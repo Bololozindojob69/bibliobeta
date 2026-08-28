@@ -37,13 +37,17 @@
       campos: [
         { id: 'nome', label: 'Nome completo', type: 'text', validacao: 'nome' },
         { id: 'telefone', label: 'Número de telefone', type: 'tel', validacao: 'telefone' },
-        { id: 'cargo', label: 'Cargo', type: 'text', validacao: 'obrigatorio' },
-        { id: 'rg', label: 'RG', type: 'text', validacao: 'rg' },
-        { id: 'nascimento', label: 'Data de nascimento', type: 'date', validacao: 'obrigatorio' },
         { id: 'email', label: 'E-mail', type: 'email', validacao: 'email' },
         { id: 'senha', label: 'Senha', type: 'password', validacao: 'senha' }
       ]
     }
+  };
+
+  // ---------- Painel de destino de cada tipo de usuário ----------
+  const PAINEIS = {
+    aluno: 'aluno.html',
+    professor: 'professor.html',
+    gestao: 'gestao.html'
   };
 
   // ---------- Elementos ----------
@@ -58,6 +62,8 @@
   const cadastroBotao = document.getElementById('cadastroBotao');
 
   const entrarForm = document.getElementById('entrarForm');
+  const entrarSide = entrarForm.closest('.login-form-side');
+  const cadastroSide = cadastroForm.closest('.login-form-side');
   const loginEmail = document.getElementById('loginEmail');
   const loginSenha = document.getElementById('loginSenha');
   const erroLoginEmail = document.getElementById('erroLoginEmail');
@@ -80,10 +86,6 @@
   function validarRA(v) {
     return /^\d{4,8}-?\d$/.test(v.trim());
   }
-  function validarRG(v) {
-    const digitos = v.replace(/\D/g, '');
-    return digitos.length >= 5 && digitos.length <= 12;
-  }
   function validarSenha(v) {
     return v.length >= 6;
   }
@@ -98,13 +100,27 @@
     email: { fn: validarEmail, msg: 'Informe um e-mail válido.' },
     telefone: { fn: validarTelefone, msg: 'Informe um telefone válido (DDD + número).' },
     ra: { fn: validarRA, msg: 'Informe o RA seguido do dígito (ex.: 123456-7).' },
-    rg: { fn: validarRG, msg: 'Informe um RG válido.' },
     senha: { fn: validarSenha, msg: 'A senha deve ter ao menos 6 caracteres.' },
     nome: { fn: validarNome, msg: 'Informe o nome completo.' },
     obrigatorio: { fn: validarObrigatorio, msg: 'Este campo é obrigatório.' }
   };
 
   // ---------- Renderização dos campos de cadastro ----------
+  function criarBotaoOlho(targetId) {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'login-eye';
+    btn.setAttribute('aria-label', 'Mostrar senha');
+    btn.dataset.target = targetId;
+    btn.innerHTML =
+      '<svg class="icon-olho-aberto" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+      '<path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>' +
+      '<svg class="icon-olho-fechado" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+      '<path d="M17.94 17.94A10.94 10.94 0 0 1 12 19c-7 0-11-7-11-7a18.5 18.5 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 7 11 7a18.5 18.5 0 0 1-2.16 3.19"/>' +
+      '<path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
+    return btn;
+  }
+
   function renderCampos(config) {
     cadastroCampos.innerHTML = '';
     config.campos.forEach(function (campo) {
@@ -124,7 +140,16 @@
       erro.className = 'login-error';
       erro.id = 'erro_cad_' + campo.id;
 
-      wrapper.appendChild(input);
+      if (campo.type === 'password') {
+        const passWrap = document.createElement('div');
+        passWrap.className = 'login-password-wrap';
+        passWrap.appendChild(input);
+        passWrap.appendChild(criarBotaoOlho(input.id));
+        wrapper.appendChild(passWrap);
+      } else {
+        wrapper.appendChild(input);
+      }
+
       wrapper.appendChild(erro);
       cadastroCampos.appendChild(wrapper);
     });
@@ -169,6 +194,29 @@
     return emailOk && senhaValida;
   }
 
+  // ---------- Iguala a altura do painel de Entrar e do de Cadastro ----------
+  // Sem isso, o card muda de tamanho ao alternar entre login e cadastro,
+  // porque cada formulário tem uma quantidade diferente de campos.
+  function sincronizarAlturaModal() {
+    // Na versão mobile (empilhada) cada card já usa altura natural própria
+    // e alternar não deve ficar "travado" numa altura fixa; então só
+    // igualamos as alturas no layout lado a lado (desktop/tablet).
+    if (window.matchMedia('(max-width: 720px)').matches) {
+      container.style.minHeight = '';
+      return;
+    }
+    const alturaEntrar = entrarSide.scrollHeight;
+    const alturaCadastro = cadastroSide.scrollHeight;
+    const maior = Math.max(alturaEntrar, alturaCadastro);
+    if (maior > 0) {
+      container.style.minHeight = maior + 'px';
+    }
+  }
+
+  window.addEventListener('resize', function () {
+    if (overlay.classList.contains('show')) sincronizarAlturaModal();
+  });
+
   // ---------- Abrir / Fechar modal ----------
   function abrirLogin(tipoUsuario) {
     const config = CONFIGS[tipoUsuario] || CONFIGS.aluno;
@@ -185,6 +233,7 @@
 
     overlay.classList.add('show');
     document.body.style.overflow = 'hidden';
+    sincronizarAlturaModal();
   }
 
   function fecharLogin() {
@@ -192,6 +241,7 @@
     document.body.style.overflow = '';
     limparFormularios();
     container.classList.remove('active');
+    container.style.minHeight = '';
   }
 
   function limparFormularios() {
@@ -234,19 +284,60 @@
     alert('Um link de redefinição de senha será enviado para o seu e-mail cadastrado.');
   });
 
+  // Delegação: funciona tanto no botão fixo do login quanto nos
+  // botões de olho criados dinamicamente pelo renderCampos()
+  overlay.addEventListener('click', function (e) {
+    const btn = e.target.closest('.login-eye');
+    if (!btn) return;
+    const input = document.getElementById(btn.dataset.target);
+    if (!input) return;
+    const mostrando = input.type === 'text';
+    input.type = mostrando ? 'password' : 'text';
+    btn.classList.toggle('mostrando', !mostrando);
+    btn.setAttribute('aria-label', mostrando ? 'Mostrar senha' : 'Ocultar senha');
+  });
+
+  const btnAcessar = entrarForm.querySelector('button[type="submit"], .login-btn');
+
   entrarForm.addEventListener('submit', function (e) {
     e.preventDefault();
     if (!validarLogin()) return;
-    alert('Login realizado com sucesso!');
-    fecharLogin();
+
+    if (btnAcessar) {
+      btnAcessar.classList.add('is-loading');
+      btnAcessar.disabled = true;
+    }
+
+    // Simula a chamada de autenticação; troque por uma requisição real quando houver backend
+    setTimeout(function () {
+      if (btnAcessar) {
+        btnAcessar.classList.remove('is-loading');
+        btnAcessar.disabled = false;
+      }
+      fecharLogin();
+      window.location.href = PAINEIS[tipoAtual] || PAINEIS.aluno;
+    }, 1200);
   });
 
   cadastroForm.addEventListener('submit', function (e) {
     e.preventDefault();
     if (!validarCadastro()) return;
     const config = CONFIGS[tipoAtual];
-    alert(config.botao + ' realizado com sucesso!');
-    fecharLogin();
+
+    if (cadastroBotao) {
+      cadastroBotao.classList.add('is-loading');
+      cadastroBotao.disabled = true;
+    }
+
+    setTimeout(function () {
+      if (cadastroBotao) {
+        cadastroBotao.classList.remove('is-loading');
+        cadastroBotao.disabled = false;
+      }
+      alert(config.botao + ' realizado com sucesso!');
+      fecharLogin();
+      window.location.href = PAINEIS[tipoAtual] || PAINEIS.aluno;
+    }, 1200);
   });
 
 })();

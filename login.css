@@ -83,8 +83,8 @@
 /* Altura do card ajustada conforme a quantidade de campos de cada
    cadastro (professor tem menos campos, gestão tem mais) */
 .login-container.active.tipo-professor { min-height: 560px; }
-.login-container.active.tipo-aluno { min-height: 700px; }
-.login-container.active.tipo-gestao { min-height: 780px; }
+.login-container.active.tipo-aluno { min-height: 540px; }
+.login-container.active.tipo-gestao { min-height: 560px; }
 
 .login-container h1 {
   font-weight: 600;
@@ -197,6 +197,56 @@
   border-color: #d64545;
 }
 
+/* ---------- Campo de senha com botão de mostrar/ocultar (olhinho) ---------- */
+.login-password-wrap {
+  position: relative;
+  width: 100%;
+}
+
+.login-password-wrap input {
+  padding-right: 44px; /* espaço para o ícone não ficar em cima do texto */
+}
+
+.login-eye {
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  transform: translateY(-50%);
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  color: #7a7a7a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: color 0.2s ease, background 0.2s ease;
+}
+
+.login-eye:hover {
+  color: #33291f;
+  background: rgba(51, 41, 31, 0.08);
+}
+
+.login-eye:focus-visible {
+  outline: 2px solid var(--btn, #e86a17);
+  outline-offset: 1px;
+}
+
+.login-eye svg {
+  width: 18px;
+  height: 18px;
+  stroke: currentColor;
+  fill: none;
+}
+
+/* esconde o ícone de "olho riscado" por padrão; a classe é alternada via JS */
+.login-eye .icon-olho-fechado { display: none; }
+.login-eye.mostrando .icon-olho-aberto { display: none; }
+.login-eye.mostrando .icon-olho-fechado { display: flex; }
+
 .login-error {
   display: block;
   min-height: 15px;
@@ -233,6 +283,42 @@
 
 .login-btn:hover { background-color: var(--btn-hover, #f28c28); }
 .login-btn:active { transform: scale(0.97); }
+
+.login-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.85;
+}
+
+/* Estado de carregamento: some o texto e mostra o spinner */
+.login-btn.is-loading {
+  position: relative;
+  color: transparent;
+  pointer-events: none;
+}
+
+.login-btn.is-loading::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 16px;
+  height: 16px;
+  margin: -8px 0 0 -8px;
+  border: 2.5px solid rgba(255, 255, 255, 0.45);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: loginBtnSpin 0.7s linear infinite;
+}
+
+@keyframes loginBtnSpin {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .login-btn.is-loading::after {
+    animation-duration: 1.4s;
+  }
+}
 
 .login-btn-hollow {
   background-color: transparent;
@@ -310,7 +396,7 @@
   .login-container { min-height: 660px; }
   .login-container.active.tipo-professor { min-height: 600px; }
   .login-container.active.tipo-aluno { min-height: 740px; }
-  .login-container.active.tipo-gestao { min-height: 820px; }
+  .login-container.active.tipo-gestao { min-height: 600px; }
   .login-form-side { padding: 34px 28px; }
 }
 

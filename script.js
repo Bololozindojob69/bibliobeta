@@ -70,6 +70,12 @@
       "--btn-hover":"#767676","--icon":"#9A9A9A","--detail":"#C7C7C7","--green":"#6AA84F",
       "--on-dark":"#F2F2F2"
     },
+    contraste: {
+      "--bg":"#000000","--card":"#0A0A0A","--navbar":"#000000","--menu":"#000000",
+      "--banner":"#000000","--text":"#FFFFFF","--title":"#FFE600","--btn":"#FFE600",
+      "--btn-hover":"#FFF35C","--icon":"#FFE600","--detail":"#FFFFFF","--green":"#00FF6A",
+      "--on-dark":"#FFFFFF"
+    },
     marrom: {
       "--bg":"#F6EFE6","--card":"#EAD9C2","--navbar":"#3B2A1E","--menu":"#3B2A1E",
       "--banner":"#3B2A1E","--text":"#5C4530","--title":"#28190F","--btn":"#8B5A2B",
@@ -119,6 +125,7 @@
   }
 
   function setTheme(name){
+    document.documentElement.classList.toggle('alto-contraste', name === 'contraste');
     if(THEMES[name]){
       applyVars(THEMES[name]);
       saveState(name, THEMES[name]);
@@ -151,6 +158,10 @@
   });
 
   loadState();
+  document.documentElement.classList.toggle(
+    'alto-contraste', localStorage.getItem(STORAGE_SELECT_KEY) === 'contraste'
+  );
+  window.BiblioBetaTema = { setTheme: setTheme };
 
   // ---------------- Dropdown ----------------
   const profileBtn = document.getElementById('profileBtn');

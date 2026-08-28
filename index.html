@@ -7,8 +7,11 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles.css">
-<link rel="stylesheet" href="login.css?v=2">
+<link rel="icon" href="/favicon.png" type="image/png">
+<link rel="stylesheet" href="/css/styles.css">
+<link rel="stylesheet" href="/css/login.css">
+<link rel="stylesheet" href="/css/painel.css">
+<link rel="stylesheet" href="/css/acessibilidade.css">
 </head>
 <body>
 
@@ -281,6 +284,7 @@
         <option value="vermelho">Vermelho</option>
         <option value="amarelo">Amarelo</option>
         <option value="turquesa">Turquesa</option>
+        <option value="contraste">Alto contraste (acessibilidade)</option>
         <option value="grafite">Grafite</option>
         <option value="marrom">Marrom Clássico</option>
         <option value="custom">Personalizado</option>
@@ -343,7 +347,20 @@
               <span class="login-error" id="erroLoginEmail"></span>
             </div>
             <div class="login-field">
-              <input type="password" id="loginSenha" placeholder="Senha" autocomplete="current-password" />
+              <div class="login-password-wrap">
+                <input type="password" id="loginSenha" placeholder="Senha" autocomplete="current-password" />
+                <button type="button" class="login-eye" aria-label="Mostrar senha" data-target="loginSenha">
+                  <svg class="icon-olho-aberto" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                  <svg class="icon-olho-fechado" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M17.94 17.94A10.94 10.94 0 0 1 12 19c-7 0-11-7-11-7a18.5 18.5 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 7 11 7a18.5 18.5 0 0 1-2.16 3.19"/>
+                    <path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/>
+                    <line x1="1" y1="1" x2="23" y2="23"/>
+                  </svg>
+                </button>
+              </div>
               <span class="login-error" id="erroLoginSenha"></span>
             </div>
           </div>
@@ -373,7 +390,9 @@
   </div>
 </div>
 
-<script src="script.js"></script>
-<script src="login.js"></script>
+<script src="/js/script.js"></script>
+<script src="/js/login.js"></script>
+<script src="/js/painel.js"></script>
+<script src="/js/acessibilidade.js"></script>
 </body>
 </html>
