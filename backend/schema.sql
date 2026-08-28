@@ -1,89 +1,15 @@
-CREATE DATABASE IF NOT EXISTS bibliobeta CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE bibliobeta;
-
-CREATE TABLE IF NOT EXISTS escolas (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  nome VARCHAR(255) NOT NULL,
-  cnpj VARCHAR(30) UNIQUE,
-  codigo_inep VARCHAR(30) UNIQUE,
-  telefone VARCHAR(30),
-  email VARCHAR(255),
-  cep VARCHAR(20),
-  estado VARCHAR(100),
-  cidade VARCHAR(150),
-  endereco VARCHAR(255),
-  numero VARCHAR(30),
-  complemento VARCHAR(255),
-  diretor VARCHAR(255),
-  status VARCHAR(20) NOT NULL DEFAULT 'ativa',
-  criado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-CREATE TABLE IF NOT EXISTS usuarios (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  escola_id INT NOT NULL,
-  nome VARCHAR(255) NOT NULL,
-  email VARCHAR(255) NOT NULL UNIQUE,
-  telefone VARCHAR(30),
-  senha_hash VARCHAR(255) NOT NULL,
-  tipo ENUM('aluno','professor','gestao') NOT NULL,
-  status VARCHAR(20) NOT NULL DEFAULT 'ativo',
-  criado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  CONSTRAINT fk_usuarios_escola FOREIGN KEY (escola_id) REFERENCES escolas(id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-CREATE TABLE IF NOT EXISTS alunos (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  usuario_id INT NOT NULL UNIQUE,
-  escola_id INT NOT NULL,
-  ra VARCHAR(50) NOT NULL UNIQUE,
-  serie VARCHAR(100),
-  turma VARCHAR(50),
-  numero_chamada INT,
-  CONSTRAINT fk_alunos_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
-  CONSTRAINT fk_alunos_escola FOREIGN KEY (escola_id) REFERENCES escolas(id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-CREATE TABLE IF NOT EXISTS professores (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  usuario_id INT NOT NULL UNIQUE,
-  escola_id INT NOT NULL,
-  matricula VARCHAR(50) UNIQUE,
-  disciplina VARCHAR(150),
-  CONSTRAINT fk_professores_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
-  CONSTRAINT fk_professores_escola FOREIGN KEY (escola_id) REFERENCES escolas(id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-CREATE TABLE IF NOT EXISTS administradores (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  usuario_id INT NOT NULL UNIQUE,
-  escola_id INT NOT NULL,
-  data_nascimento VARCHAR(30),
-  rg VARCHAR(50),
-  cargo VARCHAR(150),
-  nivel_acesso VARCHAR(50) NOT NULL DEFAULT 'gestao',
-  CONSTRAINT fk_admin_usuario FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,
-  CONSTRAINT fk_admin_escola FOREIGN KEY (escola_id) REFERENCES escolas(id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-CREATE TABLE IF NOT EXISTS livros (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  escola_id INT NOT NULL,
-  titulo VARCHAR(255) NOT NULL,
-  autor VARCHAR(255) NOT NULL,
-  editora VARCHAR(255),
-  isbn VARCHAR(50),
-  ano_publicacao INT,
-  categoria VARCHAR(150),
-  descricao TEXT,
-  capa TEXT,
-  quantidade INT NOT NULL DEFAULT 1,
-  disponiveis INT NOT NULL DEFAULT 1,
-  ativo TINYINT NOT NULL DEFAULT 1,
-  criado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  CONSTRAINT fk_livros_escola FOREIGN KEY (escola_id) REFERENCES escolas(id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
-CREATE INDEX idx_usuarios_email ON usuarios(email);
-CREATE INDEX idx_alunos_ra ON alunos(ra);
-CREATE INDEX idx_livros_titulo ON livros(titulo);
+PRAGMA foreign_keys = ON;
+CREATE TABLE IF NOT EXISTS usuarios (id INTEGER PRIMARY KEY AUTOINCREMENT,nome TEXT NOT NULL,email TEXT NOT NULL UNIQUE,telefone TEXT,senha_hash TEXT NOT NULL,tipo TEXT NOT NULL CHECK(tipo IN ('aluno','professor','gestao')),status TEXT NOT NULL DEFAULT 'ativo' CHECK(status IN ('ativo','inativo')),criado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP);
+CREATE TABLE IF NOT EXISTS alunos (id INTEGER PRIMARY KEY AUTOINCREMENT,usuario_id INTEGER NOT NULL UNIQUE,ra TEXT NOT NULL UNIQUE,serie TEXT,turma TEXT,numero_chamada INTEGER,FOREIGN KEY(usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE);
+CREATE TABLE IF NOT EXISTS professores (id INTEGER PRIMARY KEY AUTOINCREMENT,usuario_id INTEGER NOT NULL UNIQUE,matricula TEXT UNIQUE,disciplina TEXT,FOREIGN KEY(usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE);
+CREATE TABLE IF NOT EXISTS gestao (id INTEGER PRIMARY KEY AUTOINCREMENT,usuario_id INTEGER NOT NULL UNIQUE,cargo TEXT,nivel_acesso TEXT NOT NULL DEFAULT 'gestao',FOREIGN KEY(usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE);
+CREATE TABLE IF NOT EXISTS categorias (id INTEGER PRIMARY KEY AUTOINCREMENT,nome TEXT NOT NULL UNIQUE,descricao TEXT);
+CREATE TABLE IF NOT EXISTS livros (id INTEGER PRIMARY KEY AUTOINCREMENT,categoria_id INTEGER,titulo TEXT NOT NULL,autor TEXT NOT NULL,editora TEXT,isbn TEXT UNIQUE,ano_publicacao INTEGER,descricao TEXT,capa TEXT,ativo INTEGER NOT NULL DEFAULT 1,criado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,FOREIGN KEY(categoria_id) REFERENCES categorias(id) ON DELETE SET NULL);
+CREATE TABLE IF NOT EXISTS localizacoes (id INTEGER PRIMARY KEY AUTOINCREMENT,nome TEXT NOT NULL UNIQUE,descricao TEXT);
+CREATE TABLE IF NOT EXISTS exemplares (id INTEGER PRIMARY KEY AUTOINCREMENT,livro_id INTEGER NOT NULL,localizacao_id INTEGER,codigo TEXT NOT NULL UNIQUE,status TEXT NOT NULL DEFAULT 'disponivel' CHECK(status IN ('disponivel','emprestado','reservado','danificado','perdido')),observacao TEXT,FOREIGN KEY(livro_id) REFERENCES livros(id) ON DELETE CASCADE,FOREIGN KEY(localizacao_id) REFERENCES localizacoes(id) ON DELETE SET NULL);
+CREATE TABLE IF NOT EXISTS emprestimos (id INTEGER PRIMARY KEY AUTOINCREMENT,usuario_id INTEGER NOT NULL,exemplar_id INTEGER NOT NULL,data_emprestimo DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,data_prevista_devolucao DATETIME NOT NULL,data_devolucao DATETIME,renovacoes INTEGER NOT NULL DEFAULT 0,status TEXT NOT NULL DEFAULT 'ativo' CHECK(status IN ('ativo','devolvido','atrasado')),FOREIGN KEY(usuario_id) REFERENCES usuarios(id),FOREIGN KEY(exemplar_id) REFERENCES exemplares(id));
+CREATE TABLE IF NOT EXISTS reservas (id INTEGER PRIMARY KEY AUTOINCREMENT,usuario_id INTEGER NOT NULL,livro_id INTEGER NOT NULL,data_reserva DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,status TEXT NOT NULL DEFAULT 'fila' CHECK(status IN ('fila','pronto','retirada','cancelada')),FOREIGN KEY(usuario_id) REFERENCES usuarios(id),FOREIGN KEY(livro_id) REFERENCES livros(id));
+CREATE TABLE IF NOT EXISTS favoritos (id INTEGER PRIMARY KEY AUTOINCREMENT,usuario_id INTEGER NOT NULL,livro_id INTEGER NOT NULL,criado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,UNIQUE(usuario_id,livro_id),FOREIGN KEY(usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE,FOREIGN KEY(livro_id) REFERENCES livros(id) ON DELETE CASCADE);
+CREATE TABLE IF NOT EXISTS notificacoes (id INTEGER PRIMARY KEY AUTOINCREMENT,usuario_id INTEGER NOT NULL,titulo TEXT NOT NULL,mensagem TEXT NOT NULL,tipo TEXT NOT NULL DEFAULT 'info',lida INTEGER NOT NULL DEFAULT 0,criado_em DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,FOREIGN KEY(usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE);
+CREATE TABLE IF NOT EXISTS configuracoes (id INTEGER PRIMARY KEY CHECK(id=1),dias_emprestimo INTEGER NOT NULL DEFAULT 14,limite_livros_aluno INTEGER NOT NULL DEFAULT 5,limite_livros_professor INTEGER NOT NULL DEFAULT 5,maximo_renovacoes INTEGER NOT NULL DEFAULT 2,permitir_reservas INTEGER NOT NULL DEFAULT 1);
+CREATE INDEX IF NOT EXISTS idx_livros_titulo ON livros(titulo); CREATE INDEX IF NOT EXISTS idx_emprestimos_usuario ON emprestimos(usuario_id); CREATE INDEX IF NOT EXISTS idx_reservas_livro ON reservas(livro_id);

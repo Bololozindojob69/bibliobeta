@@ -713,3 +713,12 @@
     animation: none !important;
   }
 }
+
+/* Política de senha e confirmação */
+.senha-politica {
+  display: block;
+  margin: 6px 2px 0;
+  font-size: 10.5px;
+  line-height: 1.45;
+  color: #6f655b;
+}

@@ -6,7 +6,7 @@
 
   // ---------- Conexão com a API ----------
   // Endereço do backend (server.js). Ajuste aqui se o backend rodar em outra porta/host.
-  const API_URL = 'http://localhost:3000';
+  const API_URL = '/api';
 
   // ---------- Configuração de cada tipo de usuário ----------
   // "campos" agora fica organizado em 3 etapas (steps), cada uma com seu
@@ -27,7 +27,8 @@
         {
           titulo: 'Informações escolares',
           campos: [
-            { id: 'ra', label: 'RA + Dígito', type: 'text', validacao: 'ra' },
+            { id: 'ra', label: 'RA (9 dígitos)', type: 'text', validacao: 'ra', inputmode: 'numeric', pattern: '\\d{9}', maxlength: 9, autocomplete: 'off' },
+            { id: 'ra_digito', label: 'Dígito', type: 'text', validacao: 'raDigito', inputmode: 'numeric', pattern: '\\d{1}', maxlength: 1, autocomplete: 'off' },
             { id: 'turma', label: 'Série / Turma', type: 'text', validacao: 'obrigatorio' }
           ]
         },
@@ -35,7 +36,8 @@
           titulo: 'Contato e senha',
           campos: [
             { id: 'email', label: 'E-mail', type: 'email', validacao: 'email' },
-            { id: 'senha', label: 'Senha', type: 'password', validacao: 'senha' }
+            { id: 'senha', label: 'Senha', type: 'password', validacao: 'senha' },
+            { id: 'confirmar_senha', label: 'Confirmar senha', type: 'password', validacao: 'confirmarSenha' }
           ]
         }
       ]
@@ -61,7 +63,8 @@
         {
           titulo: 'Senha',
           campos: [
-            { id: 'senha', label: 'Senha', type: 'password', validacao: 'senha' }
+            { id: 'senha', label: 'Senha', type: 'password', validacao: 'senha' },
+            { id: 'confirmar_senha', label: 'Confirmar senha', type: 'password', validacao: 'confirmarSenha' }
           ]
         }
       ]
@@ -87,7 +90,8 @@
         {
           titulo: 'Senha',
           campos: [
-            { id: 'senha', label: 'Senha', type: 'password', validacao: 'senha' }
+            { id: 'senha', label: 'Senha', type: 'password', validacao: 'senha' },
+            { id: 'confirmar_senha', label: 'Confirmar senha', type: 'password', validacao: 'confirmarSenha' }
           ]
         }
       ]
@@ -143,17 +147,29 @@
 
   // ---------- Validações ----------
   function validarEmail(v) {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim());
+    const email = v.trim().toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return false;
+    // Para aluno são aceitos e-mails normais e os institucionais:
+    // @aluno.educacao.sp.gov.br e @al.educacao.sp.gov.br.
+    return true;
   }
   function validarTelefone(v) {
     const digitos = v.replace(/\D/g, '');
     return digitos.length >= 10 && digitos.length <= 11;
   }
   function validarRA(v) {
-    return /^\d{4,8}-?\d$/.test(v.trim());
+    return /^\d{9}$/.test(v);
+  }
+  function validarRADigito(v) {
+    return /^\d{1}$/.test(v);
   }
   function validarSenha(v) {
-    return v.length >= 6;
+    // Política: mínimo 8 caracteres, com maiúscula, minúscula, número e símbolo.
+    return v.length >= 8 && /[A-Z]/.test(v) && /[a-z]/.test(v) && /\d/.test(v) && /[^A-Za-z0-9]/.test(v);
+  }
+  function validarConfirmarSenha(v) {
+    const senha = document.getElementById('cad_senha');
+    return !!senha && v === senha.value && v.length > 0;
   }
   function validarNome(v) {
     return v.trim().length >= 3 && v.trim().includes(' ');
@@ -162,11 +178,19 @@
     return v.trim().length > 0;
   }
 
+  function mensagemEmail() {
+    return tipoAtual === 'aluno'
+      ? 'Use um e-mail válido. Aceita normal ou institucional: @aluno.educacao.sp.gov.br / @al.educacao.sp.gov.br.'
+      : 'Informe um e-mail válido.';
+  }
+
   const VALIDADORES = {
-    email: { fn: validarEmail, msg: 'Informe um e-mail válido.' },
+    email: { fn: validarEmail, get msg() { return mensagemEmail(); } },
     telefone: { fn: validarTelefone, msg: 'Informe um telefone válido (DDD + número).' },
-    ra: { fn: validarRA, msg: 'Informe o RA seguido do dígito (ex.: 123456-7).' },
-    senha: { fn: validarSenha, msg: 'A senha deve ter ao menos 6 caracteres.' },
+    ra: { fn: validarRA, msg: 'Informe o RA somente com números, sem hífen ou espaços (9 dígitos).' },
+    raDigito: { fn: validarRADigito, msg: 'Informe o dígito do RA (1 número).' },
+    senha: { fn: validarSenha, msg: 'Use 8+ caracteres, com maiúscula, minúscula, número e símbolo.' },
+    confirmarSenha: { fn: validarConfirmarSenha, msg: 'As senhas não coincidem.' },
     nome: { fn: validarNome, msg: 'Informe o nome completo.' },
     obrigatorio: { fn: validarObrigatorio, msg: 'Este campo é obrigatório.' }
   };
@@ -207,6 +231,24 @@
         input.id = 'cad_' + campo.id;
         input.placeholder = campo.label;
         input.dataset.validacao = campo.validacao;
+
+        // RA: aceita somente dígitos, preserva zeros à esquerda e impede
+        // hífen, letras e espaços tanto na digitação quanto na colagem.
+        if (campo.id === 'ra' || campo.id === 'ra_digito') {
+          const limite = campo.id === 'ra' ? 9 : 1;
+          input.inputMode = 'numeric';
+          input.pattern = '\\d{' + limite + '}';
+          input.maxLength = limite;
+          input.autocomplete = 'off';
+          const somenteNumeros = function () {
+            this.value = this.value.replace(/\D/g, '').slice(0, limite);
+          };
+          input.addEventListener('input', somenteNumeros);
+          input.addEventListener('paste', function () {
+            setTimeout(somenteNumeros.bind(this), 0);
+          });
+        }
+
         if (campo.type === 'date') {
           input.setAttribute('aria-label', campo.label);
         }
@@ -223,6 +265,14 @@
           wrapper.appendChild(passWrap);
         } else {
           wrapper.appendChild(input);
+        }
+
+        // Explica a política de senha diretamente no cadastro.
+        if (campo.id === 'senha') {
+          const politica = document.createElement('small');
+          politica.className = 'senha-politica';
+          politica.textContent = 'Política de senha: mínimo 8 caracteres, incluindo letra maiúscula, minúscula, número e símbolo.';
+          wrapper.appendChild(politica);
         }
 
         wrapper.appendChild(erro);
@@ -314,7 +364,15 @@
   }
 
   function validarLogin() {
-    const emailOk = validarCampo(loginEmail, erroLoginEmail);
+    const identificador = (loginEmail.value || '').trim();
+    const emailOuRaOk = validarEmail(identificador) || /^\d{10}$/.test(identificador);
+    if (!emailOuRaOk) {
+      loginEmail.classList.add('invalid');
+      erroLoginEmail.textContent = 'Informe seu e-mail ou RA (10 dígitos).';
+    } else {
+      loginEmail.classList.remove('invalid');
+      erroLoginEmail.textContent = '';
+    }
     const senhaValida = (loginSenha.value || '').length > 0;
     if (!senhaValida) {
       loginSenha.classList.add('invalid');
@@ -323,7 +381,7 @@
       loginSenha.classList.remove('invalid');
       erroLoginSenha.textContent = '';
     }
-    return emailOk && senhaValida;
+    return emailOuRaOk && senhaValida;
   }
 
   // ---------- Iguala a altura do painel de Entrar e do de Cadastro ----------
@@ -504,7 +562,7 @@
     }
 
     try {
-      const resposta = await fetch(API_URL + '/api/auth/login', {
+      const resposta = await fetch(API_URL + '/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -566,12 +624,18 @@
     config.steps.forEach(function (step) {
       step.campos.forEach(function (campo) {
         const input = document.getElementById('cad_' + campo.id);
-        if (input) corpo[campo.id] = input.value.trim();
+        if (input) corpo[campo.id] = (campo.id === 'senha' || campo.id === 'confirmar_senha') ? input.value : input.value.trim();
       });
     });
 
+    // RA é enviado ao backend como RA + dígito (10 números, sem hífen).
+    if (corpo.ra) {
+      corpo.ra_digito = (corpo.ra_digito || '').trim();
+      corpo.ra = corpo.ra + corpo.ra_digito;
+    }
+
     try {
-      const resposta = await fetch(API_URL + '/api/cadastro', {
+      const resposta = await fetch(API_URL + '/cadastro', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(corpo)
@@ -584,6 +648,20 @@
         return;
       }
 
+      // O backend já devolve token + usuario no cadastro: entra direto.
+      if (dados.token && dados.usuario) {
+        localStorage.setItem('bibliobeta_token', dados.token);
+        localStorage.setItem('bibliobeta_usuario', JSON.stringify(dados.usuario));
+
+        const tipoCadastrado = dados.usuario.tipo || tipoAtual;
+        cadastroForm.reset();
+        irParaEtapa(config, 0);
+        fecharLogin();
+        window.location.href = PAINEIS[tipoCadastrado] || PAINEIS.aluno;
+        return;
+      }
+
+      // Sem token na resposta: volta para a tela de login.
       alert(config.botao + ' realizado com sucesso! Faça login para continuar.');
       cadastroForm.reset();
       irParaEtapa(config, 0); // reseta o wizard pra Etapa 1

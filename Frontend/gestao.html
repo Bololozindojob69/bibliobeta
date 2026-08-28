@@ -65,7 +65,7 @@
   </div>
 
   <div class="side-foot">
-    <a href="Index.html">&larr; Sair do Perfil </a>
+    <a href="Index.html" data-logout>&larr; Sair do Perfil </a>
   </div>
 </aside>
 
@@ -92,7 +92,7 @@
       <div class="user-dropdown" id="userDropdown">
         <a href="#pane-usuarios" data-fecha-nav="usuarios">Usuários</a>
         <a href="#pane-configuracoes" data-fecha-nav="configuracoes">Configurações</a>
-        <a href="Index.html">Sair do painel</a>
+        <a href="Index.html" data-logout>Sair do painel</a>
       </div>
     </div>
   </div>
@@ -224,11 +224,9 @@
 
   <section class="painel-pane" id="pane-turmas">
     <h2>Minhas Turmas</h2>
-    <p style="margin:6px 0 18px">Bibliografias e reservas por turma, organizadas pelos professores.</p>
-    <div class="painel-grid">
-      <article class="painel-card"><h3>9º A</h3><p>Reserva ativa: 32 exemplares de literatura.</p></article>
-      <article class="painel-card"><h3>1º B</h3><p>Bibliografia enviada para a biblioteca.</p></article>
-      <article class="painel-card"><h3>3º C</h3><p>Sem reservas para este bimestre.</p></article>
+    <p style="margin:6px 0 18px">Alunos cadastrados organizados pela série e turma.</p>
+    <div id="turmas-lista" class="painel-grid">
+      <article class="painel-card"><p>Carregando turmas...</p></article>
     </div>
   </section>
 
@@ -331,23 +329,14 @@
 
   <section class="painel-pane" id="pane-usuarios">
     <h2>Usuários</h2>
-    <p style="margin:6px 0 18px">Alunos, professores e equipe com acesso ao sistema.</p>
-    <div class="painel-grid">
-      <article class="painel-card"><div class="stat">842</div><h3>Alunos</h3><p>Contas ativas de estudantes.</p></article>
-      <article class="painel-card"><div class="stat">54</div><h3>Professores</h3><p>Contas ativas do corpo docente.</p></article>
-      <article class="painel-card"><div class="stat">9</div><h3>Pendentes</h3><p>Cadastros aguardando aprovação.</p></article>
-    </div>
-
+    <p style="margin:6px 0 18px">Contas reais cadastradas no sistema.</p>
+    <div class="painel-grid" id="usuarios-resumo"></div>
     <div class="painel-grid" style="margin-top:20px">
       <article class="painel-card data-table-card">
         <h3>Contas do sistema</h3>
         <table class="data-table">
-          <thead><tr><th>Nome</th><th>Papel</th><th>E-mail</th><th>Status</th></tr></thead>
-          <tbody>
-            <tr><td><div class="avatar-row"><span class="avatar av-1">MS</span>Maria Silva</div></td><td>Aluno</td><td>maria.silva@escola.com</td><td><span class="badge badge-ativo">Ativo</span></td></tr>
-            <tr><td><div class="avatar-row"><span class="avatar av-2">CP</span>Carla Pires</div></td><td>Professora</td><td>carla.pires@escola.com</td><td><span class="badge badge-ativo">Ativo</span></td></tr>
-            <tr><td><div class="avatar-row"><span class="avatar av-4">CS</span>Camila Souza</div></td><td>Aluna</td><td>camila.souza@escola.com</td><td><span class="badge badge-pendente">Pendente</span></td></tr>
-          </tbody>
+          <thead><tr><th>Nome</th><th>Tipo</th><th>E-mail</th><th>Status</th></tr></thead>
+          <tbody id="usuarios-lista"><tr><td colspan="4">Carregando usuários...</td></tr></tbody>
         </table>
       </article>
     </div>
@@ -366,6 +355,9 @@
 </main>
 
 <script src="painel.js"></script>
+<script src="gestao.js"></script>
 <script src="acessibilidade.js"></script>
+
+
 </body>
 </html>
