@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gestão Bibliotecária — BiblioBeta</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="icon" href="/favicon.png" type="image/png">
+<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="painel.css">
+<link rel="stylesheet" href="acessibilidade.css">
+</head>
+<body class="painel-body">
+
+<!-- Logo flutuante: no mobile abre a navbar lateral -->
+<button class="logo-toggle" id="logoToggle" aria-label="Abrir menu">
+  <img src="logo.png" alt="Logo BiblioBeta">
+</button>
+<div class="side-backdrop" id="sideBackdrop"></div>
+
+<!-- ===================== NAVBAR LATERAL ===================== -->
+<aside class="side-nav" id="sideNav">
+  <div class="side-brand">
+    <img src="logo.png" alt="Logo BiblioBeta">
+    <span class="side-brand-text"><strong>BiblioBeta</strong><span>Gestão</span></span>
+  </div>
+
+  <div class="radio-container" style="--total-radio: 11">
+    <input type="radio" name="nav-gestao" id="nav-dashboard" value="dashboard" checked>
+    <label for="nav-dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Dashboard</label>
+
+    <input type="radio" name="nav-gestao" id="nav-turmas" value="turmas">
+    <label for="nav-turmas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><path d="M3 20c0-3.3 2.7-5 6-5s6 1.7 6 5"/><path d="M17 11a3 3 0 100-6"/></svg>Minhas Turmas</label>
+
+    <input type="radio" name="nav-gestao" id="nav-alunos" value="alunos">
+    <label for="nav-alunos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>Alunos</label>
+
+    <input type="radio" name="nav-gestao" id="nav-livros" value="livros">
+    <label for="nav-livros"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>Livros</label>
+
+    <input type="radio" name="nav-gestao" id="nav-emprestimos" value="emprestimos">
+    <label for="nav-emprestimos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16v12H4z"/><path d="M8 10h8M8 14h5"/></svg>Empréstimos</label>
+
+    <input type="radio" name="nav-gestao" id="nav-devolucoes" value="devolucoes">
+    <label for="nav-devolucoes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg>Devoluções</label>
+
+    <input type="radio" name="nav-gestao" id="nav-reservas" value="reservas">
+    <label for="nav-reservas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v18l-6-4-6 4V3z"/></svg>Reservas</label>
+
+    <input type="radio" name="nav-gestao" id="nav-multas" value="multas">
+    <label for="nav-multas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>Multas</label>
+
+    <input type="radio" name="nav-gestao" id="nav-relatorios" value="relatorios">
+    <label for="nav-relatorios"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Relatórios</label>
+
+    <input type="radio" name="nav-gestao" id="nav-usuarios" value="usuarios">
+    <label for="nav-usuarios"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M2 21c0-4.4 3.6-7 7-7s7 2.6 7 7"/><path d="M17 11l2 2 4-4"/></svg>Usuários</label>
+
+    <input type="radio" name="nav-gestao" id="nav-configuracoes" value="configuracoes">
+    <label for="nav-configuracoes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>Configurações</label>
+
+    <div class="glider-container"><div class="glider"></div></div>
+  </div>
+
+  <div class="side-foot">
+    <a href="Index.html">&larr; Sair do Perfil </a>
+  </div>
+</aside>
+
+<!-- ===================== CONTEÚDO ===================== -->
+<main class="painel-main">
+  <div class="painel-topbar">
+    <button type="button" class="topbar-bell" id="topbarBell" aria-label="Notificações">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      <span class="bell-badge" id="bellBadge">3</span>
+    </button>
+    <div class="topbar-notif" id="topbarNotif" hidden>
+      <h4>Avisos e pendências</h4>
+      <ul id="topbarNotifLista">
+        <li><strong>5 empréstimos atrasados</strong><span>Alunos devem devolver os livros.</span></li>
+        <li><strong>2 reservas aguardando</strong><span>Livros reservados pelos alunos.</span></li>
+        <li><strong>3 multas pendentes</strong><span>Alunos com multas em aberto.</span></li>
+      </ul>
+    </div>
+
+    <div class="topbar-user" id="topbarUser">
+      <span class="avatar user-avatar" id="userAvatar">AD</span>
+      <span class="user-name" id="userName">Administrador</span>
+      <svg class="user-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+      <div class="user-dropdown" id="userDropdown">
+        <a href="#pane-usuarios" data-fecha-nav="usuarios">Usuários</a>
+        <a href="#pane-configuracoes" data-fecha-nav="configuracoes">Configurações</a>
+        <a href="Index.html">Sair do painel</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="painel-head">
+    <span class="eyebrow">BiblioBeta</span>
+    <h1>Gestão Bibliotecária</h1>
+    <p>Controle empréstimos, usuários e relatórios da biblioteca.</p>
+  </div>
+
+  <section class="painel-pane" id="pane-dashboard">
+    <h2>Bem-vindo(a), Administrador!</h2>
+    <p style="margin:6px 0 18px">Gerencie a biblioteca de forma rápida e eficiente.</p>
+    <div class="painel-grid">
+      <article class="painel-card"><div class="stat">1.248</div><h3>Total de livros</h3><p>Disponíveis: 847.</p></article>
+      <article class="painel-card"><div class="stat">356</div><h3>Alunos cadastrados</h3><p>Ativos: 342.</p></article>
+      <article class="painel-card"><div class="stat">78</div><h3>Empréstimos ativos</h3><p>Atrasados: 5.</p></article>
+      <article class="painel-card"><div class="stat">12</div><h3>Devoluções hoje</h3><p>Movimentações já registradas.</p></article>
+    </div>
+
+    <div class="painel-grid" style="margin-top:20px">
+      <article class="painel-card data-table-card">
+        <h3>Empréstimos recentes</h3>
+        <table class="data-table">
+          <thead><tr><th>Aluno</th><th>Livro</th><th>Empréstimo</th><th>Devolução</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><div class="avatar-row"><span class="avatar av-1">MS</span>Maria Silva</div></td>
+              <td>O Pequeno Príncipe</td><td>14/05</td><td>28/05</td>
+              <td><span class="badge badge-ativo">Ativo</span></td>
+            </tr>
+            <tr>
+              <td><div class="avatar-row"><span class="avatar av-2">JP</span>João Pedro</div></td>
+              <td>O Hobbit</td><td>13/05</td><td>27/05</td>
+              <td><span class="badge badge-ativo">Ativo</span></td>
+            </tr>
+            <tr>
+              <td><div class="avatar-row"><span class="avatar av-3">LA</span>Laura Andrade</div></td>
+              <td>Extraordinário</td><td>12/05</td><td>26/05</td>
+              <td><span class="badge badge-atrasado">Atrasado</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </article>
+
+      <article class="painel-card">
+        <h3>Avisos e pendências</h3>
+        <p style="margin-top:10px"><strong>5 empréstimos atrasados</strong><br>Alunos devem devolver os livros.</p>
+        <p style="margin-top:10px"><strong>2 reservas aguardando</strong><br>Livros reservados pelos alunos.</p>
+        <p style="margin-top:10px"><strong>3 multas pendentes</strong><br>Alunos com multas em aberto.</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="painel-pane" id="pane-alunos">
+    <h2>Alunos</h2>
+    <p style="margin:6px 0 18px">Cadastros de alunos da escola.</p>
+    <div class="painel-grid">
+      <article class="painel-card"><div class="stat">842</div><h3>Total de alunos</h3><p>Contas cadastradas no sistema.</p></article>
+      <article class="painel-card"><div class="stat">799</div><h3>Ativos</h3><p>Com login realizado nos últimos 90 dias.</p></article>
+      <article class="painel-card"><div class="stat">9</div><h3>Pendentes</h3><p>Cadastros aguardando aprovação.</p></article>
+    </div>
+
+    <div class="painel-grid" style="margin-top:20px">
+      <article class="painel-card data-table-card">
+        <h3>Alunos cadastrados</h3>
+        <table class="data-table">
+          <thead><tr><th>Nome</th><th>Série</th><th>E-mail</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td><div class="avatar-row"><span class="avatar av-1">MS</span>Maria Silva</div></td><td>8º Ano A</td><td>maria.silva@escola.com</td><td><span class="badge badge-ativo">Ativo</span></td></tr>
+            <tr><td><div class="avatar-row"><span class="avatar av-2">JP</span>João Pedro</div></td><td>7º Ano B</td><td>joao.pedro@escola.com</td><td><span class="badge badge-ativo">Ativo</span></td></tr>
+            <tr><td><div class="avatar-row"><span class="avatar av-3">LA</span>Laura Andrade</div></td><td>9º Ano A</td><td>laura.andrade@escola.com</td><td><span class="badge badge-ativo">Ativo</span></td></tr>
+            <tr><td><div class="avatar-row"><span class="avatar av-4">GM</span>Gabriel Martins</div></td><td>8º Ano B</td><td>gabriel.martins@escola.com</td><td><span class="badge badge-ativo">Ativo</span></td></tr>
+          </tbody>
+        </table>
+      </article>
+    </div>
+  </section>
+
+  <section class="painel-pane" id="pane-livros">
+    <h2>Livros</h2>
+    <p style="margin:6px 0 18px">Catálogo completo do acervo.</p>
+    <div class="painel-grid">
+      <article class="painel-card"><div class="stat">1.248</div><h3>Total de títulos</h3><p>Exemplares cadastrados no acervo.</p></article>
+      <article class="painel-card"><div class="stat">847</div><h3>Disponíveis</h3><p>Prontos para empréstimo.</p></article>
+      <article class="painel-card"><div class="stat">401</div><h3>Emprestados</h3><p>Fora da biblioteca no momento.</p></article>
+    </div>
+
+    <div class="painel-grid" style="margin-top:20px">
+      <article class="painel-card data-table-card">
+        <h3>Catálogo</h3>
+        <table class="data-table">
+          <thead><tr><th>Título</th><th>Autor</th><th>Categoria</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>O Pequeno Príncipe</td><td>Antoine de Saint-Exupéry</td><td>Infantil</td><td><span class="badge badge-pendente">Emprestado</span></td></tr>
+            <tr><td>O Hobbit</td><td>J.R.R. Tolkien</td><td>Ficção</td><td><span class="badge badge-pendente">Emprestado</span></td></tr>
+            <tr><td>Extraordinário</td><td>R.J. Palacio</td><td>Juvenil</td><td><span class="badge badge-pendente">Emprestado</span></td></tr>
+            <tr><td>O Sol é para Todos</td><td>Harper Lee</td><td>Clássico</td><td><span class="badge badge-ativo">Disponível</span></td></tr>
+          </tbody>
+        </table>
+      </article>
+    </div>
+  </section>
+
+  <section class="painel-pane" id="pane-emprestimos">
+    <h2>Controle de Empréstimos</h2>
+    <p style="margin:6px 0 18px">Registre retiradas e devoluções do dia.</p>
+    <div class="painel-grid">
+      <article class="painel-card"><div class="stat">86</div><h3>Em aberto</h3><p>Empréstimos ainda não devolvidos.</p></article>
+      <article class="painel-card"><div class="stat">7</div><h3>Atrasados</h3><p>Requerem contato com o responsável.</p></article>
+      <article class="painel-card"><div class="stat">23</div><h3>Devolvidos hoje</h3><p>Movimentações registradas hoje.</p></article>
+    </div>
+
+    <div class="painel-grid" style="margin-top:20px">
+      <article class="painel-card data-table-card">
+        <h3>Empréstimos recentes</h3>
+        <table class="data-table">
+          <thead><tr><th>Aluno</th><th>Livro</th><th>Empréstimo</th><th>Devolução</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td><div class="avatar-row"><span class="avatar av-1">MS</span>Maria Silva</div></td><td>O Pequeno Príncipe</td><td>14/05</td><td>28/05</td><td><span class="badge badge-ativo">Ativo</span></td></tr>
+            <tr><td><div class="avatar-row"><span class="avatar av-2">JP</span>João Pedro</div></td><td>O Hobbit</td><td>13/05</td><td>27/05</td><td><span class="badge badge-ativo">Ativo</span></td></tr>
+            <tr><td><div class="avatar-row"><span class="avatar av-3">LA</span>Laura Andrade</div></td><td>Extraordinário</td><td>12/05</td><td>26/05</td><td><span class="badge badge-atrasado">Atrasado</span></td></tr>
+            <tr><td><div class="avatar-row"><span class="avatar av-4">GM</span>Gabriel Martins</div></td><td>A Menina que Roubava Livros</td><td>10/05</td><td>24/05</td><td><span class="badge badge-ativo">Ativo</span></td></tr>
+          </tbody>
+        </table>
+      </article>
+    </div>
+  </section>
+
+  <section class="painel-pane" id="pane-turmas">
+    <h2>Minhas Turmas</h2>
+    <p style="margin:6px 0 18px">Bibliografias e reservas por turma, organizadas pelos professores.</p>
+    <div class="painel-grid">
+      <article class="painel-card"><h3>9º A</h3><p>Reserva ativa: 32 exemplares de literatura.</p></article>
+      <article class="painel-card"><h3>1º B</h3><p>Bibliografia enviada para a biblioteca.</p></article>
+      <article class="painel-card"><h3>3º C</h3><p>Sem reservas para este bimestre.</p></article>
+    </div>
+  </section>
+
+  <section class="painel-pane" id="pane-devolucoes">
+    <h2>Devoluções</h2>
+    <p style="margin:6px 0 18px">Confira devoluções feitas e pendentes.</p>
+    <div class="painel-grid">
+      <article class="painel-card"><div class="stat">23</div><h3>Devolvidas hoje</h3><p>Livros que retornaram ao acervo.</p></article>
+      <article class="painel-card"><div class="stat">7</div><h3>Atrasadas</h3><p>Prazo já vencido.</p></article>
+      <article class="painel-card"><div class="stat">4</div><h3>Previstas para amanhã</h3><p>Devoluções esperadas.</p></article>
+    </div>
+
+    <div class="painel-grid" style="margin-top:20px">
+      <article class="painel-card data-table-card">
+        <h3>Devoluções recentes</h3>
+        <table class="data-table">
+          <thead><tr><th>Aluno</th><th>Livro</th><th>Devolvido em</th><th>Condição</th></tr></thead>
+          <tbody>
+            <tr><td><div class="avatar-row"><span class="avatar av-1">CS</span>Camila Souza</div></td><td>O Sol é para Todos</td><td>16/08</td><td><span class="badge badge-ativo">Boa</span></td></tr>
+            <tr><td><div class="avatar-row"><span class="avatar av-2">GM</span>Gabriel Martins</div></td><td>A Menina que Roubava Livros</td><td>15/08</td><td><span class="badge badge-ativo">Boa</span></td></tr>
+          </tbody>
+        </table>
+      </article>
+    </div>
+  </section>
+
+  <section class="painel-pane" id="pane-reservas">
+    <h2>Reservas</h2>
+    <p style="margin:6px 0 18px">Livros reservados pelos alunos.</p>
+    <div class="painel-grid">
+      <article class="painel-card"><div class="stat">2</div><h3>Aguardando</h3><p>Reservas aguardando retirada.</p></article>
+      <article class="painel-card"><div class="stat">1</div><h3>Expiradas</h3><p>Prazo de retirada não cumprido.</p></article>
+    </div>
+
+    <div class="painel-grid" style="margin-top:20px">
+      <article class="painel-card data-table-card">
+        <h3>Reservas ativas</h3>
+        <table class="data-table">
+          <thead><tr><th>Aluno</th><th>Livro</th><th>Reservado em</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td><div class="avatar-row"><span class="avatar av-1">MS</span>Maria Silva</div></td><td>1984</td><td>10/08</td><td><span class="badge badge-ativo">Pronto para retirada</span></td></tr>
+          </tbody>
+        </table>
+      </article>
+    </div>
+  </section>
+
+  <section class="painel-pane" id="pane-multas">
+    <h2>Multas</h2>
+    <p style="margin:6px 0 18px">Pendências financeiras por atraso.</p>
+    <div class="painel-grid">
+      <article class="painel-card"><div class="stat">3</div><h3>Alunos com multa</h3><p>Pendências em aberto.</p></article>
+      <article class="painel-card"><div class="stat">R$ 47</div><h3>Total pendente</h3><p>Valor acumulado a receber.</p></article>
+    </div>
+
+    <div class="painel-grid" style="margin-top:20px">
+      <article class="painel-card data-table-card">
+        <h3>Multas em aberto</h3>
+        <table class="data-table">
+          <thead><tr><th>Aluno</th><th>Livro</th><th>Dias de atraso</th><th>Valor</th></tr></thead>
+          <tbody>
+            <tr><td><div class="avatar-row"><span class="avatar av-3">LA</span>Laura Andrade</div></td><td>Extraordinário</td><td>3</td><td>R$ 15</td></tr>
+          </tbody>
+        </table>
+      </article>
+    </div>
+  </section>
+
+  <section class="painel-pane" id="pane-relatorios">
+    <h2>Relatórios</h2>
+    <p style="margin:6px 0 18px">Indicadores de uso da biblioteca.</p>
+    <div class="painel-grid">
+      <article class="painel-card"><div class="stat">118</div><h3>Frequência</h3><p>Média de atendimentos por semana.</p></article>
+      <article class="painel-card"><h3>Categorias mais procuradas</h3><p>Ficção 56% · Aventura 22% · Clássicos 12%</p></article>
+      <article class="painel-card"><h3>Exportar</h3><p>Gere planilhas mensais em CSV.</p></article>
+    </div>
+
+    <div class="painel-grid" style="margin-top:20px">
+      <article class="painel-card chart-card">
+        <h3>Empréstimos por dia</h3>
+        <svg viewBox="0 0 240 140" class="chart-line" aria-hidden="true">
+          <polyline points="0,100 30,80 60,60 90,70 120,40 150,55 180,30 210,45 240,35"></polyline>
+        </svg>
+        <p class="chart-caption">Últimos 30 dias</p>
+      </article>
+
+      <article class="painel-card data-table-card">
+        <h3>Mais emprestados</h3>
+        <table class="data-table">
+          <thead><tr><th>#</th><th>Livro</th><th>Empréstimos</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>O Pequeno Príncipe</td><td>18</td></tr>
+            <tr><td>2</td><td>O Hobbit</td><td>15</td></tr>
+            <tr><td>3</td><td>Extraordinário</td><td>12</td></tr>
+          </tbody>
+        </table>
+      </article>
+    </div>
+  </section>
+
+  <section class="painel-pane" id="pane-usuarios">
+    <h2>Usuários</h2>
+    <p style="margin:6px 0 18px">Alunos, professores e equipe com acesso ao sistema.</p>
+    <div class="painel-grid">
+      <article class="painel-card"><div class="stat">842</div><h3>Alunos</h3><p>Contas ativas de estudantes.</p></article>
+      <article class="painel-card"><div class="stat">54</div><h3>Professores</h3><p>Contas ativas do corpo docente.</p></article>
+      <article class="painel-card"><div class="stat">9</div><h3>Pendentes</h3><p>Cadastros aguardando aprovação.</p></article>
+    </div>
+
+    <div class="painel-grid" style="margin-top:20px">
+      <article class="painel-card data-table-card">
+        <h3>Contas do sistema</h3>
+        <table class="data-table">
+          <thead><tr><th>Nome</th><th>Papel</th><th>E-mail</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td><div class="avatar-row"><span class="avatar av-1">MS</span>Maria Silva</div></td><td>Aluno</td><td>maria.silva@escola.com</td><td><span class="badge badge-ativo">Ativo</span></td></tr>
+            <tr><td><div class="avatar-row"><span class="avatar av-2">CP</span>Carla Pires</div></td><td>Professora</td><td>carla.pires@escola.com</td><td><span class="badge badge-ativo">Ativo</span></td></tr>
+            <tr><td><div class="avatar-row"><span class="avatar av-4">CS</span>Camila Souza</div></td><td>Aluna</td><td>camila.souza@escola.com</td><td><span class="badge badge-pendente">Pendente</span></td></tr>
+          </tbody>
+        </table>
+      </article>
+    </div>
+  </section>
+
+  <section class="painel-pane" id="pane-configuracoes">
+    <h2>Configurações</h2>
+    <p style="margin:6px 0 18px">Preferências gerais do sistema.</p>
+    <div class="painel-grid">
+      <article class="painel-card"><h3>Notificações</h3><p>Alertas de atraso e reservas por e-mail.</p></article>
+      <article class="painel-card"><h3>Regras de empréstimo</h3><p>Prazo padrão de 14 dias, até 2 renovações.</p></article>
+      <article class="painel-card"><h3>Backup</h3><p>Exportação automática semanal dos dados.</p></article>
+    </div>
+  </section>
+
+</main>
+
+<script src="painel.js"></script>
+<script src="acessibilidade.js"></script>
+</body>
+</html>
