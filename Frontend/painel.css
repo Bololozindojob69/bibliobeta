@@ -22,9 +22,62 @@
   padding:22px 0 24px;
   z-index:1200;
   box-shadow:0 12px 40px rgba(0,0,0,.28);
-  transition:transform .38s cubic-bezier(.22,1,.36,1);
+  transition:transform .38s cubic-bezier(.22,1,.36,1), width .32s cubic-bezier(.22,1,.36,1);
   overflow-y:auto;
-  overflow-x:hidden;
+  overflow-x:visible;
+}
+
+/* ---------- Botão de recolher (desktop) ---------- */
+.side-toggle{
+  position:fixed;
+  top:26px; left:236px;
+  width:28px; height:28px;
+  border-radius:50%;
+  border:1px solid rgba(0,0,0,.08);
+  background:var(--card);
+  color:var(--text);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer;
+  box-shadow:0 6px 16px rgba(0,0,0,.2);
+  z-index:1300;
+  padding:0;
+  transition:left .32s cubic-bezier(.22,1,.36,1);
+}
+.side-toggle svg{ width:15px; height:15px; transition:transform .35s cubic-bezier(.22,1,.36,1); }
+.side-toggle:hover{ background:color-mix(in srgb, var(--icon) 14%, var(--card)); }
+.side-toggle:active{ transform:scale(.92); }
+
+/* ---------- Estado recolhido (só ícones) ---------- */
+body.nav-collapsed .side-nav{ width:84px; }
+body.nav-collapsed .side-toggle{ left:70px; }
+body.nav-collapsed .side-toggle svg{ transform:rotate(180deg); }
+body.nav-collapsed .side-brand{ justify-content:center; padding:0 0 22px; gap:0; }
+body.nav-collapsed .side-brand-text{ display:none; }
+body.nav-collapsed .radio-container{ padding-left:0; }
+body.nav-collapsed .radio-container label{
+  justify-content:center;
+  gap:0;
+  margin:0 .55rem;
+  padding:1rem .5rem;
+  font-size:0;
+}
+body.nav-collapsed .radio-container label .bell-badge{
+  position:absolute !important;
+  top:8px; right:12px;
+  margin:0 !important;
+}
+body.nav-collapsed .side-foot{ padding:16px 12px 0; }
+body.nav-collapsed .side-foot a{
+  justify-content:center;
+  gap:0;
+  margin:0;
+  padding:1rem .5rem;
+  font-size:0;
+}
+body.nav-collapsed .painel-main{ margin-left:84px; }
+
+@media (max-width:900px){
+  .side-toggle{ display:none; }
 }
 /* barra de rolagem discreta, alinhada ao tema escuro/dourado */
 .side-nav::-webkit-scrollbar{ width:6px; }
@@ -155,6 +208,11 @@
 .radio-container input:nth-of-type(8):checked ~ .glider-container .glider{ transform:translateY(700%); }
 .radio-container input:nth-of-type(9):checked ~ .glider-container .glider{ transform:translateY(800%); }
 .radio-container input:nth-of-type(10):checked ~ .glider-container .glider{ transform:translateY(900%); }
+.radio-container input:nth-of-type(11):checked ~ .glider-container .glider{ transform:translateY(1000%); }
+.radio-container input:nth-of-type(12):checked ~ .glider-container .glider{ transform:translateY(1100%); }
+.radio-container input:nth-of-type(13):checked ~ .glider-container .glider{ transform:translateY(1200%); }
+.radio-container input:nth-of-type(14):checked ~ .glider-container .glider{ transform:translateY(1300%); }
+.radio-container input:nth-of-type(15):checked ~ .glider-container .glider{ transform:translateY(1400%); }
 
 .side-nav .radio-container{ flex:0 0 auto; padding-left:18px; margin-bottom:auto; }
 
@@ -202,6 +260,7 @@
   margin-left:250px;
   padding:38px 40px 60px;
   min-height:100vh;
+  transition:margin-left .32s cubic-bezier(.22,1,.36,1);
 }
 .painel-head{ margin-bottom:28px; }
 .painel-head .eyebrow{ color:var(--icon); }
@@ -226,6 +285,64 @@
 .painel-card h3{ font-size:1.02rem; margin-bottom:8px; }
 .painel-card p{ font-size:.9rem; line-height:1.5; }
 .painel-card .stat{ font-size:2rem; font-weight:700; color:var(--btn); line-height:1.1; }
+
+/* ---------- Dashboard: grid de estatísticas e resumo ---------- */
+.painel-grid-stats{ grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); }
+
+.painel-grid-resumo{ grid-template-columns:2fr 1fr; align-items:start; }
+@media (max-width:900px){
+  .painel-grid-resumo{ grid-template-columns:1fr; }
+}
+
+/* Card de estatística em estado de alerta (ex.: solicitações pendentes) */
+.painel-card.painel-card-alerta{
+  border-left:4px solid #b9650a;
+  background:linear-gradient(135deg, rgba(230,126,34,.12), transparent 60%);
+}
+.painel-card.painel-card-alerta .stat{ color:#b9650a; }
+
+/* Lista de avisos e pendências do dashboard */
+.avisos-lista{ display:flex; flex-direction:column; gap:14px; margin-top:4px; }
+.aviso-item{ display:flex; align-items:flex-start; gap:12px; }
+.aviso-item-texto{ display:flex; flex-direction:column; gap:2px; font-size:.88rem; }
+.aviso-item-texto a{ color:inherit; text-decoration:none; }
+.aviso-item-texto a:hover{ text-decoration:underline; }
+.aviso-item-texto span{ opacity:.7; font-size:.85rem; }
+.avisos-vazio{ opacity:.7; font-size:.9rem; margin-top:4px; }
+
+/* ---------- Cabeçalho de card com link "Ver todos" ---------- */
+.painel-card-head{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:14px; }
+.painel-card-head h3{ margin-bottom:0; }
+.card-link{ color:var(--btn); font-weight:600; font-size:.82rem; text-decoration:none; white-space:nowrap; }
+.card-link:hover{ text-decoration:underline; }
+/* Quando "Ver todos"/"Ver mais" é um <button> (não um <a>), zera a
+   aparência nativa pra ele ficar visualmente igual a um link. */
+button.card-link{ background:none; border:none; padding:0; cursor:pointer; font-family:inherit; }
+
+/* ---------- Stat cards com ícone (dashboard) ---------- */
+.painel-grid-stats .stat-card{ display:flex; align-items:flex-start; gap:14px; }
+.painel-grid-stats .stat-card .stat{ font-size:1.7rem; }
+.stat-icone.icone-4{ background:linear-gradient(135deg, #7e57c2, #4a2f7a); }
+.stat-icone.icone-5{ background:linear-gradient(135deg, #c0392b, #7a2317); }
+.painel-card-alerta .stat-icone{ box-shadow:0 0 0 3px rgba(192,57,43,.18); }
+
+/* ---------- Ícones nos itens de aviso (substituem o ponto colorido) ---------- */
+.aviso-item .aviso-dot{
+  width:34px; height:34px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  margin-top:0; color:#fff;
+}
+.aviso-item .aviso-dot svg{ width:16px; height:16px; }
+.aviso-item.aviso-atrasado .aviso-dot{ background:#c62828; }
+.aviso-item.aviso-pendente .aviso-dot{ background:#b9650a; }
+.aviso-item.aviso-info .aviso-dot{ background:var(--btn); }
+.aviso-item + .aviso-item{ padding-top:14px; border-top:1px solid rgba(0,0,0,.07); }
+
+/* ---------- Lista de ranking (livros mais emprestados) ---------- */
+.ranking-lista{ list-style:none; margin-top:10px; display:flex; flex-direction:column; gap:10px; }
+.ranking-lista li{ display:flex; align-items:center; justify-content:space-between; font-size:.88rem; gap:10px; }
+.ranking-lista .ranking-titulo{ overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.ranking-lista .ranking-valor{ color:var(--btn); font-weight:700; flex-shrink:0; }
 
 /* ---------- Botão logo (mobile) ---------- */
 .logo-toggle{
@@ -265,11 +382,18 @@
    TABELAS, BADGES, AVATARES E MINI-GRÁFICOS
    ===================================================== */
 
-/* Cards que ocupam a linha inteira do grid (tabelas/gráficos) */
+/* Tabelas/gráficos sempre podem rolar na horizontal se necessário */
 .painel-card.data-table-card,
 .painel-card.chart-card{
-  grid-column:1 / -1;
   overflow-x:auto;
+}
+/* Só ocupam a linha inteira do grid quando são o único card da linha
+   (quando vêm acompanhados de outro card, ex.: tabela + card lateral,
+   devem respeitar as colunas do grid e ficar lado a lado) */
+.painel-grid > .painel-card.data-table-card:only-child,
+.painel-grid > .painel-card.chart-card:only-child,
+.painel-grid > .painel-card.historico-card:only-child{
+  grid-column:1 / -1;
 }
 .painel-card.data-table-card h3,
 .painel-card.chart-card h3{ margin-bottom:14px; }
@@ -368,6 +492,86 @@
   font-size:.78rem;
   opacity:.7;
 }
+
+/* ---------- Gráfico de barras real (empréstimos por dia) ---------- */
+.chart-bars-real{ margin-top:6px; }
+.chart-bars-real .cbr-linha{
+  display:flex;
+  align-items:flex-end;
+  gap:6px;
+  height:130px;
+  padding-top:20px;
+}
+.chart-bars-real-scroll .cbr-linha{
+  overflow-x:auto;
+  padding-bottom:4px;
+}
+.chart-bars-real .cbr-col{
+  flex:1 1 0;
+  min-width:26px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-end;
+  height:100%;
+  background:none;
+  border:none;
+  padding:0;
+  cursor:pointer;
+  font:inherit;
+  color:inherit;
+  border-radius:8px;
+}
+.chart-bars-real-scroll .cbr-col{ flex:0 0 22px; }
+.chart-bars-real .cbr-col:hover,
+.chart-bars-real .cbr-col:focus-visible{ outline:none; background:color-mix(in srgb, var(--btn) 8%, transparent); }
+.chart-bars-real .cbr-valor{
+  font-size:.68rem;
+  font-weight:700;
+  color:var(--btn);
+  opacity:0;
+  transition:opacity .15s;
+  line-height:1.4;
+}
+.chart-bars-real .cbr-col:hover .cbr-valor,
+.chart-bars-real .cbr-col:focus-visible .cbr-valor,
+.chart-bars-real .cbr-col-hoje .cbr-valor,
+.chart-bars-real .cbr-col-max .cbr-valor{ opacity:1; }
+.chart-bars-real .cbr-bar-track{
+  width:100%;
+  max-width:20px;
+  height:70px;
+  display:flex;
+  align-items:flex-end;
+  background:color-mix(in srgb, var(--btn) 8%, transparent);
+  border-radius:5px;
+  overflow:hidden;
+}
+.chart-bars-real .cbr-bar{
+  width:100%;
+  background:color-mix(in srgb, var(--btn) 55%, transparent);
+  border-radius:5px 5px 0 0;
+  transition:background .15s, opacity .15s;
+}
+.chart-bars-real .cbr-col:hover .cbr-bar,
+.chart-bars-real .cbr-col:focus-visible .cbr-bar,
+.chart-bars-real .cbr-col-max .cbr-bar{ background:var(--btn); }
+.chart-bars-real .cbr-col-hoje .cbr-bar{ background:var(--btn); box-shadow:0 0 0 2px color-mix(in srgb, var(--btn) 30%, transparent); }
+.chart-bars-real .cbr-label{
+  margin-top:6px;
+  font-size:.64rem;
+  opacity:.7;
+  white-space:nowrap;
+}
+.chart-bars-real .cbr-detalhe{
+  margin-top:10px;
+  font-size:.82rem;
+  min-height:1.4em;
+  padding:8px 10px;
+  background:color-mix(in srgb, var(--btn) 6%, transparent);
+  border-radius:8px;
+}
+.chart-bars-real .cbr-detalhe strong{ color:var(--btn); }
 /* =====================================================
    CATÁLOGO — busca, categorias e cards de livro
    ===================================================== */
@@ -411,17 +615,25 @@
 }
 .livro-capa{
   position:relative;
-  height:150px;
+  height:230px;
   display:flex;
   align-items:center;
   justify-content:center;
   color:#fff;
+  overflow:hidden;
   font-weight:700;
   font-size:.95rem;
   text-align:center;
   padding:10px;
   line-height:1.25;
 }
+.livro-capa > img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+.livro-capa-fallback{align-items:center;justify-content:center;width:100%;height:100%;padding:12px;}
 .livro-fav{
   position:absolute;
   top:8px; right:8px;
@@ -467,6 +679,272 @@
   font-family:inherit;
 }
 .row-acao-btn:hover{ text-decoration:underline; }
+.row-acao-btn:disabled{ opacity:.5; cursor:default; text-decoration:none; }
+
+/* ---------- Notificações: lista em cartões (substitui a antiga tabela) ---------- */
+.bb-notifs__lista{
+  list-style:none;
+  margin:0;
+  padding:0;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+.bb-notif{
+  position:relative;
+  display:grid;
+  grid-template-columns:42px minmax(0,1fr) auto;
+  gap:14px;
+  align-items:start;
+  padding:16px 18px 16px 16px;
+  background:var(--bg);
+  border:1px solid rgba(0,0,0,.08);
+  border-left:4px solid var(--btn);
+  border-radius:var(--radius-md);
+  transition:transform .18s var(--ease), box-shadow .18s var(--ease), background .18s var(--ease);
+}
+.bb-notif.notificacao-row-clicavel{ cursor:pointer; }
+.bb-notif:hover{
+  transform:translateY(-2px);
+  box-shadow:var(--shadow-soft);
+}
+.bb-notif:focus-within{
+  box-shadow:0 0 0 3px color-mix(in srgb, var(--btn) 25%, transparent);
+}
+/* lida: recolhe o destaque */
+.bb-notif.bb-notif--lida{
+  background:color-mix(in srgb, var(--card) 55%, var(--bg));
+  border-left-color:rgba(0,0,0,.1);
+}
+.bb-notif.bb-notif--lida .bb-notif__titulo{ font-weight:600; color:var(--text); }
+
+.bb-notif__icone{
+  width:42px; height:42px;
+  border-radius:12px;
+  display:grid; place-items:center;
+  font-size:1.1rem;
+  background:color-mix(in srgb, var(--btn) 14%, transparent);
+  color:var(--btn);
+  flex-shrink:0;
+}
+.bb-notif.bb-notif--lida .bb-notif__icone{
+  background:rgba(0,0,0,.05);
+  color:var(--text);
+  opacity:.7;
+}
+
+.bb-notif__corpo{ min-width:0; }
+.bb-notif__titulo{
+  margin:0 0 4px;
+  font-size:.95rem;
+  font-weight:700;
+  color:var(--title);
+  line-height:1.35;
+  display:flex;
+  align-items:center;
+  gap:7px;
+}
+.bb-notif:not(.bb-notif--lida) .bb-notif__titulo::after{
+  content:"";
+  width:8px; height:8px;
+  border-radius:50%;
+  background:var(--btn);
+  flex:none;
+}
+.bb-notif__msg{
+  margin:0;
+  font-size:.86rem;
+  line-height:1.55;
+  color:var(--text);
+  max-width:68ch;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  display:-webkit-box;
+  -webkit-line-clamp:2;
+  -webkit-box-orient:vertical;
+}
+.bb-notif__meta{
+  margin-top:8px;
+  font-size:.75rem;
+  color:var(--text);
+  opacity:.65;
+}
+.bb-notif__acoes{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
+  gap:8px;
+}
+.bb-notif__acoes .row-acao-btn{ font-size:.78rem; white-space:nowrap; }
+
+@media (max-width:640px){
+  .bb-notif{ grid-template-columns:36px minmax(0,1fr); padding:14px; }
+  .bb-notif__icone{ width:36px; height:36px; }
+  .bb-notif__acoes{
+    grid-column:2;
+    flex-direction:row;
+    align-items:center;
+    flex-wrap:wrap;
+  }
+}
+@media (prefers-reduced-motion: reduce){
+  .bb-notif{ transition:none; }
+  .bb-notif:hover{ transform:none; }
+}
+
+/* ---------- Chips de filtro rápido (status de tabela) ---------- */
+.filtro-chips{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px; }
+.chip{
+  padding:6px 15px; border-radius:100px;
+  border:1px solid rgba(0,0,0,.14);
+  background:var(--bg); color:var(--text);
+  font-family:inherit; font-size:.78rem; font-weight:600;
+  cursor:pointer; transition:background .2s ease, color .2s ease, border-color .2s ease;
+}
+.chip:hover{ border-color:var(--btn); }
+.chip.active{ background:var(--btn); border-color:var(--btn); color:#fff; }
+
+/* ---------- Contador de resultados ao lado do título da tabela ---------- */
+.table-count{ font-size:.8rem; color:var(--text); opacity:.65; white-space:nowrap; }
+
+/* ---------- Cards de estatística clicáveis (funcionam como filtro) ---------- */
+.stat-card.stat-filtravel{ cursor:pointer; transition:box-shadow .2s ease, transform .15s ease; }
+.stat-card.stat-filtravel:hover{ transform:translateY(-2px); }
+.stat-card.stat-filtravel.stat-ativo{ box-shadow:0 0 0 2px var(--btn); }
+
+/* ---------- Linhas de tabela em destaque ---------- */
+.data-table tbody tr.linha-atrasada td{ background:rgba(198,40,40,.06); }
+.data-table tbody tr.linha-atrasada:hover td{ background:rgba(198,40,40,.11); }
+.data-table tbody tr.linha-aviso td{ background:rgba(230,126,34,.06); }
+
+/* ---------- Mensagens de formulário (sucesso/erro) ---------- */
+.form-msg{ font-size:.85rem; font-weight:600; min-height:1.2em; }
+.form-msg.sucesso{ color:#2e7d32; }
+.form-msg.erro{ color:#c62828; }
+
+/* ---------- Ajuda contextual pequena abaixo de campos ---------- */
+.campo-ajuda{ font-size:.78rem; opacity:.65; margin-top:4px; }
+
+/* =====================================================
+   EMPRÉSTIMOS ATIVOS — lista de cards (Área do Aluno/Professor)
+   Substitui a antiga tabela: sem rolagem horizontal, os botões
+   Renovar/Devolver ficam sempre visíveis.
+   ===================================================== */
+.emprestimos-card{ overflow:visible; }
+.emprestimos-card h3{ margin-bottom:14px; }
+
+.emprestimos-lista{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+
+.emprestimo-item{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  padding:14px 16px;
+  border-radius:12px;
+  background:var(--bg);
+  border:1px solid rgba(0,0,0,.06);
+  transition:box-shadow .2s ease;
+}
+.emprestimo-item:hover{ box-shadow:0 6px 18px -10px rgba(0,0,0,.25); }
+
+.emprestimo-item-capa{
+  width:52px; height:70px;
+  border-radius:8px;
+  display:flex; align-items:center; justify-content:center;
+  overflow:hidden;
+  color:#fff; font-weight:700; font-size:.85rem;
+  flex-shrink:0;
+  box-shadow:0 4px 10px -4px rgba(0,0,0,.35);
+}
+.emprestimo-item-capa img{ width:100%; height:100%; object-fit:cover; display:block; }
+
+.emprestimo-item-info{ flex:1 1 auto; min-width:0; display:flex; flex-direction:column; gap:4px; }
+.emprestimo-item-titulo{
+  font-weight:600; font-size:.95rem; color:var(--text);
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+.emprestimo-item-autor{
+  font-size:.8rem; color:var(--text); opacity:.65;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+}
+.emprestimo-item-meta{
+  display:flex; flex-wrap:wrap; align-items:center; gap:10px;
+  font-size:.8rem; color:var(--text); opacity:.75;
+  margin-top:2px;
+}
+.emprestimo-item-token{font-size:.82rem;display:flex;align-items:center;gap:6px;flex-wrap:wrap}.emprestimo-item-token code{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.12em;font-weight:800;padding:3px 7px;border-radius:6px;background:rgba(0,0,0,.06)}
+.emprestimo-item-dias{
+  font-size:.78rem; font-weight:600;
+  color:#2e7d32;
+}
+.emprestimo-item-dias.emprestimo-item-dias-pendente{ color:#b9650a; }
+.emprestimo-item-dias.emprestimo-item-dias-atrasado{ color:#c62828; }
+
+.emprestimo-item-acoes{
+  display:flex; align-items:center; gap:12px;
+  flex-shrink:0;
+}
+.emprestimo-item-aviso{ opacity:.7; font-size:.8rem; white-space:nowrap; }
+
+/* "Ver mais N empréstimos", exibido no fim da lista compacta do dashboard */
+.emprestimos-ver-mais{
+  text-align:left;
+  padding-top:6px !important;
+  margin-top:2px;
+  border-top:1px solid rgba(0,0,0,.06);
+}
+
+/* No mobile os botões descem pra uma linha própria, alinhados à
+   direita, mas continuam 100% visíveis sem precisar rolar. */
+@media (max-width:560px){
+  .emprestimo-item{ flex-wrap:wrap; }
+  .emprestimo-item-info{ order:2; width:100%; }
+  .emprestimo-item-acoes{ order:3; width:100%; justify-content:flex-end; }
+}
+
+/* ---------- Card de multas: ganha destaque quando há pendência ---------- */
+.multas-card.tem-pendencia{
+  border-left:4px solid #c62828;
+  background:linear-gradient(135deg, rgba(198,40,40,.10), transparent 60%);
+}
+.multas-card.tem-pendencia .stat{ color:#c62828; }
+
+/* =====================================================
+   HISTÓRICO — lista de cards (substitui a antiga tabela)
+   ===================================================== */
+.historico-card{ overflow:visible; }
+.historico-card .table-search{ max-width:100%; margin-bottom:16px; }
+
+.historico-contagem{
+  font-size:.82rem;
+  color:var(--text);
+  opacity:.6;
+  white-space:nowrap;
+}
+
+.historico-lista{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+
+.historico-item{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  padding:14px 16px;
+  border-radius:12px;
+  background:var(--bg);
+  border:1px solid rgba(0,0,0,.06);
+}
+
+@media (max-width:560px){
+  .historico-item{ flex-wrap:wrap; }
+}
 
 /* =====================================================
    MODAL — cadastrar empréstimo / confirmação
@@ -478,11 +956,12 @@
   display:none;
   align-items:flex-start;
   justify-content:center;
-  overflow-y:auto;
+  overflow:hidden;
   padding:40px 16px;
   z-index:2000;
 }
 .modal-backdrop.show{ display:flex; }
+.livro-modal-aberta{ overflow:hidden; }
 .modal-box{
   position:relative;
   background:var(--card);
@@ -490,6 +969,9 @@
   border-radius:18px;
   max-width:640px;
   width:100%;
+  max-height:calc(100vh - 80px);
+  overflow-y:auto;
+  overflow-x:hidden;
   padding:32px 30px 28px;
   box-shadow:0 30px 70px -20px rgba(0,0,0,.4);
   animation:paneIn .25s ease both;
@@ -502,6 +984,7 @@
   color:var(--text);
 }
 .modal-close:hover{ background:rgba(0,0,0,.12); }
+.modal-step{ animation:paneIn .3s ease both; }
 .modal-icon{ font-size:1.8rem; margin-bottom:6px; }
 .modal-sub{ opacity:.8; font-size:.9rem; margin:4px 0 20px; }
 
@@ -520,8 +1003,9 @@
   padding:10px 12px; font-weight:400;
 }
 .livro-preview .mini-capa{
-  width:36px; height:48px; border-radius:6px; flex-shrink:0;
+  width:36px; height:48px; border-radius:6px; flex-shrink:0; overflow:hidden;
 }
+.livro-preview .mini-capa img{width:100%;height:100%;object-fit:cover;display:block}
 .livro-preview .mini-info strong{ display:block; font-size:.85rem; }
 .livro-preview .mini-info span{ font-size:.78rem; opacity:.7; }
 
@@ -599,6 +1083,7 @@
 
 .topbar-bell{
   position:relative;
+  z-index:1601;
   width:42px; height:42px;
   border-radius:50%;
   border:1px solid rgba(0,0,0,.08);
@@ -623,6 +1108,7 @@
 
 .topbar-notif{
   position:absolute;
+  pointer-events:auto;
   top:52px; right:60px;
   width:280px;
   background:var(--card);
@@ -719,6 +1205,120 @@
   .hero-ilustracao{ width:70px; height:70px; align-self:flex-end; margin-top:-40px; }
 }
 
+/* =====================================================
+   CARTÃO DE DATA E HORA (hero do Início e da Gestão)
+   Adaptado do card "sol e nuvens" do Uiverse (zanina-yassine):
+   o número grande que era a temperatura agora é a hora.
+   De dia aparece o sol; à noite (18h–6h) vira lua.
+   ===================================================== */
+.rel-card{
+  --rel-tinta: var(--title, #4a2c1a);
+  --rel-nuvem: color-mix(in srgb, var(--detail, #a67c52) 38%, #fff);
+  --rel-brilho-canto: #fff7b1;
+  position:relative;
+  flex-shrink:0;
+  width:280px;
+  height:190px;
+  padding:20px;
+  overflow:hidden;
+  border-radius:20px;
+  background:
+    radial-gradient(178.94% 106.41% at 26.42% 106.41%, var(--rel-brilho-canto) 0%, rgba(255,255,255,0) 71.88%),
+    #fff;
+  box-shadow: 0 22px 34px -14px rgba(0,0,0,.5), 0 4px 12px rgba(0,0,0,.18);
+  transition: transform .8s cubic-bezier(.15,.83,.66,1);
+}
+.rel-card:hover{ transform:scale(1.05); }
+
+/* céu: sol + nuvens (mesma geometria do original, reduzida) */
+.rel-ceu{
+  position:absolute;
+  left:83px; top:-65px;
+  width:250px; height:250px;
+  display:flex; align-items:center; justify-content:center;
+  transform:scale(.56);
+  pointer-events:none;
+}
+.rel-nuvem{ width:250px; }
+.rel-nuvem span{ display:inline-block; z-index:5; background:var(--rel-nuvem); }
+.rel-frente{
+  padding-top:45px; margin-left:25px;
+  display:inline; position:absolute; z-index:11;
+  animation:rel-nuvens 8s ease-in-out infinite;
+}
+.rel-fundo{
+  margin-top:-30px; margin-left:150px; z-index:12;
+  animation:rel-nuvens 12s ease-in-out infinite;
+}
+.rel-frente-e{ width:65px; height:65px; border-radius:50% 50% 0 50%; }
+.rel-frente-d{ width:45px; height:45px; border-radius:50% 50% 50% 0; margin-left:-25px; }
+.rel-fundo-e{ width:30px; height:30px; border-radius:50% 50% 0 50%; }
+.rel-fundo-d{ width:50px; height:50px; border-radius:50% 50% 50% 0; margin-left:-20px; }
+.rel-sol{
+  width:120px; height:120px;
+  border-radius:60px;
+  display:inline; position:absolute;
+  background:linear-gradient(to right, #fcbb04, #fffc00);
+}
+.rel-brilho{ animation:rel-brilho 2s infinite; }
+
+/* texto */
+.rel-cabecalho{ position:relative; z-index:1; display:flex; flex-direction:column; gap:4px; }
+.rel-semana{
+  font-size:14px; font-weight:800; line-height:1.3;
+  color:color-mix(in srgb, var(--rel-tinta) 85%, transparent);
+}
+.rel-data{
+  font-size:12.5px; font-weight:600; line-height:1.3;
+  color:color-mix(in srgb, var(--rel-tinta) 62%, transparent);
+}
+.rel-hora{
+  position:absolute; left:20px; bottom:14px;
+  font-size:48px; font-weight:700; line-height:58px; letter-spacing:-.02em;
+  font-variant-numeric:tabular-nums;
+  color:var(--rel-tinta);
+}
+.rel-hora small{
+  margin-left:3px;
+  font-size:16px; font-weight:700; letter-spacing:0;
+  color:var(--btn, #e86a17);
+}
+.rel-periodo{
+  position:absolute; right:20px; bottom:20px;
+  min-width:66px; height:30px; padding:0 12px;
+  display:flex; align-items:center; justify-content:center;
+  border-radius:9px;
+  background:rgba(0,0,0,.06);
+  font-size:12.5px; font-weight:700;
+  color:color-mix(in srgb, var(--rel-tinta) 75%, transparent);
+}
+
+/* noite: brilho azulado no canto e lua no lugar do sol */
+.rel-card[data-periodo="noite"]{ --rel-brilho-canto:#d3dbff; }
+.rel-card[data-periodo="noite"] .rel-sol{
+  background:linear-gradient(to right, #e3d4a0, #faf3dc);
+  box-shadow:inset -24px -8px 0 0 #c4b483;
+}
+
+@keyframes rel-brilho{
+  0%{ transform:scale(1); opacity:.6; }
+  100%{ transform:scale(1.4); opacity:0; }
+}
+@keyframes rel-nuvens{
+  0%{ transform:translateX(15px); }
+  50%{ transform:translateX(0); }
+  100%{ transform:translateX(15px); }
+}
+
+@media (max-width:640px){
+  .rel-card{ width:100%; max-width:320px; align-self:stretch; }
+}
+@media (prefers-reduced-motion: reduce){
+  .rel-frente, .rel-fundo, .rel-brilho{ animation:none; }
+  .rel-card{ transition:none; }
+  .rel-card:hover{ transform:none; }
+}
+
 .atalhos-row{
   display:grid;
   grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
@@ -766,3 +1366,678 @@
 .stat-icone.icone-1{ background:linear-gradient(135deg, var(--btn), color-mix(in srgb, var(--btn) 60%, #000)); }
 .stat-icone.icone-2{ background:linear-gradient(135deg, #d98c2b, #a85f16); }
 .stat-icone.icone-3{ background:linear-gradient(135deg, #5c8a6b, #34503f); }
+
+/* Turmas da Gestão */
+.turma-card{min-height:170px;}
+.turma-alunos{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin-top:12px;max-height:260px;overflow:auto;padding-right:4px;}
+.turma-alunos .avatar-row{padding:8px 10px;border-radius:10px;background:rgba(0,0,0,.035);}.topbar-notif-item{cursor:pointer;padding:10px;border-radius:10px;transition:background .15s ease}
+.topbar-notif-item:hover,.topbar-notif-item:focus{background:rgba(0,0,0,.06);outline:none}
+.topbar-notif-item small{font-size:.72rem;font-weight:700;margin-top:4px;opacity:.85}
+.topbar-notif-ver-todas{padding-top:8px;border-top:1px solid rgba(0,0,0,.08);margin-top:2px}
+.topbar-notif-ver-todas a{font-size:.78rem;font-weight:700;text-decoration:none}
+.notificacao-destaque{outline:3px solid rgba(230,120,20,.35);transition:outline .2s ease}
+.topbar-notif-item{cursor:pointer;padding:10px;border-radius:10px;transition:background .15s ease}
+.topbar-notif-item:hover,.topbar-notif-item:focus{background:rgba(0,0,0,.06);outline:none}
+.topbar-notif-item small{font-size:.72rem;font-weight:700;margin-top:4px;opacity:.85}
+.topbar-notif-ver-todas{padding-top:8px;border-top:1px solid rgba(0,0,0,.08);margin-top:2px}
+.topbar-notif-ver-todas a{font-size:.78rem;font-weight:700;text-decoration:none}
+.notificacao-destaque{outline:3px solid rgba(230,120,20,.35);transition:outline .2s ease}
+
+/* Detalhe da notificação: clicar mostra a mensagem completa sem trocar de tela. */
+.notificacao-row-clicavel{cursor:pointer;transition:background .15s ease}
+.notificacao-row-clicavel:hover{background:rgba(0,0,0,.025)}
+.notificacao-modal[hidden]{display:none!important}
+.notificacao-modal{position:fixed;inset:0;z-index:3000;display:flex;align-items:center;justify-content:center;padding:20px}
+.notificacao-modal-backdrop{position:absolute;inset:0;background:rgba(35,20,12,.42);backdrop-filter:blur(3px)}
+.notificacao-modal-card{position:relative;width:min(560px,100%);max-height:min(80vh,680px);overflow:auto;background:var(--card);color:var(--text);border-radius:20px;padding:28px;box-shadow:0 25px 80px rgba(0,0,0,.28);z-index:1}
+.notificacao-modal-fechar{position:absolute;right:14px;top:10px;border:0;background:transparent;font-size:30px;line-height:1;cursor:pointer;color:var(--text);opacity:.7}
+.notificacao-modal-fechar:hover{opacity:1}
+.notificacao-modal-tipo{display:inline-block;font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;font-weight:800;opacity:.65;margin-bottom:8px}
+.notificacao-modal-card h3{font-size:1.25rem;margin:0 36px 16px 0}
+.notificacao-modal-mensagem{font-size:1rem;line-height:1.65;white-space:pre-wrap;margin:0 0 22px}
+.notificacao-modal-meta{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:.78rem;opacity:.7;border-top:1px solid rgba(0,0,0,.08);padding-top:14px}
+.notificacao-destaque{animation:notificacaoDestaque 1.8s ease}
+@keyframes notificacaoDestaque{0%,100%{background:transparent}30%,70%{background:rgba(225,145,30,.16)}}
+
+/* =====================================================
+   GESTÃO DE EXEMPLARES — fluxo do acervo físico
+   ===================================================== */
+.modal-exemplares-card{
+  width:min(980px, calc(100vw - 28px));
+  max-width:980px;
+  max-height:88vh;
+  overflow:auto;
+}
+.modal-exemplares-sub{margin:4px 0 16px;opacity:.72}
+.exemplares-resumo{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:10px;
+  margin-bottom:16px;
+}
+.exemplares-resumo-item{
+  padding:12px 14px;
+  border:1px solid rgba(0,0,0,.09);
+  border-radius:12px;
+  background:color-mix(in srgb,var(--bg) 75%,transparent);
+}
+.exemplares-resumo-item strong{display:block;font-size:1.15rem}
+.exemplares-resumo-item span{font-size:.75rem;opacity:.65}
+.exemplares-lista-wrap{overflow-x:auto}
+.novo-exemplar-box{
+  margin-top:18px;
+  padding:16px;
+  border:1px dashed color-mix(in srgb,var(--btn) 45%,transparent);
+  border-radius:14px;
+  background:color-mix(in srgb,var(--btn) 5%,transparent);
+}
+.novo-exemplar-box h4{margin:0 0 4px}
+.novo-exemplar-box p{margin:0 0 14px;opacity:.7;font-size:.82rem}
+.exemplar-localizacao{font-weight:600}
+.exemplar-codigo{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-weight:700}
+.exemplar-status{white-space:nowrap}
+@media(max-width:700px){
+  .exemplares-resumo{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .modal-exemplares-card{padding:24px 18px}
+}
+
+
+/* =====================================================
+   CÓDIGO DE RETIRADA / DEVOLUÇÃO
+   ===================================================== */
+.codigo-operacao-card{width:min(470px,calc(100vw - 28px));text-align:center;padding:30px 28px}
+.codigo-operacao-icone{width:62px;height:62px;margin:0 auto 10px;border-radius:50%;display:grid;place-items:center;background:color-mix(in srgb,var(--btn) 12%,transparent);font-size:28px}
+.codigo-operacao-card .notificacao-modal-tipo{display:inline-block;margin-bottom:6px}
+.codigo-operacao-card h3{margin:0 0 8px}
+.codigo-operacao-card .notificacao-modal-mensagem{margin:0 auto 16px;max-width:390px}
+.codigo-operacao-livro{font-weight:700;padding:11px 14px;margin:0 0 18px;border-radius:12px;background:color-mix(in srgb,var(--btn) 7%,transparent);border:1px solid color-mix(in srgb,var(--btn) 18%,transparent)}
+.codigo-operacao-label{display:block;text-align:left;font-size:.8rem;font-weight:700;margin-bottom:7px}
+.codigo-operacao-input{width:100%;box-sizing:border-box;border:1px solid rgba(0,0,0,.14);border-radius:13px;padding:15px;text-align:center;font:700 28px/1 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:8px;outline:none;background:var(--bg);color:inherit}
+.codigo-operacao-input:focus{border-color:var(--btn);box-shadow:0 0 0 3px color-mix(in srgb,var(--btn) 15%,transparent)}
+.codigo-operacao-erro{min-height:20px;margin:8px 0 0;color:#b42318;font-size:.8rem}
+.codigo-operacao-acoes{justify-content:flex-end;margin-top:8px}
+.linha-retirada td{background:color-mix(in srgb,var(--btn) 5%,transparent)}
+@media(max-width:600px){.codigo-operacao-card{padding:26px 20px}.codigo-operacao-input{font-size:25px;letter-spacing:6px}}
+
+
+/* Confirmação de ações importantes */
+.bb-confirm-backdrop{position:fixed;inset:0;background:rgba(12,18,28,.58);display:flex;align-items:center;justify-content:center;padding:20px;z-index:99999;backdrop-filter:blur(3px)}
+.bb-confirm-backdrop[hidden]{display:none}
+.bb-confirm-box{width:min(440px,100%);background:var(--painel-card,#fff);color:var(--painel-text,#172033);border-radius:18px;padding:26px;box-shadow:0 20px 60px rgba(0,0,0,.25);text-align:center}
+.bb-confirm-icone{font-size:34px;margin-bottom:8px}.bb-confirm-box h3{margin:0 0 10px}.bb-confirm-box p{margin:0 0 22px;line-height:1.55;opacity:.86}.bb-confirm-acoes{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}.bb-confirm-acoes button{min-height:42px;padding:10px 16px}
+@media(max-width:520px){.bb-confirm-acoes{display:grid;grid-template-columns:1fr}.bb-confirm-acoes button{width:100%}}
+
+/* ---------- Tela de boas-vindas / bem-vindo de volta (aluno e professor) ---------- */
+body.bb-bv-aberta{overflow:hidden}
+.bb-bv{position:fixed;inset:0;z-index:99998;display:flex;padding:28px 20px;overflow-y:auto;color:var(--text,#6B4226);
+  background:
+    radial-gradient(circle at 12% 10%,color-mix(in srgb,var(--icon,#D9A441) 30%,transparent),transparent 52%),
+    radial-gradient(circle at 90% 92%,color-mix(in srgb,var(--btn,#E86A17) 20%,transparent),transparent 50%),
+    var(--bg,#FAF5EC);
+  animation:bbBvEntrar .45s ease both}
+.bb-bv--saindo{animation:bbBvSair .3s ease both;pointer-events:none}
+.bb-bv-conteudo{width:min(760px,100%);margin:auto;text-align:center}
+.bb-bv-logo{display:block;width:96px;height:96px;object-fit:contain;margin:0 auto 2px;animation:bbBvSubir .6s ease both}
+.bb-bv-emoji{font-size:54px;line-height:1;margin-bottom:10px;transform-origin:70% 70%;animation:bbBvAcenar 1.1s ease-in-out .5s 1 both,bbBvSubir .6s ease .05s both}
+.bb-bv-saudacao{margin:0;font-size:.8rem;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--icon,#D9A441);animation:bbBvSubir .6s ease .1s both}
+.bb-bv-titulo{text-wrap:balance;margin:.3em 0 .35em;font-size:clamp(1.7rem,5vw,2.7rem);line-height:1.15;animation:bbBvSubir .6s ease .15s both}
+.bb-bv-sub{margin:0;font-size:1.02rem;opacity:.8;animation:bbBvSubir .6s ease .2s both}
+.bb-bv-cards{display:flex;flex-wrap:wrap;justify-content:center;gap:14px;margin:30px 0 28px}
+.bb-bv-card{flex:1 1 165px;max-width:240px;display:flex;flex-direction:column;align-items:center;gap:6px;padding:20px 16px;border-radius:20px;background:var(--card,#F7E9D0);
+  border:1px solid color-mix(in srgb,var(--icon,#D9A441) 40%,transparent);box-shadow:0 10px 28px rgba(60,35,10,.10);
+  animation:bbBvSubir .55s ease both;animation-delay:calc(.3s + var(--i,0) * .08s)}
+.bb-bv-card--alerta{background:color-mix(in srgb,#b42318 12%,var(--card,#F7E9D0));border-color:rgba(180,35,24,.35)}
+.bb-bv-card--larga{flex-basis:100%;max-width:420px}
+.bb-bv-card-topo{font-size:2.3rem;font-weight:700;line-height:1;color:var(--btn,#E86A17)}
+.bb-bv-card--alerta .bb-bv-card-topo{color:#b42318}
+.bb-bv-card-titulo{font-size:1rem;line-height:1.3}
+.bb-bv-card-desc{font-size:.85rem;line-height:1.4;opacity:.75}
+.bb-bv-acoes{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;animation:bbBvSubir .6s ease .5s both}
+.bb-bv-acoes button{min-height:46px;padding:11px 26px;font-size:1rem}
+.bb-bv-secundario{background:var(--bg,#FAF5EC)!important;border:1.5px solid color-mix(in srgb,var(--btn,#E86A17) 55%,transparent)!important;border-radius:12px}
+.bb-bv-primario{box-shadow:0 8px 20px color-mix(in srgb,var(--btn,#E86A17) 35%,transparent)}
+@keyframes bbBvEntrar{from{opacity:0}to{opacity:1}}
+@keyframes bbBvSair{from{opacity:1;transform:none}to{opacity:0;transform:scale(1.02)}}
+@keyframes bbBvSubir{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@keyframes bbBvAcenar{0%,100%{transform:rotate(0)}20%{transform:rotate(16deg)}40%{transform:rotate(-10deg)}60%{transform:rotate(14deg)}80%{transform:rotate(-6deg)}}
+@media (max-width:520px){.bb-bv-acoes{display:grid;grid-template-columns:1fr}.bb-bv-acoes button{width:100%}.bb-bv-cards{gap:10px;margin:22px 0 20px}.bb-bv-card{flex:1 1 calc(50% - 5px);max-width:none;padding:14px 10px}.bb-bv-card--larga,.bb-bv-cards>.bb-bv-card:only-child{flex-basis:100%}.bb-bv-card-topo{font-size:1.9rem}.bb-bv-card-titulo{font-size:.9rem}.bb-bv-card-desc{font-size:.78rem}.bb-bv-logo{width:88px;height:88px}}
+@media (prefers-reduced-motion:reduce){.bb-bv,.bb-bv *,.bb-bv--saindo{animation-duration:.01ms!important;animation-delay:0s!important}}
+
+/* ---------- Livro folheando (loader). Base: Uiverse.io / anand_4957, adaptado ao BiblioBeta ---------- */
+.bb-carregando-texto{margin:0;padding:22px 0;font-weight:600;letter-spacing:.02em;opacity:.8}
+.bb-livro{font-size:15px;--bb-livro-duracao:15s} /* duração de um ciclo completo do livro */
+
+.bb-livro,
+.bb-livro__pg-shadow,
+.bb-livro__pg {
+  animation: bbLivro_cover var(--bb-livro-duracao, 15s) ease-in-out infinite;
+}
+.bb-livro {
+  background-color: hsl(24, 84%, 52%);
+  border-radius: 0.25em;
+  box-shadow:
+    0 0.25em 0.5em hsla(0, 0%, 0%, 0.3),
+    0 0 0 0.25em hsl(18, 78%, 36%) inset;
+  padding: 0.25em;
+  perspective: 37.5em;
+  position: relative;
+  width: 8em;
+  height: 6em;
+  transform: translate3d(0, 0, 0);
+  transform-style: preserve-3d;
+}
+.bb-livro__pg-shadow,
+.bb-livro__pg {
+  position: absolute;
+  left: 0.25em;
+  width: calc(50% - 0.25em);
+}
+.bb-livro__pg-shadow {
+  animation-name: bbLivro_shadow;
+  background-image: linear-gradient(-45deg, hsla(0, 0%, 0%, 0) 50%, hsla(0, 0%, 0%, 0.3) 50%);
+  filter: blur(0.25em);
+  top: calc(100% - 0.25em);
+  height: 3.75em;
+  transform: scaleY(0);
+  transform-origin: 100% 0%;
+}
+.bb-livro__pg {
+  animation-name: bbLivro_pg1;
+  background-color: hsl(40, 70%, 98%);
+  background-image: linear-gradient(90deg, hsla(36, 40%, 86%, 0) 87.5%, hsl(36, 40%, 86%));
+  height: calc(100% - 0.5em);
+  transform-origin: 100% 50%;
+}
+.bb-livro__pg--2,
+.bb-livro__pg--3,
+.bb-livro__pg--4 {
+  background-image: repeating-linear-gradient(hsl(20, 35%, 28%) 0 0.125em, hsla(20, 35%, 28%, 0) 0.125em 0.5em),
+    linear-gradient(90deg, hsla(36, 40%, 86%, 0) 87.5%, hsl(36, 40%, 86%));
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 2.5em 4.125em, 100% 100%;
+}
+.bb-livro__pg--2 { animation-name: bbLivro_pg2; }
+.bb-livro__pg--3 { animation-name: bbLivro_pg3; }
+.bb-livro__pg--4 { animation-name: bbLivro_pg4; }
+.bb-livro__pg--5 { animation-name: bbLivro_pg5; }
+
+@keyframes bbLivro_cover {
+  from, 5%, 45%, 55%, 95%, to { animation-timing-function: ease-out; background-color: hsl(26, 90%, 58%); }
+  10%, 40%, 60%, 90% { animation-timing-function: ease-in; background-color: hsl(20, 82%, 40%); }
+}
+@keyframes bbLivro_shadow {
+  from, 10.01%, 20.01%, 30.01%, 40.01% { animation-timing-function: ease-in; transform: translate3d(0, 0, 1px) scaleY(0) rotateY(0); }
+  5%, 15%, 25%, 35%, 45%, 55%, 65%, 75%, 85%, 95% { animation-timing-function: ease-out; transform: translate3d(0, 0, 1px) scaleY(0.2) rotateY(90deg); }
+  10%, 20%, 30%, 40%, 50%, to { animation-timing-function: ease-out; transform: translate3d(0, 0, 1px) scaleY(0) rotateY(180deg); }
+  50.01%, 60.01%, 70.01%, 80.01%, 90.01% { animation-timing-function: ease-in; transform: translate3d(0, 0, 1px) scaleY(0) rotateY(180deg); }
+  60%, 70%, 80%, 90%, to { animation-timing-function: ease-out; transform: translate3d(0, 0, 1px) scaleY(0) rotateY(0); }
+}
+@keyframes bbLivro_pg1 {
+  from, to { animation-timing-function: ease-in-out; background-color: hsl(40, 70%, 98%); transform: translate3d(0, 0, 1px) rotateY(0.4deg); }
+  10%, 15% { animation-timing-function: ease-out; background-color: hsl(40, 70%, 98%); transform: translate3d(0, 0, 1px) rotateY(180deg); }
+  20%, 80% { animation-timing-function: ease-in; background-color: hsl(34, 32%, 52%); transform: translate3d(0, 0, 1px) rotateY(180deg); }
+  85%, 90% { animation-timing-function: ease-in-out; background-color: hsl(40, 70%, 98%); transform: translate3d(0, 0, 1px) rotateY(180deg); }
+}
+@keyframes bbLivro_pg2 {
+  from, to { animation-timing-function: ease-in; background-color: hsl(34, 32%, 52%); transform: translate3d(0, 0, 1px) rotateY(0.3deg); }
+  5%, 10% { animation-timing-function: ease-in-out; background-color: hsl(40, 70%, 98%); transform: translate3d(0, 0, 1px) rotateY(0.3deg); }
+  20%, 25% { animation-timing-function: ease-out; background-color: hsl(40, 70%, 98%); transform: translate3d(0, 0, 1px) rotateY(179.9deg); }
+  30%, 70% { animation-timing-function: ease-in; background-color: hsl(34, 32%, 52%); transform: translate3d(0, 0, 1px) rotateY(179.9deg); }
+  75%, 80% { animation-timing-function: ease-in-out; background-color: hsl(40, 70%, 98%); transform: translate3d(0, 0, 1px) rotateY(179.9deg); }
+  90%, 95% { animation-timing-function: ease-out; background-color: hsl(40, 70%, 98%); transform: translate3d(0, 0, 1px) rotateY(0.3deg); }
+}
+@keyframes bbLivro_pg3 {
+  from, 10%, 90%, to { animation-timing-function: ease-in; background-color: hsl(34, 32%, 52%); transform: translate3d(0, 0, 1px) rotateY(0.2deg); }
+  15%, 20% { animation-timing-function: ease-in-out; background-color: hsl(40, 70%, 98%); transform: translate3d(0, 0, 1px) rotateY(0.2deg); }
+  30%, 35% { animation-timing-function: ease-out; background-color: hsl(40, 70%, 98%); transform: translate3d(0, 0, 1px) rotateY(179.8deg); }
+  40%, 60% { animation-timing-function: ease-in; background-color: hsl(34, 32%, 52%); transform: translate3d(0, 0, 1px) rotateY(179.8deg); }
+  65%, 70% { animation-timing-function: ease-in-out; background-color: hsl(40, 70%, 98%); transform: translate3d(0, 0, 1px) rotateY(179.8deg); }
+  80%, 85% { animation-timing-function: ease-out; background-color: hsl(40, 70%, 98%); transform: translate3d(0, 0, 1px) rotateY(0.2deg); }
+}
+@keyframes bbLivro_pg4 {
+  from, 20%, 80%, to { animation-timing-function: ease-in; background-color: hsl(34, 32%, 52%); transform: translate3d(0, 0, 1px) rotateY(0.1deg); }
+  25%, 30% { animation-timing-function: ease-in-out; background-color: hsl(40, 70%, 98%); transform: translate3d(0, 0, 1px) rotateY(0.1deg); }
+  40%, 45% { animation-timing-function: ease-out; background-color: hsl(40, 70%, 98%); transform: translate3d(0, 0, 1px) rotateY(179.7deg); }
+  50% { animation-timing-function: ease-in; background-color: hsl(34, 32%, 52%); transform: translate3d(0, 0, 1px) rotateY(179.7deg); }
+  55%, 60% { animation-timing-function: ease-in-out; background-color: hsl(40, 70%, 98%); transform: translate3d(0, 0, 1px) rotateY(179.7deg); }
+  70%, 75% { animation-timing-function: ease-out; background-color: hsl(40, 70%, 98%); transform: translate3d(0, 0, 1px) rotateY(0.1deg); }
+}
+@keyframes bbLivro_pg5 {
+  from, 30%, 70%, to { animation-timing-function: ease-in; background-color: hsl(34, 32%, 52%); transform: translate3d(0, 0, 1px) rotateY(0); }
+  35%, 40% { animation-timing-function: ease-in-out; background-color: hsl(40, 70%, 98%); transform: translate3d(0, 0, 1px) rotateY(0deg); }
+  50% { animation-timing-function: ease-in-out; background-color: hsl(40, 70%, 98%); transform: translate3d(0, 0, 1px) rotateY(179.6deg); }
+  60%, 65% { animation-timing-function: ease-out; background-color: hsl(40, 70%, 98%); transform: translate3d(0, 0, 1px) rotateY(0); }
+}
+
+@media (prefers-reduced-motion:reduce){.bb-livro,.bb-livro *{animation:none!important}}
+
+/* ---------- Livro 3D no catálogo: a capa gira e mostra a página de dentro ----------
+   Base: Uiverse.io / eslam-hany, adaptado ao BiblioBeta (responsivo, com toque e teclado). */
+.livro-card--3d{position:relative;overflow:visible;padding:14px 14px 14px;gap:14px}
+.livro-card--3d > .livro-fav{z-index:5;top:20px;right:20px}
+.livro-book{position:relative;width:100%;aspect-ratio:3/4;border-radius:10px;perspective:2000px;
+  box-shadow:1px 1px 12px rgba(0,0,0,.28)}
+.livro-book__pagina{position:absolute;inset:0;z-index:1;border-radius:10px;padding:38px 12px 12px 30px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center;
+  background:linear-gradient(90deg,rgba(0,0,0,.12),transparent 16%),color-mix(in srgb,#fff 70%,var(--card));
+  visibility:hidden;transition:visibility 0s .5s}
+.livro-book__pagina .livro-btn{width:100%;margin-top:0;padding:9px 8px;line-height:1.25}
+.livro-book__categoria{font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--icon);line-height:1.3}
+.livro-book__cover{position:absolute;inset:0;z-index:2;border:0;padding:0;border-radius:10px;overflow:hidden;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;color:#fff;font:inherit;font-weight:700;font-size:.95rem;text-align:center;line-height:1.25;
+  transform-origin:left center;transition:transform .5s ease;box-shadow:1px 1px 12px rgba(0,0,0,.35)}
+.livro-book__cover > img{width:100%;height:100%;object-fit:cover;display:block}
+.livro-book__cover .livro-capa-fallback{display:flex;align-items:center;justify-content:center;width:100%;height:100%;padding:12px}
+.livro-book__cover:focus-visible{outline:3px solid var(--btn);outline-offset:3px}
+.livro-legenda{display:flex;flex-direction:column;gap:3px}
+.livro-legenda h4{font-size:.92rem;line-height:1.3;margin:0}
+.livro-legenda .livro-autor{font-size:.8rem;opacity:.7}
+/* Aberto: fixado por toque/clique (.aberto), foco do teclado ou mouse por cima */
+.livro-card--3d.aberto .livro-book__cover{transform:rotateY(-80deg)}
+.livro-card--3d.aberto .livro-book__pagina{visibility:visible;transition-delay:0s}
+/* Teclado: focar a capa (ou o botão de dentro) abre o livro. Regras separadas para não invalidar em navegadores sem :has() */
+.livro-book:has(:focus-visible) .livro-book__cover{transform:rotateY(-80deg)}
+.livro-book:has(:focus-visible) .livro-book__pagina{visibility:visible;transition-delay:0s}
+@media (hover:hover){
+  .livro-book:hover .livro-book__cover{transform:rotateY(-80deg)}
+  .livro-book:hover .livro-book__pagina{visibility:visible;transition-delay:0s}
+}
+/* Cartão recriado já aberto (catálogo redesenhado): entra sem animar */
+.livro-card--3d.sem-anim .livro-book__cover,
+.livro-card--3d.sem-anim .livro-book__pagina{transition:none}
+@media (prefers-reduced-motion:reduce){.livro-book__cover{transition:none}}
+/* Celular: duas colunas para o livro não ficar gigante */
+@media (max-width:520px){
+  .livro-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+  .livro-card--3d{padding:10px 10px 12px;gap:10px}
+  .livro-card--3d > .livro-fav{top:16px;right:16px;width:28px;height:28px}
+  .livro-book__pagina{padding:34px 8px 8px 24px;gap:8px}
+  .livro-book__pagina .livro-btn{font-size:.78rem}
+  .livro-legenda h4{font-size:.85rem}
+}
+/* Cadastro novo: o livro folheando ocupa o lugar do emoji, sem o "aceno" */
+.bb-bv-emoji--livro{display:flex;justify-content:center;font-size:inherit;margin:8px 0 22px;animation:bbBvSubir .6s ease .05s both}
+@media (max-width:520px){.bb-bv-emoji--livro{margin:4px 0 16px}}
+/* Celular: livro menor e botões sempre visíveis no rodapé da tela de boas-vindas */
+@media (max-width:520px){
+  .bb-bv-emoji--livro .bb-livro{font-size:11px}
+  .bb-bv-acoes{position:sticky;bottom:0;padding:28px 0 4px;background:linear-gradient(to bottom,transparent,var(--bg,#FAF5EC) 30%)}
+}
+
+/* =====================================================
+   Cabeçalho animado (Área do Aluno/Professor)
+   ===================================================== */
+.painel-head--anim{
+  position:relative;overflow:hidden;isolation:isolate;
+  display:flex;align-items:center;justify-content:space-between;gap:24px;
+  padding:26px 32px;border-radius:22px;
+  background:
+    radial-gradient(120% 140% at 100% 0%, color-mix(in srgb,var(--btn) 22%,transparent) 0%, transparent 55%),
+    linear-gradient(120deg,var(--card),color-mix(in srgb,var(--icon) 22%,var(--card)));
+  border:1px solid color-mix(in srgb,var(--icon) 35%,transparent);
+  box-shadow:0 10px 30px color-mix(in srgb,var(--menu) 12%,transparent);
+}
+.painel-head--anim .ph-texto{position:relative;z-index:2;min-width:0}
+.painel-head--anim h1{
+  margin-top:12px;color:transparent;
+  background:linear-gradient(90deg,var(--menu) 0%,var(--btn) 45%,var(--icon) 55%,var(--menu) 100%);
+  background-size:250% 100%;-webkit-background-clip:text;background-clip:text;
+  animation:phBrilho 6s ease-in-out infinite;
+}
+.painel-head--anim p{margin-top:8px}
+@keyframes phBrilho{0%,100%{background-position:100% 0}50%{background-position:0 0}}
+
+/* Pílula com o logo e a frase digitando */
+.ph-chip{
+  display:inline-flex;align-items:center;gap:8px;padding:6px 14px 6px 8px;border-radius:999px;
+  background:color-mix(in srgb,var(--bg) 80%,transparent);
+  border:1px solid color-mix(in srgb,var(--icon) 45%,transparent);
+  color:var(--text)!important;font-size:.78rem;font-weight:600;letter-spacing:.02em;text-transform:none;
+  min-height:34px;max-width:100%;
+}
+.ph-chip img{width:20px;height:20px;object-fit:contain;animation:phBalanco 3.2s ease-in-out infinite}
+.ph-chip-txt{white-space:nowrap;overflow:hidden;text-overflow:clip;min-width:1ch}
+.ph-caret{width:2px;height:1.1em;background:var(--btn);border-radius:1px;margin-left:-4px;animation:phPisca 1s steps(1) infinite}
+@keyframes phPisca{50%{opacity:0}}
+@keyframes phBalanco{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(8deg) translateY(-1px)}}
+
+/* Livro folheando à direita */
+.ph-livro{position:relative;z-index:2;flex:0 0 auto;padding-right:8px;filter:drop-shadow(0 8px 10px rgba(0,0,0,.18))}
+.ph-livro .bb-livro{font-size:11px;--bb-livro-duracao:12s}
+
+/* Emojis flutuando no fundo */
+.ph-flutuantes{position:absolute;inset:0;z-index:1;pointer-events:none}
+.ph-fl{position:absolute;bottom:-30px;font-size:1.5rem;opacity:0;animation:phSobe 9s linear infinite}
+.ph-fl--1{left:8%;animation-delay:0s}
+.ph-fl--2{left:24%;animation-delay:2.4s;font-size:1.1rem}
+.ph-fl--3{left:46%;animation-delay:4.8s}
+.ph-fl--4{left:62%;animation-delay:1.2s;font-size:1.2rem}
+.ph-fl--5{left:76%;animation-delay:6.2s;font-size:1rem}
+@keyframes phSobe{
+  0%{transform:translateY(0) rotate(0);opacity:0}
+  15%{opacity:.55}
+  85%{opacity:.35}
+  100%{transform:translateY(-190px) rotate(24deg);opacity:0}
+}
+@media (max-width:900px){
+  .painel-head--anim{padding:20px 20px}
+}
+@media (max-width:640px){
+  .ph-livro{display:none}
+  .ph-chip-txt{white-space:normal}
+}
+@media (prefers-reduced-motion:reduce){
+  .painel-head--anim h1{animation:none;background-position:0 0}
+  .ph-fl,.ph-chip img,.ph-caret{animation:none}
+  .ph-fl{display:none}
+  .ph-caret{display:none}
+}
+
+/* =====================================================
+   Dicas: "passe o mouse para pedir emprestado"
+   ===================================================== */
+.catalogo-dica{
+  display:flex;align-items:center;gap:8px;margin:0 0 16px;padding:8px 14px;width:fit-content;max-width:100%;
+  border-radius:12px;font-size:.85rem;color:var(--text);
+  background:color-mix(in srgb,var(--icon) 16%,transparent);
+  border:1px dashed color-mix(in srgb,var(--icon) 65%,transparent);
+}
+.catalogo-dica strong{color:var(--btn)}
+.catalogo-dica-icone{animation:phBalanco 2.6s ease-in-out infinite;display:inline-block}
+.catalogo-dica-toque{display:none}
+@media (hover:none){
+  .catalogo-dica-hover{display:none}
+  .catalogo-dica-toque{display:inline}
+}
+
+/* Selo em cima da capa: some sozinho quando o livro abre */
+.livro-dica{
+  position:absolute;left:50%;bottom:10px;transform:translateX(-50%);z-index:3;pointer-events:none;
+  display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border-radius:999px;white-space:nowrap;
+  font-size:.68rem;font-weight:600;line-height:1;color:#fff;
+  background:rgba(20,12,6,.72);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+  border:1px solid rgba(255,255,255,.28);box-shadow:0 4px 12px rgba(0,0,0,.35);
+  animation:dicaFlutua 2.2s ease-in-out infinite;
+  transition:opacity .25s ease;
+}
+.livro-dica-icone{display:inline-block;font-size:.8rem;animation:dicaToque 2.2s ease-in-out infinite}
+.livro-dica-toque{display:none}
+@media (hover:none){
+  .livro-dica-hover{display:none}
+  .livro-dica-toque{display:inline}
+}
+@keyframes dicaFlutua{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(-4px)}}
+@keyframes dicaToque{0%,60%,100%{transform:translate(0,0) scale(1)}30%{transform:translate(3px,-3px) scale(.88)}}
+.livro-card--3d.aberto .livro-dica,
+.livro-book:has(:focus-visible) .livro-dica{opacity:0}
+@media (hover:hover){.livro-book:hover .livro-dica{opacity:0}}
+@media (prefers-reduced-motion:reduce){.livro-dica,.livro-dica-icone,.catalogo-dica-icone{animation:none}.livro-dica{transform:translateX(-50%)}}
+
+/* =====================================================
+   Acessibilidade: contraste mínimo (WCAG AA 4.5:1) e títulos
+   As cores seguem o tema (var(--btn), var(--icon), var(--text)), só ficam um pouco mais escuras.
+   ===================================================== */
+.btn, .avatar{ background:color-mix(in srgb, var(--btn) 82%, #000); }
+.card-link, .chart-bars-real .cbr-detalhe strong{ color:color-mix(in srgb, var(--btn) 70%, #000); }
+.empty-msg, .avisos-vazio{ opacity:.88; }
+.chart-bars-real .cbr-label{ opacity:1; }
+.chart-caption{ opacity:.9; }
+.data-table thead th, .painel-head .eyebrow, .livro-book__categoria{ color:color-mix(in srgb, var(--icon) 55%, #000); }
+/* h4 virou h3 / p para manter a ordem lógica dos títulos */
+.livro-legenda h3{ font-size:.92rem; line-height:1.3; margin:0; }
+.topbar-notif-titulo{ font-size:.85rem; font-weight:700; margin:0 0 10px; color:var(--title); }
+
+/* ---------- Informações do perfil (aluno/professor) ---------- */
+.info-perfil{ display:flex; flex-direction:column; gap:18px; max-width:980px; }
+.info-hero{
+  display:flex; align-items:center; gap:20px;
+  padding:26px 28px; border-radius:var(--radius-md,18px);
+  background:linear-gradient(135deg, color-mix(in srgb, var(--icon,#e67e22) 22%, var(--card)) 0%, var(--card) 70%);
+  border:1px solid color-mix(in srgb, var(--icon,#e67e22) 22%, transparent);
+  box-shadow:var(--shadow-soft,0 10px 30px -10px rgba(0,0,0,.2));
+}
+.info-avatar{
+  flex:0 0 auto; width:76px; height:76px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-size:1.7rem; font-weight:700; letter-spacing:.02em; color:#fff;
+  background:linear-gradient(145deg, var(--icon,#e67e22), color-mix(in srgb, var(--icon,#e67e22) 60%, #3b1d0a));
+  box-shadow:0 8px 20px -6px color-mix(in srgb, var(--icon,#e67e22) 70%, transparent), inset 0 0 0 3px rgba(255,255,255,.35);
+}
+.info-hero-texto{ min-width:0; }
+.info-hero-texto h3{ margin:0 0 10px; font-size:1.45rem; line-height:1.2; overflow-wrap:anywhere; }
+.info-chips{ display:flex; flex-wrap:wrap; gap:8px; }
+.info-chip{
+  padding:4px 12px; border-radius:999px; font-size:.78rem; font-weight:600;
+  background:color-mix(in srgb, var(--text) 8%, transparent); color:var(--text);
+}
+.info-chip-papel{ background:var(--icon,#e67e22); color:#fff; }
+.info-chip-ok{ background:rgba(34,139,84,.14); color:#1f7a4a; }
+.info-chip-ok::before{ content:""; display:inline-block; width:7px; height:7px; margin-right:6px; border-radius:50%; background:#22a05f; }
+
+.info-lista{ display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:16px; }
+.info-item, .info-email{
+  display:flex; align-items:flex-start; gap:14px;
+  padding:18px 20px; border-radius:var(--radius-md,16px);
+  background:var(--card); box-shadow:var(--shadow-soft,0 10px 30px -10px rgba(0,0,0,.2));
+  transition:transform .2s ease, box-shadow .2s ease;
+}
+.info-item:hover, .info-email:hover{ transform:translateY(-2px); }
+.info-item-icone{
+  flex:0 0 auto; width:42px; height:42px; border-radius:12px;
+  display:flex; align-items:center; justify-content:center;
+  background:color-mix(in srgb, var(--icon,#e67e22) 16%, transparent); color:var(--icon,#e67e22);
+}
+.info-item-icone svg{ width:22px; height:22px; }
+.info-item-texto{ display:flex; flex-direction:column; gap:2px; min-width:0; flex:1; }
+.info-item-rotulo{ font-size:.74rem; font-weight:600; letter-spacing:.06em; text-transform:uppercase; opacity:.65; }
+.info-item-valor{ font-size:1.08rem; font-weight:600; overflow-wrap:anywhere; }
+.info-item-extra{ font-size:.82rem; opacity:.7; line-height:1.45; margin-top:2px; }
+
+.info-email{ align-items:center; flex-wrap:wrap; border-left:4px solid var(--icon,#e67e22); }
+.info-email-endereco{
+  font-size:1.12rem; font-weight:600; color:var(--text); text-decoration:none;
+  overflow-wrap:anywhere; word-break:break-all;
+}
+.info-email-endereco:hover{ text-decoration:underline; }
+.info-copiar{
+  flex:0 0 auto; padding:9px 18px; border:0; border-radius:999px; cursor:pointer;
+  font:600 .85rem 'Poppins',sans-serif; color:#fff; background:var(--btn,#e8711a);
+  transition:filter .15s ease, transform .15s ease;
+}
+.info-copiar:hover{ filter:brightness(1.08); }
+.info-copiar:active{ transform:scale(.96); }
+
+@media (max-width:640px){
+  .info-hero{ flex-direction:column; text-align:center; padding:22px 18px; }
+  .info-chips{ justify-content:center; }
+  .info-email{ flex-direction:column; align-items:flex-start; }
+  .info-copiar{ width:100%; }
+}
+
+/* ---------- Cards de resumo clicáveis (início da Gestão e do aluno/professor) ---------- */
+.stat-card.stat-clicavel{
+  position:relative; cursor:pointer;
+  transition:transform .18s ease, box-shadow .18s ease;
+}
+.stat-card.stat-clicavel::after{
+  content:"→"; position:absolute; top:14px; right:16px;
+  font-size:1.05rem; font-weight:700; color:var(--icon,#e67e22);
+  opacity:0; transform:translateX(-4px);
+  transition:opacity .18s ease, transform .18s ease;
+}
+.stat-card.stat-clicavel:hover,
+.stat-card.stat-clicavel:focus-visible{
+  transform:translateY(-3px);
+  box-shadow:0 16px 34px -14px rgba(0,0,0,.35), 0 0 0 2px color-mix(in srgb, var(--icon,#e67e22) 45%, transparent);
+}
+.stat-card.stat-clicavel:hover::after,
+.stat-card.stat-clicavel:focus-visible::after{ opacity:1; transform:none; }
+.stat-card.stat-clicavel:focus-visible{ outline:none; }
+.stat-card.stat-clicavel:active{ transform:translateY(-1px) scale(.99); }
+@media (hover:none){ .stat-card.stat-clicavel::after{ opacity:.55; transform:none; } }
+@media (prefers-reduced-motion:reduce){
+  .stat-card.stat-clicavel, .stat-card.stat-clicavel::after{ transition:none; }
+}
+
+/* =====================================================
+   CATÁLOGO — galeria de gêneros e prateleiras
+   ===================================================== */
+.generos-galeria{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(148px,1fr));
+  gap:12px;
+  margin:18px 0 20px;
+}
+.generos-galeria[hidden],.genero-banner[hidden]{ display:none; }
+.genero-tile{
+  --g:#8d5a2b;
+  position:relative; overflow:hidden; isolation:isolate;
+  display:flex; flex-direction:column; justify-content:flex-end; gap:1px;
+  min-height:104px; padding:14px 14px 12px;
+  border:0; border-radius:18px; cursor:pointer; text-align:left;
+  font-family:inherit; color:#fff;
+  background:linear-gradient(145deg,color-mix(in srgb,var(--g) 88%,#000),color-mix(in srgb,var(--g) 52%,#1a0f08));
+  box-shadow:0 10px 22px -12px color-mix(in srgb,var(--g) 75%,#000);
+  transition:transform .22s cubic-bezier(.22,1,.36,1), box-shadow .22s ease, filter .2s ease;
+}
+.genero-tile::before,.genero-tile::after{ content:''; position:absolute; border-radius:50%; background:rgba(255,255,255,.13); z-index:-1; }
+.genero-tile::before{ width:96px; height:96px; right:-28px; top:-30px; }
+.genero-tile::after{ width:64px; height:64px; right:30px; bottom:-34px; background:rgba(255,255,255,.08); }
+.genero-tile__icone{ position:absolute; top:10px; right:13px; font-size:1.85rem; line-height:1; filter:drop-shadow(0 2px 3px rgba(0,0,0,.3)); transition:transform .25s ease; }
+.genero-tile__nome{ font-weight:700; font-size:.95rem; line-height:1.2; text-shadow:0 1px 2px rgba(0,0,0,.35); padding-right:34px; }
+.genero-tile__qtd{ font-size:.75rem; opacity:.9; text-shadow:0 1px 2px rgba(0,0,0,.35); }
+.genero-tile:hover{ transform:translateY(-3px); filter:saturate(1.1); box-shadow:0 16px 26px -12px color-mix(in srgb,var(--g) 80%,#000); }
+.genero-tile:hover .genero-tile__icone{ transform:scale(1.14) rotate(-6deg); }
+.genero-tile:focus-visible{ outline:3px solid var(--text); outline-offset:3px; }
+.genero-tile.ativo{ box-shadow:0 0 0 3px var(--bg),0 0 0 6px var(--g),0 14px 24px -12px color-mix(in srgb,var(--g) 80%,#000); transform:translateY(-2px); }
+
+.genero-banner{
+  --g:#8d5a2b;
+  display:flex; align-items:center; gap:14px; flex-wrap:wrap;
+  margin:0 0 20px; padding:14px 16px;
+  border-radius:16px; border-left:6px solid var(--g);
+  background:color-mix(in srgb,var(--g) 13%,var(--card));
+  animation:generoEntra .3s ease both;
+}
+.genero-banner__icone{ font-size:2rem; line-height:1; }
+.genero-banner__texto{ display:flex; flex-direction:column; flex:1 1 200px; min-width:0; }
+.genero-banner__texto strong{ font-size:1.1rem; }
+.genero-banner__texto span{ font-size:.85rem; opacity:.8; }
+.genero-banner__limpar{
+  font-family:inherit; font-weight:600; font-size:.82rem; cursor:pointer;
+  padding:8px 14px; border-radius:100px; color:var(--text);
+  border:1px solid color-mix(in srgb,var(--g) 55%,transparent); background:transparent;
+  transition:background-color .2s ease;
+}
+.genero-banner__limpar:hover{ background:color-mix(in srgb,var(--g) 18%,transparent); }
+
+/* Prateleiras: uma por gênero, rolando para o lado */
+.livro-grid.livro-grid--prateleiras{ display:block; }
+.genero-prateleira{ --g:#8d5a2b; margin:0 0 30px; animation:generoEntra .35s ease both; }
+.genero-prateleira__topo{ display:flex; align-items:center; gap:12px; margin-bottom:8px; }
+.genero-prateleira__icone{
+  flex:none; width:44px; height:44px; display:grid; place-items:center; font-size:1.4rem;
+  border-radius:14px; color:#fff;
+  background:linear-gradient(145deg,color-mix(in srgb,var(--g) 88%,#000),color-mix(in srgb,var(--g) 52%,#1a0f08));
+  box-shadow:0 8px 16px -10px var(--g);
+}
+.genero-prateleira__titulo{ flex:1 1 auto; min-width:0; }
+.genero-prateleira__titulo h3{ margin:0; font-size:1.1rem; }
+.genero-prateleira__titulo p{ margin:1px 0 0; font-size:.8rem; opacity:.75; }
+.genero-prateleira__ver{
+  flex:none; font-family:inherit; font-weight:600; font-size:.8rem; cursor:pointer; white-space:nowrap;
+  padding:7px 13px; border-radius:100px; color:var(--text); background:transparent;
+  border:1px solid color-mix(in srgb,var(--g) 55%,transparent);
+  transition:background-color .2s ease, transform .15s ease;
+}
+.genero-prateleira__ver:hover{ background:color-mix(in srgb,var(--g) 16%,transparent); transform:translateX(2px); }
+.genero-prateleira__trilho{
+  display:flex; gap:16px; overflow-x:auto; overflow-y:hidden;
+  padding:10px 6px 14px; margin:0 -6px;
+  scroll-snap-type:x proximity; scrollbar-width:thin; scrollbar-color:color-mix(in srgb,var(--g) 60%,transparent) transparent;
+}
+.genero-prateleira__trilho > .livro-card{ flex:0 0 clamp(150px,17vw,188px); scroll-snap-align:start; }
+.genero-prateleira::after{
+  content:''; display:block; height:10px; border-radius:2px 2px 10px 10px;
+  background:linear-gradient(#b07a43,#7a4a22);
+  box-shadow:0 10px 16px -10px rgba(0,0,0,.45);
+}
+@keyframes generoEntra{ from{ opacity:0; transform:translateY(8px); } to{ opacity:1; transform:none; } }
+
+@media (max-width:640px){
+  .generos-galeria{ grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+  .genero-tile{ min-height:92px; padding:12px; }
+  .genero-prateleira__titulo p{ display:none; }
+  .genero-prateleira__trilho > .livro-card{ flex-basis:148px; }
+}
+@media (prefers-reduced-motion: reduce){
+  .genero-tile,.genero-tile__icone,.genero-banner,.genero-prateleira{ transition:none; animation:none; }
+  .genero-tile:hover{ transform:none; }
+}
+
+/* Gêneros no cadastro de livro (Gestão) */
+.generos-chips{ display:flex; flex-wrap:wrap; gap:8px; margin-top:4px; }
+.genero-chip{
+  --g:#8d5a2b; font-family:inherit; font-size:.8rem; font-weight:600; cursor:pointer;
+  padding:6px 12px; border-radius:100px; color:var(--text);
+  border:1.5px solid color-mix(in srgb,var(--g) 55%,transparent);
+  background:color-mix(in srgb,var(--g) 8%,var(--card));
+  transition:background-color .15s ease, color .15s ease, transform .12s ease;
+}
+.genero-chip:hover{ transform:translateY(-1px); background:color-mix(in srgb,var(--g) 20%,var(--card)); }
+.genero-chip.ativo{ background:var(--g); border-color:var(--g); color:#fff; text-shadow:0 1px 1px rgba(0,0,0,.3); }
+.genero-chip--mini{ display:inline-block; cursor:default; font-size:.72rem; padding:2px 9px; margin:1px 0; pointer-events:none; background:color-mix(in srgb,var(--g) 16%,transparent); }
+
+/* =====================================================
+   GESTÃO — tela de multas e punições
+   ===================================================== */
+.mx-titulo{ margin:26px 0 10px; font-size:1.05rem; }
+.mx-stat--alerta .stat{ color:#b42318; }
+.mx-nav-badge{
+  margin-left:auto; min-width:20px; height:20px; padding:0 6px; border-radius:100px;
+  display:inline-flex; align-items:center; justify-content:center;
+  background:#d92d20; color:#fff; font-size:.7rem; font-weight:700; line-height:1;
+  animation:mxPulse 2s ease-in-out infinite;
+}
+.mx-nav-badge[hidden]{ display:none; }
+@keyframes mxPulse{ 0%,100%{ box-shadow:0 0 0 0 rgba(217,45,32,.5); } 50%{ box-shadow:0 0 0 6px rgba(217,45,32,0); } }
+.mx-lista{ display:grid; grid-template-columns:repeat(auto-fill,minmax(min(100%,420px),1fr)); gap:16px; }
+.mx-vazio{ grid-column:1/-1; padding:22px; text-align:center; border-radius:16px; background:color-mix(in srgb,#16a34a 10%,var(--card)); }
+.mx-card{
+  display:flex; flex-direction:column; gap:14px; padding:18px; border-radius:18px;
+  background:var(--card); border-left:6px solid #d92d20;
+  box-shadow:var(--shadow-soft,0 10px 30px -12px rgba(0,0,0,.25));
+}
+.mx-card__topo{ display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
+.mx-card__quem{ display:flex; flex-direction:column; flex:1 1 140px; min-width:0; }
+.mx-card__quem span{ font-size:.8rem; opacity:.75; }
+.mx-atraso{
+  font-size:.78rem; font-weight:600; padding:6px 12px; border-radius:100px;
+  background:#fee4e2; color:#b42318; white-space:nowrap;
+}
+.mx-atraso b{ font-size:1.05rem; }
+.mx-card__livro{ display:flex; gap:12px; align-items:center; padding:10px; border-radius:12px; background:color-mix(in srgb,var(--bg) 70%,transparent); }
+.mx-card__livro img{ width:42px; height:58px; object-fit:cover; border-radius:5px; flex:none; box-shadow:0 4px 8px -4px rgba(0,0,0,.4); }
+.mx-card__livro div{ display:flex; flex-direction:column; min-width:0; }
+.mx-card__livro span{ font-size:.78rem; opacity:.75; }
+.mx-card__livro .mx-aviso{ color:#b54708; opacity:1; font-weight:600; }
+.mx-ops{ border:0; margin:0; padding:0; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; }
+.mx-ops legend{ font-size:.8rem; font-weight:600; margin-bottom:8px; padding:0; }
+.mx-op{ cursor:pointer; position:relative; }
+.mx-op input{ position:absolute; opacity:0; inset:0; cursor:pointer; }
+.mx-op__corpo{
+  display:flex; flex-direction:column; align-items:center; gap:1px; text-align:center;
+  padding:10px 6px; border-radius:12px; border:2px solid rgba(0,0,0,.1); background:var(--bg);
+  transition:border-color .15s ease, background-color .15s ease, transform .12s ease;
+}
+.mx-op__icone{ font-size:1.25rem; }
+.mx-op__corpo b{ font-size:.82rem; }
+.mx-op__corpo small{ font-size:.68rem; opacity:.7; }
+.mx-op:hover .mx-op__corpo{ transform:translateY(-2px); border-color:rgba(0,0,0,.25); }
+.mx-op input:checked + .mx-op__corpo{ border-color:#b42318; background:#fff1f0; box-shadow:0 6px 14px -8px rgba(180,35,24,.6); }
+.mx-op input:checked + .mx-op__corpo small{ color:#b42318; opacity:1; font-weight:600; }
+.mx-op input:focus-visible + .mx-op__corpo{ outline:3px solid var(--text); outline-offset:2px; }
+.mx-card__rodape{ display:flex; gap:10px; flex-wrap:wrap; }
+.mx-obs{ flex:1 1 180px; min-width:0; padding:10px 14px; border-radius:100px; border:1px solid rgba(0,0,0,.15); background:var(--bg); color:var(--text); font-family:inherit; font-size:.85rem; }
+@media (max-width:520px){ .mx-ops{ grid-template-columns:repeat(2,minmax(0,1fr)); } .mx-card__rodape .btn-primario{ width:100%; } }

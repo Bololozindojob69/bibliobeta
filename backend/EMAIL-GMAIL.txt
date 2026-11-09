@@ -1,0 +1,23 @@
+BIBLIOBETA 1.0 - E-MAILS
+
+Remetente oficial da Gestão:
+bibliobeta20@gmail.com
+
+Para o envio funcionar:
+1. Ative a verificação em duas etapas na conta Google da Gestão.
+2. Gere uma Senha de app para o BiblioBeta.
+3. Coloque a Senha de app em SMTP_PASS no arquivo backend/.env.
+4. Não coloque a senha normal do Gmail no sistema.
+5. Inicie o servidor.
+6. Entre como Gestão > Configurações > E-mails.
+7. Clique em "Testar envio de e-mail".
+
+O teste envia uma mensagem para o e-mail da conta da Gestão que está logada.
+As notificações do sistema continuam sendo registradas no site e, quando o SMTP estiver configurado, também são enviadas por e-mail.
+
+--- ATUALIZAÇÃO 0.4 ---
+- O envio tenta a porta 465 e, se falhar, a 587 (automático), sempre em IPv4.
+- Se continuar sem chegar: rode  node diagnostico-email.js seuemail@gmail.com  na pasta backend.
+  Ele mostra se a rede bloqueia as portas 465/587. Se bloquear as duas, teste em outra rede (ex.: hotspot do celular).
+- Cole a Senha de app em SMTP_PASS (espaços são ignorados). Gere uma nova se a antiga foi compartilhada.
+- E-mails de fora podem ser descartados pelo Google Workspace da escola (@al.educacao.sp.gov.br).

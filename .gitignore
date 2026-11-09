@@ -1,0 +1,15 @@
+# Dependências (o Iniciar BiblioBeta.bat reinstala com npm install)
+node_modules/
+
+# Segredos: senha de app do Gmail, JWT_SECRET etc.
+.env
+
+# Banco de dados local (contém usuários e hashes de senha)
+backend/database.sqlite
+backend/database.sqlite-shm
+backend/database.sqlite-wal
+
+# Capas enviadas pelos usuários
+backend/uploads/
+
+*.log

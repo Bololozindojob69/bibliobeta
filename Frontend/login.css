@@ -251,6 +251,19 @@
   margin: 0;
 }
 
+/* RA + Dígito lado a lado, igual ao padrão do Sala do Futuro:
+   RA ocupa a maior parte da linha, Dígito fica estreito ao lado.
+   Isso substitui os dois campos empilhados e diminui a altura do painel. */
+.cadastro-ra-row {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+}
+
+.cadastro-ra-row .login-field { width: auto; margin: 0; }
+.cadastro-ra-row .login-field:first-child { flex: 3; min-width: 0; }
+.cadastro-ra-row .login-field:last-child { flex: 1; min-width: 64px; }
+
 .cadastro-step-group.active {
   display: flex;
   animation: cadastroStepIn 0.3s ease;
@@ -721,4 +734,387 @@
   font-size: 10.5px;
   line-height: 1.45;
   color: #6f655b;
+}
+/* =====================================================
+   RECUPERAÇÃO DE SENHA - fluxo próprio do BiblioBeta
+   -----------------------------------------------------
+   Ideia visual: a tela é uma "página de livro".
+   - lombada suave na borda esquerda do cartão
+   - ao trocar de etapa, o conteúdo "vira a página"
+     (o efeito de flip do Uiverse, só que disparado pela
+     troca de etapa e não por hover, que atrapalharia o formulário)
+   - barra de progresso no topo mostra em qual das 4 etapas você está
+   Tudo usa as variáveis do tema (--btn, --btn-hover, --title, --green),
+   então acompanha a "Configuração da Interface".
+   ===================================================== */
+
+/* ---------- Fundo escuro + cartão ---------- */
+.recuperacao-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(38, 23, 13, 0.64);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  overflow-y: auto;
+  animation: rec-fade 0.25s ease-out;
+}
+.recuperacao-overlay[hidden] { display: none !important; }
+
+.recuperacao-card {
+  position: relative;
+  width: min(100%, 440px);
+  max-height: calc(100% - 20px);
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--title, #4a2c1a) 28%, transparent) transparent;
+  padding: 38px 34px 30px;
+  border: 1px solid color-mix(in srgb, var(--btn, #e86a17) 24%, transparent);
+  border-radius: var(--radius-lg, 22px);
+  /* 1ª camada: lombada do livro | 2ª camada: papel com leve tom da cor do tema */
+  background:
+    linear-gradient(90deg, rgba(74, 44, 26, 0.07), rgba(74, 44, 26, 0) 24px),
+    linear-gradient(160deg, #fffdf9 58%, color-mix(in srgb, var(--btn, #e86a17) 8%, #fffdf9));
+  box-shadow:
+    0 32px 64px -24px rgba(38, 23, 13, 0.6),
+    0 10px 24px -10px rgba(38, 23, 13, 0.3);
+  color: #33291f;
+  animation: rec-rise 0.42s var(--ease, cubic-bezier(0.22, 1, 0.36, 1)) backwards;
+}
+.recuperacao-card::-webkit-scrollbar { width: 8px; }
+.recuperacao-card::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--title, #4a2c1a) 28%, transparent);
+  border-radius: 8px;
+}
+
+/* ---------- Barra de progresso (4 etapas) ---------- */
+.recuperacao-card::after,
+.recuperacao-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 4px;
+  pointer-events: none;
+}
+.recuperacao-card::after {            /* trilho */
+  right: 0;
+  z-index: 0;
+  background: color-mix(in srgb, var(--title, #4a2c1a) 8%, transparent);
+}
+.recuperacao-card::before {           /* preenchimento */
+  z-index: 1;
+  width: 25%;
+  border-radius: 0 4px 4px 0;
+  background: linear-gradient(90deg, var(--btn-hover, #f28c28), var(--btn, #e86a17));
+  transition: width 0.55s var(--ease, cubic-bezier(0.22, 1, 0.36, 1)), background 0.3s ease;
+}
+.recuperacao-card:has([data-recuperacao-step="2"].active)::before { width: 50%; }
+.recuperacao-card:has([data-recuperacao-step="3"].active)::before { width: 75%; }
+.recuperacao-card:has([data-recuperacao-step="4"].active)::before {
+  width: 100%;
+  border-radius: 0;
+  background: var(--green, #6aa84f);
+}
+
+/* ---------- Botão fechar ---------- */
+.recuperacao-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 2;
+  width: 36px;
+  height: 36px;
+  padding: 0 0 2px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--title, #4a2c1a) 7%, transparent);
+  color: var(--title, #4a2c1a);
+  font: 400 22px/1 'Poppins', sans-serif;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+.recuperacao-close:hover {
+  background: color-mix(in srgb, var(--title, #4a2c1a) 14%, transparent);
+}
+
+/* ---------- Cabeçalho ---------- */
+.recuperacao-icon {
+  width: 52px;
+  height: 52px;
+  margin: 0 auto 14px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--btn, #e86a17) 13%, #fff);
+  box-shadow: 0 0 0 7px color-mix(in srgb, var(--btn, #e86a17) 7%, transparent);
+  font-size: 24px;
+  line-height: 1;
+}
+.recuperacao-card h2,
+.recuperacao-card h3 {
+  margin: 0 0 8px;
+  text-align: center;
+  color: var(--title, #4a2c1a);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.recuperacao-card h2 { font-size: 25px; line-height: 1.2; }
+.recuperacao-card h3 { font-size: 21px; line-height: 1.25; }
+.recuperacao-desc {
+  margin: 0 auto 24px;
+  max-width: 330px;
+  text-align: center;
+  color: #6b5f54;
+  font-size: 13.5px;
+  line-height: 1.55;
+  text-wrap: balance;
+}
+
+/* ---------- Etapas (a "virada de página") ---------- */
+.recuperacao-step { width: 100%; }
+.recuperacao-step[hidden] { display: none !important; }
+/* a 1ª etapa aparece junto com o cartão; da 2ª em diante a página vira */
+.recuperacao-step.active:not([data-recuperacao-step="1"]) {
+  transform-origin: left center;
+  backface-visibility: hidden;
+  animation: rec-page-turn 0.6s var(--ease, cubic-bezier(0.22, 1, 0.36, 1)) backwards;
+}
+
+/* ---------- Campos ---------- */
+.recuperacao-field { margin-bottom: 16px; }
+.recuperacao-field label {
+  display: block;
+  margin: 0 0 7px 2px;
+  color: var(--title, #4a2c1a);
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 1.2;
+}
+.recuperacao-field input {
+  width: 100%;
+  height: 46px;
+  padding: 0 14px;
+  border: 1.5px solid color-mix(in srgb, var(--title, #4a2c1a) 14%, transparent);
+  border-radius: 12px;
+  background: #fbf7ef;
+  color: #33291f;
+  outline: none;
+  font: 400 14px 'Poppins', sans-serif;
+  transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+}
+.recuperacao-field input::placeholder { color: #8a7b6e; opacity: 1; }
+.recuperacao-field input:hover {
+  border-color: color-mix(in srgb, var(--title, #4a2c1a) 30%, transparent);
+}
+.recuperacao-field input:focus {
+  border-color: var(--btn, #e86a17);
+  background: #fff;
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--btn, #e86a17) 18%, transparent);
+}
+.recuperacao-field input.invalid {
+  border-color: #d64545;
+  background: #fff8f7;
+}
+.recuperacao-field input.invalid:focus {
+  box-shadow: 0 0 0 4px rgba(214, 69, 69, 0.14);
+}
+/* autofill do navegador não pode pintar o campo de amarelo/azul */
+.recuperacao-field input:-webkit-autofill,
+.recuperacao-field input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #33291f;
+  box-shadow: 0 0 0 100px #fbf7ef inset;
+}
+/* campos de senha: mantém espaço para o olhinho (antes o texto passava por baixo dele) */
+.recuperacao-field .login-password-wrap input { padding-right: 46px; }
+
+/* mensagem de erro: some quando vazia, para não deixar um "buraco" no layout */
+.recuperacao-field .login-error {
+  min-height: 0;
+  margin: 6px 2px 0;
+  color: #b93030;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.35;
+}
+.recuperacao-field .login-error:empty { display: none; }
+.recuperacao-field .senha-politica {
+  margin: 7px 2px 0;
+  font-size: 11.5px;
+  color: #6f655b;
+}
+
+/* campo do código de 6 dígitos: centralizado e espaçado, como um código de verdade */
+.recuperacao-field #recuperacaoCodigoInput {
+  height: 54px;
+  padding: 0 14px 0 calc(14px + 0.55em);   /* compensa o espaço que o letter-spacing deixa no fim */
+  text-align: center;
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: 0.55em;
+  font-variant-numeric: tabular-nums;
+}
+.recuperacao-field #recuperacaoCodigoInput::placeholder {
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+}
+
+/* ---------- Botão principal ---------- */
+.recuperacao-card .recuperacao-btn {
+  display: block;
+  width: 100%;
+  height: 48px;
+  margin-top: 8px;
+  padding: 0 20px;
+  border: 0;
+  border-radius: 999px;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--btn, #e86a17) 90%, #fff), var(--btn, #e86a17));
+  box-shadow: 0 10px 20px -10px color-mix(in srgb, var(--btn, #e86a17) 80%, transparent);
+  font: 600 14.5px 'Poppins', sans-serif;
+  letter-spacing: 0;
+  text-transform: none;
+  transition: background 0.25s ease, box-shadow 0.25s ease, transform 0.15s ease;
+}
+.recuperacao-card .recuperacao-btn:hover {
+  background: linear-gradient(180deg, var(--btn-hover, #f28c28), color-mix(in srgb, var(--btn-hover, #f28c28) 88%, var(--btn, #e86a17)));
+  transform: translateY(-1px);
+}
+.recuperacao-card .recuperacao-btn:active { transform: translateY(0) scale(0.99); }
+.recuperacao-card .recuperacao-btn:disabled { transform: none; box-shadow: none; }
+
+/* ---------- Etapa 2: aviso do e-mail (papel de devolução da biblioteca) ---------- */
+.recuperacao-code-card {
+  margin: 0 0 20px;
+  padding: 16px 18px 14px;
+  border: 1.5px dashed color-mix(in srgb, var(--btn, #e86a17) 46%, transparent);
+  border-radius: 16px;
+  background: color-mix(in srgb, var(--btn, #e86a17) 6%, #fffdf9);
+  text-align: center;
+}
+.recuperacao-code-label {
+  display: block;
+  color: #7a6d61;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  text-transform: none;
+}
+/* aqui o JS escreve uma frase ("Código enviado para ...@..."), não o código em si */
+.recuperacao-code-card strong {
+  display: block;
+  margin: 6px 0 12px;
+  color: var(--title, #4a2c1a);
+  font-size: 14.5px;
+  font-weight: 600;
+  line-height: 1.45;
+  letter-spacing: 0;
+  overflow-wrap: anywhere;
+}
+.recuperacao-code-card small {
+  display: block;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px dashed color-mix(in srgb, var(--btn, #e86a17) 32%, transparent);
+  color: #6f655b;
+  font-size: 11.5px;
+}
+.recuperacao-copy {
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 14px;
+  border: 1px solid color-mix(in srgb, var(--btn, #e86a17) 40%, transparent);
+  border-radius: 999px;
+  background: transparent;
+  color: color-mix(in srgb, var(--btn, #e86a17) 55%, var(--title, #4a2c1a));
+  font: 600 12px 'Poppins', sans-serif;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+.recuperacao-copy:hover {
+  background: color-mix(in srgb, var(--btn, #e86a17) 10%, transparent);
+}
+
+/* ---------- Etapa 4: sucesso ---------- */
+/* o título, o ícone e o texto do topo repetiam o que o sucesso já diz: escondemos */
+.recuperacao-card:has([data-recuperacao-step="4"].active) :is(.recuperacao-icon, h2, .recuperacao-desc) {
+  display: none;
+}
+.recuperacao-sucesso { text-align: center; padding: 6px 0 0; }
+.recuperacao-sucesso p {
+  max-width: 320px;
+  margin: 0 auto 8px;
+  color: #6b5f54;
+  font-size: 13.5px;
+  line-height: 1.55;
+}
+.recuperacao-sucesso .recuperacao-btn { margin-top: 20px; }
+.recuperacao-success-icon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 16px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--green, #6aa84f) 18%, #fff);
+  box-shadow: 0 0 0 8px color-mix(in srgb, var(--green, #6aa84f) 9%, transparent);
+  color: color-mix(in srgb, var(--green, #6aa84f) 75%, #1d3a12);
+  font-size: 30px;
+  font-weight: 700;
+}
+
+/* ---------- Animações ---------- */
+@keyframes rec-fade {
+  from { opacity: 0; }
+}
+@keyframes rec-rise {
+  from { opacity: 0; transform: translateY(14px) scale(0.98); }
+}
+@keyframes rec-page-turn {
+  from { opacity: 0; transform: perspective(900px) rotateY(-62deg); }
+}
+
+/* ---------- Telas baixas (notebook com barra do navegador, janela pequena) ---------- */
+@media (max-height: 640px) {
+  .recuperacao-card { padding: 28px 28px 22px; }
+  .recuperacao-icon { display: none; }
+  .recuperacao-card h2 { font-size: 22px; }
+  .recuperacao-desc { margin-bottom: 16px; }
+  .recuperacao-field { margin-bottom: 12px; }
+  .recuperacao-field input { height: 42px; }
+  .recuperacao-field #recuperacaoCodigoInput { height: 48px; }
+  .recuperacao-card .recuperacao-btn { height: 44px; margin-top: 6px; }
+  .recuperacao-code-card { margin-bottom: 14px; }
+}
+
+/* ---------- Celular ---------- */
+@media (max-width: 720px) {
+  .recuperacao-overlay { position: fixed; padding: 16px; }
+  .recuperacao-card { padding: 34px 20px 24px; border-radius: 18px; }
+  .recuperacao-field input { font-size: 16px; }   /* 16px evita o zoom automático do iPhone */
+}
+
+/* ---------- Quem prefere menos movimento ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .recuperacao-overlay,
+  .recuperacao-card,
+  .recuperacao-step.active:not([data-recuperacao-step="1"]) { animation: none; }
+  .recuperacao-card::before { transition: none; }
+}
+
+/* Sem fundo azul/amarelo do preenchimento automático do navegador nos campos de login/cadastro */
+#loginOverlay input:-webkit-autofill,
+#loginOverlay input:-webkit-autofill:hover,
+#loginOverlay input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px #fff inset !important;
+  -webkit-text-fill-color: inherit !important;
+  transition: background-color 99999s ease-in-out 0s;
 }

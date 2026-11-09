@@ -123,3 +123,7 @@ html.alto-contraste :focus-visible {
   white-space: nowrap;
   border: 0;
 }
+
+/* Cabeçalho animado do painel: no alto contraste o título vira cor sólida e sem movimento */
+html.alto-contraste .painel-head--anim h1 { background: none; -webkit-background-clip: initial; background-clip: initial; color: var(--text); animation: none; }
+html.alto-contraste .ph-flutuantes { display: none; }
