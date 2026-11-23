@@ -1,0 +1,4 @@
+/* BiblioBeta — nada de texto forçado em MAIÚSCULAS: só a primeira letra maiúscula. */
+body *, body *::before, body *::after{ text-transform:none !important; }
+/* mantém só o que é de propósito: coloque class="manter-caixa" para ficar em maiúsculas */
+body .manter-caixa, body .manter-caixa *{ text-transform:uppercase !important; }

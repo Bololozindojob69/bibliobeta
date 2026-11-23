@@ -1,0 +1,34 @@
+BIBLIOBETA - ATUALIZACAO (professor com 2 e-mails + capas dentro do banco)
+
+COMO INSTALAR
+1. Feche a janela preta do servidor (isso salva o banco direito).
+2. Copie as pastas "backend" e "Frontend" deste zip POR CIMA das suas (aceite substituir).
+   NAO apague database.sqlite nem a pasta uploads: o banco se atualiza sozinho ao iniciar.
+3. Abra "Iniciar BiblioBeta.bat" normalmente.
+
+O QUE MUDOU
+- Professor pode usar QUALQUER Gmail pessoal (nao precisa mais ser nome.sobrenome@gmail.com).
+- Cadastro do professor tem 2 campos: Gmail pessoal + E-mail institucional (opcional).
+  O professor pode entrar (login) com qualquer um dos dois.
+- Avisos, cobrancas e codigo de recuperacao de senha sao enviados para OS DOIS e-mails.
+  Se o institucional nao receber, o Gmail pessoal recebe.
+- Professor ja cadastrado: em "Meu perfil" aparece o campo "2o e-mail" para preencher.
+- Capas: tudo que for enviado (upload manual) ou baixado pelo ISBN agora fica GRAVADO DENTRO
+  do database.sqlite. Ao compactar e mandar pro Drive, as capas vao junto no banco.
+- O banco e "fechado" (checkpoint) ao iniciar, a cada 2 minutos e ao fechar o servidor, para o
+  arquivo database.sqlite ficar completo mesmo se voce copiar so ele.
+
+IMPORTANTE AO COMPACTAR PARA O DRIVE
+- Feche o servidor antes. Inclua database.sqlite (os arquivos -wal e -shm nao sao mais necessarios).
+- As 5 capas que ja foram enviadas antes e sumiram (livros 5, 7, 8, 9 e 10) nao tem como
+  recuperar: envie de novo UMA vez; depois ficam salvas no banco. Enquanto isso o sistema tenta
+  mostrar a capa automatica pelo ISBN.
+
+E-MAIL INSTITUCIONAL NAO RECEBE
+O servidor envia certo; quem barra e o e-mail da escola (filtro anti-spam do dominio
+educacao.sp.gov.br trata remetente @gmail.com como externo). Confira Spam/Quarentena e peca a TI
+da escola para liberar o remetente bibliobeta20@gmail.com. O Gmail pessoal nao tem esse problema.
+
+SEGURANCA
+O arquivo .env.example vinha com a Senha de app real do Gmail. Foi removida neste zip.
+Gere uma NOVA Senha de app no Google (a antiga ja circulou) e atualize SMTP_PASS no backend/.env.

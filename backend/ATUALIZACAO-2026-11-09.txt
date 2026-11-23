@@ -1,0 +1,11 @@
+BIBLIOBETA - ATUALIZACAO 09/11/2026
+
+- JWT_SECRET: agora e gerado automaticamente se estiver ausente ou com o valor padrao (este zip ja vem com um novo).
+- Login: 8 erros em 15 min bloqueiam por 15 min (IP + e-mail).
+- CORS: so aceita pedidos da mesma origem do site.
+- Capas: apos cada upload o servidor confere que a imagem entrou no banco e grava tudo no database.sqlite na hora.
+
+IMPORTANTE
+- As capas dos livros 5, 7, 8, 9 e 10 foram perdidas: envie de novo UMA vez pela Gestao.
+- Gere uma NOVA Senha de app do Gmail e atualize SMTP_PASS no backend/.env.
+- Feche o servidor antes de compactar e inclua o database.sqlite.

@@ -6,36 +6,371 @@
 <title>Gestão Bibliotecária — BiblioBeta</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'" />
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" /></noscript>
 <link rel="icon" href="/favicon.png" type="image/png">
 <link rel="stylesheet" href="styles.css">
-<link rel="stylesheet" href="painel.css">
+<link rel="stylesheet" href="scrollbar.css?v=5">
+<link rel="stylesheet" href="tooltip.css?v=2">
+<link rel="stylesheet" href="caixa.css?v=1">
+<link rel="stylesheet" href="painel.css?v=3.10">
 <link rel="stylesheet" href="acessibilidade.css">
-</head>
+<style>
+/* Confirmação */
+.confirma-cabecalho{ display:flex; align-items:flex-start; gap:14px; }
+.confirma-check{
+  width:44px; height:44px; border-radius:50%; flex-shrink:0;
+  background:rgba(46,125,50,.15); color:#2e7d32;
+  display:flex; align-items:center; justify-content:center;
+  font-size:1.3rem; font-weight:700;
+}
+.confirma-grid{
+  display:grid; grid-template-columns:1fr 1fr; gap:16px;
+  margin-top:22px;
+}
+.confirma-resumo, .confirma-codigo{
+  border-radius:12px; padding:18px;
+}
+.confirma-resumo{ border:1px solid rgba(0,0,0,.1); }
+.confirma-resumo h3, .confirma-codigo h3{ font-size:.95rem; margin-bottom:12px; }
+.confirma-resumo dl{ display:flex; flex-direction:column; gap:10px; }
+.confirma-resumo dt{ font-size:.72rem; text-transform:uppercase; letter-spacing:.05em; opacity:.6; }
+.confirma-resumo dd{ margin:2px 0 0; font-weight:600; font-size:.9rem; }
+.confirma-codigo{
+  background:rgba(46,125,50,.09);
+  text-align:center;
+}
+.codigo-caixa{
+  background:rgba(46,125,50,.15);
+  color:#2e7d32;
+  font-weight:700;
+  font-size:1.4rem;
+  letter-spacing:.12em;
+  border-radius:10px;
+  padding:14px;
+  margin:6px 0 12px;
+}
+.confirma-codigo p{ font-size:.8rem; opacity:.8; margin-top:6px; }
+.confirma-aviso{ font-weight:600; opacity:1 !important; }
+
+@media (max-width:640px){
+  .form-grid, .confirma-grid{ grid-template-columns:1fr; }
+  .modal-box{ padding:24px 18px 22px; }
+}
+
+/* =====================================================
+   TOPBAR — sino de notificações + perfil do usuário
+   ===================================================== */
+.painel-topbar{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:16px;
+  margin-bottom:18px;
+  position:relative;
+}
+
+.topbar-bell{
+  position:relative;
+  z-index:1601;
+  width:42px; height:42px;
+  border-radius:50%;
+  border:1px solid rgba(0,0,0,.08);
+  background:var(--card);
+  color:var(--text);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer;
+  transition:background-color .2s ease, transform .15s ease;
+  flex-shrink:0;
+}
+.topbar-bell svg{ width:19px; height:19px; }
+.topbar-bell:hover{ background:color-mix(in srgb, var(--icon) 10%, var(--card)); transform:translateY(-1px); }
+.bell-badge{
+  position:absolute; top:-2px; right:-2px;
+  min-width:18px; height:18px; padding:0 4px;
+  border-radius:100px;
+  background:#c62828; color:#fff;
+  font-size:.66rem; font-weight:700;
+  display:flex; align-items:center; justify-content:center;
+  border:2px solid var(--bg);
+}
+
+.topbar-notif{
+  position:absolute;
+  pointer-events:auto;
+  top:52px; right:60px;
+  width:280px;
+  background:var(--card);
+  color:var(--text);
+  border-radius:14px;
+  box-shadow:0 20px 50px -15px rgba(0,0,0,.35);
+  padding:16px;
+  z-index:1500;
+}
+.topbar-notif h4{ font-size:.85rem; margin-bottom:10px; }
+.topbar-notif ul{ display:flex; flex-direction:column; gap:10px; }
+.topbar-notif li{ display:flex; flex-direction:column; gap:2px; font-size:.8rem; }
+.topbar-notif li strong{ font-size:.82rem; }
+.topbar-notif li span{ opacity:.7; }
+.topbar-notif .notif-vazio{ opacity:.7; font-size:.82rem; }
+
+.topbar-user{
+  position:relative;
+  display:flex; align-items:center; gap:10px;
+  cursor:pointer;
+  padding:6px 10px 6px 6px;
+  border-radius:100px;
+  transition:background-color .2s ease;
+}
+.topbar-user:hover{ background:color-mix(in srgb, var(--icon) 8%, transparent); }
+.topbar-user .user-avatar{ width:38px; height:38px; font-size:.78rem; }
+.user-name{ font-weight:600; font-size:.9rem; white-space:nowrap; }
+.user-chevron{ width:16px; height:16px; transition:transform .2s ease; flex-shrink:0; }
+.topbar-user.open .user-chevron{ transform:rotate(180deg); }
+
+.user-dropdown{
+  position:absolute;
+  top:52px; right:0;
+  width:200px;
+  background:var(--card);
+  color:var(--text);
+  border-radius:14px;
+  box-shadow:0 20px 50px -15px rgba(0,0,0,.35);
+  padding:8px;
+  display:none;
+  flex-direction:column;
+  z-index:1500;
+}
+.topbar-user.open .user-dropdown{ display:flex; }
+.user-dropdown a{
+  padding:10px 12px;
+  border-radius:9px;
+  font-size:.85rem;
+  font-weight:500;
+  color:var(--text);
+  transition:background-color .15s ease;
+}
+.user-dropdown a:hover{ background:color-mix(in srgb, var(--icon) 10%, transparent); }
+.user-dropdown a:last-child{ color:#c62828; }
+
+@media (max-width:640px){
+  .user-name{ display:none; }
+  .topbar-notif{ right:16px; width:calc(100vw - 32px); max-width:300px; }
+}
+
+/* =====================================================
+   INÍCIO (ALUNO) — hero, atalhos e stats com ícone
+   ===================================================== */
+.hero-card{
+  position:relative;
+  overflow:hidden;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:24px;
+  background:linear-gradient(135deg, var(--menu) 0%, color-mix(in srgb, var(--menu) 70%, var(--btn)) 100%);
+  color:#fff;
+  border-radius:var(--radius-md,18px);
+  padding:30px 32px;
+  margin-bottom:22px;
+  box-shadow:var(--shadow-soft,0 10px 30px -10px rgba(0,0,0,.25));
+}
+.hero-texto{ max-width:520px; }
+.hero-eyebrow{
+  display:inline-block;
+  font-size:.75rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase;
+  color:rgba(255,255,255,.75);
+  margin-bottom:6px;
+}
+.hero-card h2{ font-size:1.7rem; color:#fff; margin-bottom:8px; }
+.hero-card p{ color:rgba(255,255,255,.82); font-size:.92rem; line-height:1.55; margin-bottom:18px; }
+.hero-card .btn-primario{ background:#fff; color:var(--menu); }
+.hero-card .btn-primario:hover{ filter:none; background:rgba(255,255,255,.9); }
+.hero-ilustracao{ flex-shrink:0; width:110px; height:110px; opacity:.9; }
+.hero-ilustracao svg{ width:100%; height:100%; }
+
+@media (max-width:640px){
+  .hero-card{ flex-direction:column; align-items:flex-start; text-align:left; padding:26px 22px; }
+  .hero-ilustracao{ width:70px; height:70px; align-self:flex-end; margin-top:-40px; }
+}
+
+.atalhos-row{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+  gap:14px;
+  margin-bottom:22px;
+}
+.atalho-card{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  background:var(--card);
+  color:var(--text);
+  border:none;
+  border-radius:14px;
+  padding:16px 18px;
+  font-family:inherit;
+  font-size:.9rem;
+  font-weight:600;
+  text-align:left;
+  cursor:pointer;
+  box-shadow:var(--shadow-soft,0 10px 30px -10px rgba(0,0,0,.18));
+  transition:transform .18s ease, box-shadow .18s ease;
+}
+.atalho-card:hover{ transform:translateY(-3px); box-shadow:0 16px 34px -14px rgba(0,0,0,.3); }
+.atalho-card:active{ transform:translateY(-1px) scale(.98); }
+.atalho-icone{
+  width:38px; height:38px; border-radius:11px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+  background:color-mix(in srgb, var(--btn) 16%, transparent);
+  color:var(--btn);
+}
+.atalho-icone svg{ width:19px; height:19px; }
+
+.stats-grid .stat-card{
+  display:flex;
+  align-items:flex-start;
+  gap:14px;
+}
+.stat-icone{
+  width:44px; height:44px; border-radius:12px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+  color:#fff;
+}
+.stat-icone svg{ width:21px; height:21px; }
+.stat-icone.icone-1{ background:linear-gradient(135deg, var(--btn), color-mix(in srgb, var(--btn) 60%, #000)); }
+.stat-icone.icone-2{ background:linear-gradient(135deg, #d98c2b, #a85f16); }
+.stat-icone.icone-3{ background:linear-gradient(135deg, #5c8a6b, #34503f); }
+
+/* Turmas da Gestão */
+.turma-card{min-height:170px;}
+.turma-alunos{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px;margin-top:12px;max-height:260px;overflow:auto;margin-right:-22px;padding-right:22px;}
+.turma-alunos .avatar-row{padding:8px 10px;border-radius:10px;background:rgba(0,0,0,.035);}.topbar-notif-item{cursor:pointer;padding:10px;border-radius:10px;transition:background .15s ease}
+.topbar-notif-item:hover,.topbar-notif-item:focus{background:rgba(0,0,0,.06);outline:none}
+.topbar-notif-item small{font-size:.72rem;font-weight:700;margin-top:4px;opacity:.85}
+.topbar-notif-ver-todas{padding-top:8px;border-top:1px solid rgba(0,0,0,.08);margin-top:2px}
+.topbar-notif-ver-todas a{font-size:.78rem;font-weight:700;text-decoration:none}
+.notificacao-destaque{outline:3px solid rgba(230,120,20,.35);transition:outline .2s ease}
+.topbar-notif-item{cursor:pointer;padding:10px;border-radius:10px;transition:background .15s ease}
+.topbar-notif-item:hover,.topbar-notif-item:focus{background:rgba(0,0,0,.06);outline:none}
+.topbar-notif-item small{font-size:.72rem;font-weight:700;margin-top:4px;opacity:.85}
+.topbar-notif-ver-todas{padding-top:8px;border-top:1px solid rgba(0,0,0,.08);margin-top:2px}
+.topbar-notif-ver-todas a{font-size:.78rem;font-weight:700;text-decoration:none}
+.notificacao-destaque{outline:3px solid rgba(230,120,20,.35);transition:outline .2s ease}
+
+/* Detalhe da notificação: clicar mostra a mensagem completa sem trocar de tela. */
+.notificacao-row-clicavel{cursor:pointer;transition:background .15s ease}
+.notificacao-row-clicavel:hover{background:rgba(0,0,0,.025)}
+.notificacao-modal[hidden]{display:none!important}
+.notificacao-modal{position:fixed;inset:0;z-index:3000;display:flex;align-items:center;justify-content:center;padding:20px}
+.notificacao-modal-backdrop{position:absolute;inset:0;background:rgba(35,20,12,.42);backdrop-filter:blur(3px)}
+.notificacao-modal-card{position:relative;width:min(560px,100%);max-height:min(80vh,680px);overflow:auto;background:var(--card);color:var(--text);border-radius:20px;padding:28px;box-shadow:0 25px 80px rgba(0,0,0,.28);z-index:1}
+.notificacao-modal-fechar{position:absolute;right:14px;top:10px;border:0;background:transparent;font-size:30px;line-height:1;cursor:pointer;color:var(--text);opacity:.7}
+.notificacao-modal-fechar:hover{opacity:1}
+.notificacao-modal-tipo{display:inline-block;font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;font-weight:800;opacity:.65;margin-bottom:8px}
+.notificacao-modal-card h3{font-size:1.25rem;margin:0 36px 16px 0}
+.notificacao-modal-mensagem{font-size:1rem;line-height:1.65;white-space:pre-wrap;margin:0 0 22px}
+.notificacao-modal-meta{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:.78rem;opacity:.7;border-top:1px solid rgba(0,0,0,.08);padding-top:14px}
+.notificacao-destaque{animation:notificacaoDestaque 1.8s ease}
+@keyframes notificacaoDestaque{0%,100%{background:transparent}30%,70%{background:rgba(225,145,30,.16)}}
+
+/* =====================================================
+   GESTÃO DE EXEMPLARES — fluxo do acervo físico
+   ===================================================== */
+.modal-exemplares-card{
+  width:min(980px, calc(100vw - 28px));
+  max-width:980px;
+  max-height:88vh;
+  overflow:auto;
+}
+.modal-exemplares-sub{margin:4px 0 16px;opacity:.72}
+.exemplares-resumo{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:10px;
+  margin-bottom:16px;
+}
+.exemplares-resumo-item{
+  padding:12px 14px;
+  border:1px solid rgba(0,0,0,.09);
+  border-radius:12px;
+  background:color-mix(in srgb,var(--bg) 75%,transparent);
+}
+.exemplares-resumo-item strong{display:block;font-size:1.15rem}
+.exemplares-resumo-item span{font-size:.75rem;opacity:.65}
+.exemplares-lista-wrap{overflow-x:auto}
+.novo-exemplar-box{
+  margin-top:18px;
+  padding:16px;
+  border:1px dashed color-mix(in srgb,var(--btn) 45%,transparent);
+  border-radius:14px;
+  background:color-mix(in srgb,var(--btn) 5%,transparent);
+}
+.novo-exemplar-box h4{margin:0 0 4px}
+.novo-exemplar-box p{margin:0 0 14px;opacity:.7;font-size:.82rem}
+.exemplar-localizacao{font-weight:600}
+.exemplar-codigo{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-weight:700}
+.exemplar-status{white-space:nowrap}
+@media(max-width:700px){
+  .exemplares-resumo{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .modal-exemplares-card{padding:24px 18px}
+}
+
+
+/* =====================================================
+   CÓDIGO DE RETIRADA / DEVOLUÇÃO
+   ===================================================== */
+.codigo-operacao-card{width:min(470px,calc(100vw - 28px));text-align:center;padding:30px 28px}
+.codigo-operacao-icone{width:62px;height:62px;margin:0 auto 10px;border-radius:50%;display:grid;place-items:center;background:color-mix(in srgb,var(--btn) 12%,transparent);font-size:28px}
+.codigo-operacao-card .notificacao-modal-tipo{display:inline-block;margin-bottom:6px}
+.codigo-operacao-card h3{margin:0 0 8px}
+.codigo-operacao-card .notificacao-modal-mensagem{margin:0 auto 16px;max-width:390px}
+.codigo-operacao-livro{font-weight:700;padding:11px 14px;margin:0 0 18px;border-radius:12px;background:color-mix(in srgb,var(--btn) 7%,transparent);border:1px solid color-mix(in srgb,var(--btn) 18%,transparent)}
+.codigo-operacao-label{display:block;text-align:left;font-size:.8rem;font-weight:700;margin-bottom:7px}
+.codigo-operacao-input{width:100%;box-sizing:border-box;border:1px solid rgba(0,0,0,.14);border-radius:13px;padding:15px;text-align:center;font:700 28px/1 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:8px;outline:none;background:var(--bg);color:inherit}
+.codigo-operacao-input:focus{border-color:var(--btn);box-shadow:0 0 0 3px color-mix(in srgb,var(--btn) 15%,transparent)}
+.codigo-operacao-erro{min-height:20px;margin:8px 0 0;color:#b42318;font-size:.8rem}
+.codigo-operacao-acoes{justify-content:flex-end;margin-top:8px}
+.linha-retirada td{background:color-mix(in srgb,var(--btn) 5%,transparent)}
+@media(max-width:600px){.codigo-operacao-card{padding:26px 20px}.codigo-operacao-input{font-size:25px;letter-spacing:6px}}
+
+
+/* Confirmação de ações importantes */
+.bb-confirm-backdrop{position:fixed;inset:0;background:rgba(12,18,28,.58);display:flex;align-items:center;justify-content:center;padding:20px;z-index:99999;backdrop-filter:blur(3px)}
+.bb-confirm-backdrop[hidden]{display:none}
+.bb-confirm-box{width:min(440px,100%);background:var(--painel-card,#fff);color:var(--painel-text,#172033);border-radius:18px;padding:26px;box-shadow:0 20px 60px rgba(0,0,0,.25);text-align:center}
+.bb-confirm-icone{font-size:34px;margin-bottom:8px}.bb-confirm-box h3{margin:0 0 10px}.bb-confirm-box p{margin:0 0 22px;line-height:1.55;opacity:.86}.bb-confirm-acoes{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}.bb-confirm-acoes button{min-height:42px;padding:10px 16px}
+@media(max-width:520px){.bb-confirm-acoes{display:grid;grid-template-columns:1fr}.bb-confirm-acoes button{width:100%}}
+</style></head>
 <body class="painel-body">
 
 <!-- Logo flutuante: no mobile abre a navbar lateral -->
 <button class="logo-toggle" id="logoToggle" aria-label="Abrir menu">
-  <img src="logo.png" alt="Logo BiblioBeta">
+  <img src="logo-bibliobeta.png" alt="Logo BiblioBeta">
 </button>
 <div class="side-backdrop" id="sideBackdrop"></div>
 
 <!-- ===================== NAVBAR LATERAL ===================== -->
+<button class="side-toggle" id="sideToggle" type="button" aria-label="Recolher menu">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>
+</button>
+
 <aside class="side-nav" id="sideNav">
   <div class="side-brand">
-    <img src="logo.png" alt="Logo BiblioBeta">
+    <img src="logo-bibliobeta.png" alt="Logo BiblioBeta">
     <span class="side-brand-text"><strong>BiblioBeta</strong><span>Gestão</span></span>
   </div>
 
-  <div class="radio-container" style="--total-radio: 11">
+  <div class="radio-container" style="--total-radio: 12">
     <input type="radio" name="nav-gestao" id="nav-dashboard" value="dashboard" checked>
     <label for="nav-dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>Dashboard</label>
 
     <input type="radio" name="nav-gestao" id="nav-turmas" value="turmas">
     <label for="nav-turmas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><path d="M3 20c0-3.3 2.7-5 6-5s6 1.7 6 5"/><path d="M17 11a3 3 0 100-6"/></svg>Minhas Turmas</label>
 
-    <input type="radio" name="nav-gestao" id="nav-alunos" value="alunos">
-    <label for="nav-alunos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/></svg>Alunos</label>
+
+    <input type="radio" name="nav-gestao" id="nav-usuarios" value="usuarios">
+    <label for="nav-usuarios"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M2 21c0-4.4 3.6-7 7-7s7 2.6 7 7"/><path d="M17 11l2 2 4-4"/></svg>Leitores <span id="cadastrosPendentesBadge" class="bell-badge" style="position:static;margin-left:auto;" hidden>0</span></label>
 
     <input type="radio" name="nav-gestao" id="nav-livros" value="livros">
     <label for="nav-livros"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>Livros</label>
@@ -50,13 +385,17 @@
     <label for="nav-reservas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v18l-6-4-6 4V3z"/></svg>Reservas</label>
 
     <input type="radio" name="nav-gestao" id="nav-multas" value="multas">
-    <label for="nav-multas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>Multas</label>
+    <label for="nav-multas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>Multas<span class="mx-nav-badge" id="multasNavBadge" hidden>0</span></label>
 
     <input type="radio" name="nav-gestao" id="nav-relatorios" value="relatorios">
     <label for="nav-relatorios"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Relatórios</label>
 
-    <input type="radio" name="nav-gestao" id="nav-usuarios" value="usuarios">
-    <label for="nav-usuarios"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M2 21c0-4.4 3.6-7 7-7s7 2.6 7 7"/><path d="M17 11l2 2 4-4"/></svg>Usuários</label>
+
+    <input type="radio" name="nav-gestao" id="nav-contatos" value="contatos">
+    <label for="nav-contatos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>Contatos</label>
+
+    <input type="radio" name="nav-gestao" id="nav-notificacoes" value="notificacoes">
+    <label for="nav-notificacoes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>Notificações <span id="gestaoNotifBadge" class="bell-badge" style="position:static;margin-left:auto;" hidden>0</span></label>
 
     <input type="radio" name="nav-gestao" id="nav-configuracoes" value="configuracoes">
     <label for="nav-configuracoes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>Configurações</label>
@@ -72,151 +411,323 @@
 <!-- ===================== CONTEÚDO ===================== -->
 <main class="painel-main">
   <div class="painel-topbar">
-    <button type="button" class="topbar-bell" id="topbarBell" aria-label="Notificações">
+    <button type="button" class="topbar-bell" id="topbarBell" aria-label="Notificações" aria-expanded="false" aria-controls="topbarNotif">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
       <span class="bell-badge" id="bellBadge">3</span>
     </button>
     <div class="topbar-notif" id="topbarNotif" hidden>
       <h4>Avisos e pendências</h4>
-      <ul id="topbarNotifLista">
-        <li><strong>5 empréstimos atrasados</strong><span>Alunos devem devolver os livros.</span></li>
-        <li><strong>2 reservas aguardando</strong><span>Livros reservados pelos alunos.</span></li>
-        <li><strong>3 multas pendentes</strong><span>Alunos com multas em aberto.</span></li>
-      </ul>
+      <ul id="topbarNotifLista"><li class="notif-vazio">Carregando notificações...</li></ul>
     </div>
 
     <div class="topbar-user" id="topbarUser">
-      <span class="avatar user-avatar" id="userAvatar">AD</span>
-      <span class="user-name" id="userName">Administrador</span>
+      <span class="avatar user-avatar" id="userAvatar"></span>
+      <span class="user-name" id="userName"></span>
       <svg class="user-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
       <div class="user-dropdown" id="userDropdown">
-        <a href="#pane-usuarios" data-fecha-nav="usuarios">Usuários</a>
+        <a href="#pane-usuarios" data-fecha-nav="usuarios">Leitores</a>
         <a href="#pane-configuracoes" data-fecha-nav="configuracoes">Configurações</a>
         <a href="Index.html" data-logout>Sair do painel</a>
       </div>
     </div>
   </div>
 
-  <div class="painel-head">
-    <span class="eyebrow">BiblioBeta</span>
-    <h1>Gestão Bibliotecária</h1>
-    <p>Controle empréstimos, usuários e relatórios da biblioteca.</p>
+  <div class="painel-head painel-head--anim" id="painelHeadAnim">
+    <!-- Fundo decorativo: livrinhos e brilhos flutuando -->
+    <div class="ph-flutuantes" aria-hidden="true">
+      <span class="ph-fl ph-fl--1">📊</span>
+      <span class="ph-fl ph-fl--2">✨</span>
+      <span class="ph-fl ph-fl--3">📚</span>
+      <span class="ph-fl ph-fl--4">🗂️</span>
+      <span class="ph-fl ph-fl--5">✨</span>
+    </div>
+    <div class="ph-texto">
+      <span class="eyebrow ph-chip" aria-label="BiblioBeta">
+        <img src="logo-bibliobeta.png" alt="" width="20" height="20" />
+        <span class="ph-chip-txt" id="phDigitandoGestao">BiblioBeta</span><span class="ph-caret" aria-hidden="true"></span>
+      </span>
+      <h1>Gestão Bibliotecária</h1>
+      <p>Controle empréstimos, leitores e relatórios da biblioteca.</p>
+    </div>
+    <div class="ph-livro" aria-hidden="true">
+      <div class="bb-livro"><div class="bb-livro__pg-shadow"></div><div class="bb-livro__pg"></div><div class="bb-livro__pg bb-livro__pg--2"></div><div class="bb-livro__pg bb-livro__pg--3"></div><div class="bb-livro__pg bb-livro__pg--4"></div><div class="bb-livro__pg bb-livro__pg--5"></div></div>
+    </div>
   </div>
 
   <section class="painel-pane" id="pane-dashboard">
-    <h2>Bem-vindo(a), Administrador!</h2>
-    <p style="margin:6px 0 18px">Gerencie a biblioteca de forma rápida e eficiente.</p>
-    <div class="painel-grid">
-      <article class="painel-card"><div class="stat">1.248</div><h3>Total de livros</h3><p>Disponíveis: 847.</p></article>
-      <article class="painel-card"><div class="stat">356</div><h3>Alunos cadastrados</h3><p>Ativos: 342.</p></article>
-      <article class="painel-card"><div class="stat">78</div><h3>Empréstimos ativos</h3><p>Atrasados: 5.</p></article>
-      <article class="painel-card"><div class="stat">12</div><h3>Devoluções hoje</h3><p>Movimentações já registradas.</p></article>
+    <div class="hero-card">
+      <div class="hero-texto">
+        <span class="hero-eyebrow">Visão geral da biblioteca 📚</span>
+        <h2>Bem-vindo(a), <span id="dashboardNome"></span>!</h2>
+        <p>Gerencie a biblioteca de forma rápida e eficiente.</p>
+        <button type="button" class="btn-primario" data-fecha-nav="emprestimos">Ver empréstimos</button>
+      </div>
+      <div class="rel-card" data-relogio data-periodo="dia" role="group" aria-label="Data e hora atuais">
+        <div class="rel-ceu" aria-hidden="true">
+          <div class="rel-nuvem rel-frente"><span class="rel-frente-e"></span><span class="rel-frente-d"></span></div>
+          <span class="rel-sol rel-brilho"></span>
+          <span class="rel-sol"></span>
+          <div class="rel-nuvem rel-fundo"><span class="rel-fundo-e"></span><span class="rel-fundo-d"></span></div>
+        </div>
+        <div class="rel-cabecalho">
+          <span class="rel-semana" data-rel-semana>Hoje</span>
+          <span class="rel-data" data-rel-data>&nbsp;</span>
+        </div>
+        <time class="rel-hora" data-rel-hora><span data-rel-hm>--:--</span><small data-rel-seg aria-hidden="true">--</small></time>
+        <div class="rel-periodo"><span data-rel-periodo>Olá</span></div>
+      </div>
+    </div>
+    <div class="painel-grid painel-grid-stats">
+      <article class="painel-card stat-card stat-clicavel" data-fecha-nav="livros" role="link" tabindex="0" aria-label="Ver todos os livros">
+        <span class="stat-icone icone-2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></span>
+        <div><div class="stat" id="statLivros">—</div><h3>Total de livros</h3><p id="statLivrosSub">Carregando...</p></div>
+      </article>
+      <article class="painel-card stat-card stat-clicavel" data-fecha-nav="usuarios" role="link" tabindex="0" aria-label="Ver leitores cadastrados">
+        <span class="stat-icone icone-3"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M2 21c0-4.4 3.6-7 7-7s7 2.6 7 7"/><path d="M17 11l2 2 4-4"/></svg></span>
+        <div><div class="stat" id="statUsuarios">—</div><h3>Leitores cadastrados</h3><p id="statUsuariosSub">Carregando...</p></div>
+      </article>
+      <article class="painel-card stat-card stat-clicavel" data-fecha-nav="emprestimos" role="link" tabindex="0" aria-label="Ver empréstimos">
+        <span class="stat-icone icone-1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16v12H4z"/><path d="M8 10h8M8 14h5"/></svg></span>
+        <div><div class="stat" id="statEmprestimos">—</div><h3>Empréstimos ativos</h3><p id="statEmprestimosSub">Carregando...</p></div>
+      </article>
+      <article class="painel-card stat-card stat-clicavel" data-fecha-nav="devolucoes" role="link" tabindex="0" aria-label="Ver devoluções">
+        <span class="stat-icone icone-4"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/></svg></span>
+        <div><div class="stat" id="statDevolucoesHoje">—</div><h3>Devoluções hoje</h3><p id="statDevolucoesHojeSub">Movimentações já registradas.</p></div>
+      </article>
+      <article class="painel-card stat-card stat-clicavel" id="cardSolicitacoes" data-fecha-nav="emprestimos" data-rolar="#solicitacoesGestaoLista" role="link" tabindex="0" aria-label="Ver solicitações pendentes">
+        <span class="stat-icone icone-5"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/></svg></span>
+        <div><div class="stat" id="statSolicitacoes">—</div><h3>Solicitações pendentes</h3><p id="statSolicitacoesSub">Aguardando aprovação.</p></div>
+      </article>
     </div>
 
-    <div class="painel-grid" style="margin-top:20px">
+    <div class="painel-grid painel-grid-resumo" style="margin-top:20px">
       <article class="painel-card data-table-card">
-        <h3>Empréstimos recentes</h3>
+        <div class="painel-card-head"><h3>Empréstimos recentes</h3><a href="#pane-emprestimos" data-fecha-nav="emprestimos" class="card-link">Ver todos</a></div>
         <table class="data-table">
-          <thead><tr><th>Aluno</th><th>Livro</th><th>Empréstimo</th><th>Devolução</th><th>Status</th></tr></thead>
-          <tbody>
-            <tr>
-              <td><div class="avatar-row"><span class="avatar av-1">MS</span>Maria Silva</div></td>
-              <td>O Pequeno Príncipe</td><td>14/05</td><td>28/05</td>
-              <td><span class="badge badge-ativo">Ativo</span></td>
-            </tr>
-            <tr>
-              <td><div class="avatar-row"><span class="avatar av-2">JP</span>João Pedro</div></td>
-              <td>O Hobbit</td><td>13/05</td><td>27/05</td>
-              <td><span class="badge badge-ativo">Ativo</span></td>
-            </tr>
-            <tr>
-              <td><div class="avatar-row"><span class="avatar av-3">LA</span>Laura Andrade</div></td>
-              <td>Extraordinário</td><td>12/05</td><td>26/05</td>
-              <td><span class="badge badge-atrasado">Atrasado</span></td>
-            </tr>
-          </tbody>
+          <thead><tr><th>Usuário</th><th>Livro</th><th>Empréstimo</th><th>Devolução</th><th>Status</th></tr></thead>
+          <tbody id="dashboardEmprestimosLista"><tr><td colspan="5">Carregando...</td></tr></tbody>
         </table>
       </article>
 
       <article class="painel-card">
-        <h3>Avisos e pendências</h3>
-        <p style="margin-top:10px"><strong>5 empréstimos atrasados</strong><br>Alunos devem devolver os livros.</p>
-        <p style="margin-top:10px"><strong>2 reservas aguardando</strong><br>Livros reservados pelos alunos.</p>
-        <p style="margin-top:10px"><strong>3 multas pendentes</strong><br>Alunos com multas em aberto.</p>
+        <div class="painel-card-head"><h3>Avisos e pendências</h3><a href="#pane-notificacoes" data-fecha-nav="notificacoes" class="card-link">Ver todos</a></div>
+        <div id="dashboardAvisos"><p class="avisos-vazio">Carregando avisos...</p></div>
       </article>
     </div>
-  </section>
 
-  <section class="painel-pane" id="pane-alunos">
-    <h2>Alunos</h2>
-    <p style="margin:6px 0 18px">Cadastros de alunos da escola.</p>
-    <div class="painel-grid">
-      <article class="painel-card"><div class="stat">842</div><h3>Total de alunos</h3><p>Contas cadastradas no sistema.</p></article>
-      <article class="painel-card"><div class="stat">799</div><h3>Ativos</h3><p>Com login realizado nos últimos 90 dias.</p></article>
-      <article class="painel-card"><div class="stat">9</div><h3>Pendentes</h3><p>Cadastros aguardando aprovação.</p></article>
-    </div>
-
-    <div class="painel-grid" style="margin-top:20px">
+    <div class="painel-grid painel-grid-resumo" style="margin-top:20px">
       <article class="painel-card data-table-card">
-        <h3>Alunos cadastrados</h3>
+        <div class="painel-card-head"><h3>Leitores cadastrados recentemente</h3><a href="#pane-usuarios" data-fecha-nav="usuarios" class="card-link">Ver todos</a></div>
         <table class="data-table">
-          <thead><tr><th>Nome</th><th>Série</th><th>E-mail</th><th>Status</th></tr></thead>
-          <tbody>
-            <tr><td><div class="avatar-row"><span class="avatar av-1">MS</span>Maria Silva</div></td><td>8º Ano A</td><td>maria.silva@escola.com</td><td><span class="badge badge-ativo">Ativo</span></td></tr>
-            <tr><td><div class="avatar-row"><span class="avatar av-2">JP</span>João Pedro</div></td><td>7º Ano B</td><td>joao.pedro@escola.com</td><td><span class="badge badge-ativo">Ativo</span></td></tr>
-            <tr><td><div class="avatar-row"><span class="avatar av-3">LA</span>Laura Andrade</div></td><td>9º Ano A</td><td>laura.andrade@escola.com</td><td><span class="badge badge-ativo">Ativo</span></td></tr>
-            <tr><td><div class="avatar-row"><span class="avatar av-4">GM</span>Gabriel Martins</div></td><td>8º Ano B</td><td>gabriel.martins@escola.com</td><td><span class="badge badge-ativo">Ativo</span></td></tr>
-          </tbody>
+          <thead><tr><th>Nome</th><th>Tipo</th><th>E-mail</th><th>Status</th><th>Ações</th></tr></thead>
+          <tbody id="dashboardUsuariosLista"><tr><td colspan="4">Carregando...</td></tr></tbody>
         </table>
+      </article>
+
+      <article class="painel-card chart-card">
+        <div class="painel-card-head"><h3>Empréstimos por dia</h3></div>
+        <p class="chart-caption">Últimos 7 dias</p>
+        <div class="chart-bars-real" id="dashboardGraficoEmprestimos" role="group" aria-label="Gráfico de empréstimos por dia"></div>
+        <h3 style="margin-top:18px">Livros mais emprestados</h3>
+        <ol class="ranking-lista" id="dashboardLivrosTop"><li>Carregando...</li></ol>
       </article>
     </div>
   </section>
 
   <section class="painel-pane" id="pane-livros">
-    <h2>Livros</h2>
-    <p style="margin:6px 0 18px">Catálogo completo do acervo.</p>
+    <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:16px; flex-wrap:wrap">
+      <div>
+        <h2>Livros</h2>
+        <p style="margin:6px 0 18px">Catálogo completo do acervo.</p>
+      </div>
+      <div style="display:flex; gap:10px; flex-wrap:wrap">
+        <button type="button" class="btn-secundario" id="btnDetectarGeneros" style="white-space:nowrap" title="Procura o gênero dos livros sem gênero usando o ISBN">🔎 Detectar gêneros</button>
+        <button type="button" class="btn-primario" id="btnAbrirModalLivro" style="white-space:nowrap">+ Adicionar Livro</button>
+      </div>
+    </div>
     <div class="painel-grid">
-      <article class="painel-card"><div class="stat">1.248</div><h3>Total de títulos</h3><p>Exemplares cadastrados no acervo.</p></article>
-      <article class="painel-card"><div class="stat">847</div><h3>Disponíveis</h3><p>Prontos para empréstimo.</p></article>
-      <article class="painel-card"><div class="stat">401</div><h3>Emprestados</h3><p>Fora da biblioteca no momento.</p></article>
+      <article class="painel-card"><div class="stat" id="livrosTotalStat">0</div><h3>Títulos</h3><p>Livros diferentes no catálogo.</p></article>
+      <article class="painel-card"><div class="stat" id="livrosDisponiveisStat">0</div><h3>Exemplares disponíveis</h3><p id="livrosDisponiveisSub">Cópias prontas para empréstimo.</p></article>
+      <article class="painel-card"><div class="stat" id="livrosEmprestadosStat">0</div><h3>Exemplares emprestados</h3><p>Fora da biblioteca no momento.</p></article>
     </div>
 
     <div class="painel-grid" style="margin-top:20px">
-      <article class="painel-card data-table-card">
-        <h3>Catálogo</h3>
-        <table class="data-table">
-          <thead><tr><th>Título</th><th>Autor</th><th>Categoria</th><th>Status</th></tr></thead>
-          <tbody>
-            <tr><td>O Pequeno Príncipe</td><td>Antoine de Saint-Exupéry</td><td>Infantil</td><td><span class="badge badge-pendente">Emprestado</span></td></tr>
-            <tr><td>O Hobbit</td><td>J.R.R. Tolkien</td><td>Ficção</td><td><span class="badge badge-pendente">Emprestado</span></td></tr>
-            <tr><td>Extraordinário</td><td>R.J. Palacio</td><td>Juvenil</td><td><span class="badge badge-pendente">Emprestado</span></td></tr>
-            <tr><td>O Sol é para Todos</td><td>Harper Lee</td><td>Clássico</td><td><span class="badge badge-ativo">Disponível</span></td></tr>
-          </tbody>
-        </table>
+      <article class="painel-card data-table-card catalogo-card">
+        <div class="catalogo-topo">
+          <div class="catalogo-titulo"><h3>Catálogo</h3><span class="table-count" id="catalogoContagem"></span></div>
+          <div class="catalogo-filtros">
+            <input type="search" class="table-search" id="catalogoBuscaGestao" placeholder="Buscar por título, autor, ISBN ou gênero..." aria-label="Buscar no catálogo" autocomplete="off">
+            <label class="catalogo-genero">Gênero <select id="catalogoGeneroGestao" aria-label="Filtrar por gênero"><option value="">Todos os gêneros</option></select></label>
+            <label class="catalogo-genero">Ordenar <select id="catalogoOrdemGestao" aria-label="Ordenar livros"><option value="">Padrão</option><option value="titulo-asc">Título (A → Z)</option><option value="titulo-desc">Título (Z → A)</option><option value="autor-asc">Autor (A → Z)</option><option value="autor-desc">Autor (Z → A)</option><option value="qtd-asc">Quantidade (menor → maior)</option><option value="qtd-desc">Quantidade (maior → menor)</option></select></label>
+            <label class="catalogo-genero">Situação <select id="catalogoSituacaoGestao" aria-label="Filtrar por situação"><option value="">Todas</option><option value="disp">Com exemplar disponível</option><option value="sem">Sem exemplar disponível</option></select></label>
+            <button type="button" class="btn-secundario" id="catalogoLimpar" hidden>Limpar filtros</button>
+          </div>
+        </div>
+        <div class="catalogo-scroll">
+          <table class="data-table">
+            <thead><tr><th>Capa</th><th>Título</th><th>Autor</th><th>Gêneros</th><th>Qtd.</th><th>Status</th><th>Ações</th></tr></thead>
+            <tbody id="livros-lista"></tbody>
+          </table>
+          <p class="table-search-vazio" id="catalogoVazio" hidden>Nenhum livro encontrado com essa busca ou gênero.</p>
+        </div>
       </article>
     </div>
+
+    <div class="painel-grid" style="margin-top:20px">
+      <article class="painel-card data-table-card" style="grid-column:1/-1">
+        <div class="painel-card-head"><div><h3>Categorias</h3><p>Gerencie as categorias usadas no catálogo.</p></div><button type="button" class="livro-btn" id="btnNovaCategoria">+ Nova categoria</button></div>
+        <table class="data-table"><thead><tr><th>Nome</th><th>Descrição</th><th>Ações</th></tr></thead><tbody id="categoriasGestaoLista"><tr><td colspan="3">Carregando...</td></tr></tbody></table>
+      </article>
+      <article class="painel-card data-table-card" style="grid-column:1/-1">
+        <div class="painel-card-head"><div><h3>Livros desativados</h3><p>O livro continua salvo no banco. A Gestão pode colocá-lo novamente no catálogo com um clique.</p></div><button type="button" class="livro-btn" id="btnAtualizarDesativados">Atualizar</button></div>
+        <div style="overflow:auto"><table class="data-table"><thead><tr><th>Livro</th><th>Autor</th><th>ISBN</th><th>Exemplares</th><th>Ações</th></tr></thead><tbody id="livros-desativados-lista"><tr><td colspan="5">Carregando...</td></tr></tbody></table></div>
+      </article>
+      <article class="painel-card data-table-card" style="grid-column:1/-1"><div style="display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap"><div><h3>Localizações</h3><p>Gerencie estantes, salas e outros locais do acervo.</p></div><button type="button" class="livro-btn" id="btnNovaLocalizacao">+ Nova localização</button></div><table class="data-table"><thead><tr><th>Nome</th><th>Descrição</th><th>Ações</th></tr></thead><tbody id="localizacoesGestaoLista"><tr><td colspan="3">Carregando...</td></tr></tbody></table></article>
+    </div>
+
   </section>
+
+  <!-- ===================== MODAL: ADICIONAR LIVRO ===================== -->
+  <div class="modal-backdrop" id="modalLivroBackdrop">
+    <div class="modal-box" id="modalLivroBox">
+      <button class="modal-close" id="modalLivroClose" type="button" aria-label="Fechar">&times;</button>
+      <div class="modal-icon">📖</div>
+      <h2 id="modalLivroTitulo">Adicionar Livro ao Catálogo</h2>
+      <p class="modal-sub">Digite o ISBN para buscar os dados automaticamente, ou preencha manualmente.</p>
+
+      <div class="form-field" style="margin-bottom:16px">
+        <label for="livroIsbnInput">ISBN</label>
+        <div style="display:flex; gap:10px">
+          <input type="text" id="livroIsbnInput" placeholder="Ex: 9788533613379" inputmode="numeric" style="flex:1">
+          <button class="btn-secundario" id="btnBuscarIsbn" type="button" style="white-space:nowrap">Buscar</button>
+        </div>
+        <small id="isbnFeedback"></small>
+      </div>
+
+      <div class="livro-preview" id="livroPreview" hidden>
+        <img class="mini-capa" id="livroPreviewCapa" src="" alt="Capa do livro" style="width:64px;height:88px;object-fit:cover;border-radius:8px;flex-shrink:0;background:#eadfcf">
+        <div class="mini-info">
+          <strong id="livroPreviewTitulo"></strong>
+          <span id="livroPreviewAutor"></span>
+        </div>
+      </div>
+
+      <div class="form-field" style="margin:14px 0 4px">
+        <label for="livroCapaArquivo">Capa do livro (opcional)</label>
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+          <input type="file" id="livroCapaArquivo" accept="image/jpeg,image/png,image/webp,image/gif" hidden>
+          <button class="btn-secundario" id="btnEnviarCapa" type="button" style="white-space:nowrap">🖼️ Escolher capa</button>
+          <span id="nomeCapaSelecionada" style="font-size:.9rem;opacity:.8">Nenhuma imagem selecionada</span>
+        </div>
+        <small>Se as APIs não encontrarem a capa, escolha uma imagem. JPG, PNG, WEBP ou GIF, até 5 MB. A imagem será enviada e salva no servidor do BiblioBeta.</small>
+        <small id="capaFeedback"></small>
+      </div>
+
+      <form id="formLivro">
+        <div class="form-grid" style="margin-top:18px">
+          <div class="form-field">
+            <label for="livroTitulo">Título</label>
+            <input type="text" id="livroTitulo" required>
+          </div>
+          <div class="form-field">
+            <label for="livroAutor">Autor</label>
+            <input type="text" id="livroAutor" required>
+          </div>
+          <div class="form-field">
+            <label for="livroEditora">Editora</label>
+            <input type="text" id="livroEditora">
+          </div>
+          <div class="form-field">
+            <label for="livroAno">Ano</label>
+            <input type="number" id="livroAno" min="1400" max="2100" placeholder="Ex: 2024">
+          </div>
+          <div class="form-field">
+            <label for="livroCategoria">Categoria</label>
+            <select id="livroCategoria">
+              <option value="Ficção">Ficção</option>
+              <option value="Não-ficção">Não-ficção</option>
+              <option value="Infantil">Infantil</option>
+              <option value="Juvenil">Juvenil</option>
+              <option value="Clássico">Clássico</option>
+              <option value="Acadêmico">Acadêmico</option>
+              <option value="Outro">Outro</option>
+            </select>
+          </div>
+          <div class="form-field" style="grid-column:1/-1">
+            <label>Gêneros <small style="font-weight:400">(escolha um ou mais)</small></label>
+            <div class="generos-chips" id="livroGeneros" role="group" aria-label="Gêneros do livro"></div>
+            <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-top:8px">
+              <button type="button" class="row-acao-btn" id="btnGenerosApi">🔎 Buscar gênero pela API</button>
+              <small id="livroGenerosDica">Ao buscar pelo ISBN, o gênero é sugerido automaticamente.</small>
+            </div>
+          </div>
+          <div class="form-field">
+            <label for="livroQuantidade">Quantidade de exemplares</label>
+            <input type="number" id="livroQuantidade" min="1" max="999" value="1" required>
+            <small>Se o título já existir, não crie outro livro: use “Gerenciar exemplares”.</small>
+          </div>
+        </div>
+
+        <div class="modal-aviso" id="livroAviso">
+          <strong>Como funciona o acervo</strong>
+          <span>O título é cadastrado uma única vez. Cada cópia física é um <b>exemplar</b>, com código próprio e status. Se este ISBN ou título já existir, o sistema direciona você para “Gerenciar exemplares” em vez de duplicar o livro.</span>
+        </div>
+
+        <div class="modal-acoes">
+          <button type="button" class="btn-secundario" id="btnCancelarLivro">Cancelar</button>
+          <button type="submit" class="btn-primario" id="btnSalvarLivro">Adicionar ao catálogo</button>
+        </div>
+      </form>
+    </div>
+  </div>
 
   <section class="painel-pane" id="pane-emprestimos">
     <h2>Controle de Empréstimos</h2>
-    <p style="margin:6px 0 18px">Registre retiradas e devoluções do dia.</p>
-    <div class="painel-grid">
-      <article class="painel-card"><div class="stat">86</div><h3>Em aberto</h3><p>Empréstimos ainda não devolvidos.</p></article>
-      <article class="painel-card"><div class="stat">7</div><h3>Atrasados</h3><p>Requerem contato com o responsável.</p></article>
-      <article class="painel-card"><div class="stat">23</div><h3>Devolvidos hoje</h3><p>Movimentações registradas hoje.</p></article>
+    <p style="margin:6px 0 18px">A Gestão registra a retirada, acompanha os prazos e confirma as devoluções.</p>
+    <div class="painel-grid" id="emprestimosStats">
+      <article class="painel-card"><div class="stat">—</div><h3>Em aberto</h3><p>Empréstimos não devolvidos.</p></article>
+      <article class="painel-card"><div class="stat">—</div><h3>Atrasados</h3><p>Prazo de devolução vencido.</p></article>
+      <article class="painel-card"><div class="stat">—</div><h3>Devolvidos hoje</h3><p>Devoluções registradas hoje.</p></article>
+    </div>
+
+    <article class="painel-card" style="margin-top:20px">
+      <h3>Registrar novo empréstimo</h3>
+      <p>Selecione quem vai receber o livro e qual exemplar será retirado.</p>
+      <form id="formNovoEmprestimo" class="painel-grid" style="margin-top:12px">
+        <label class="form-field">Usuário<select id="emprestimoUsuario" required><option value="">Carregando...</option></select></label>
+        <label class="form-field">Exemplar disponível<select id="emprestimoExemplar" required><option value="">Carregando...</option></select>
+          <span class="campo-ajuda" id="exemplaresDisponiveisInfo"></span>
+        </label>
+        <div style="display:flex;align-items:end"><button class="livro-btn" type="submit" id="btnConfirmarEmprestimo">Confirmar empréstimo</button></div>
+      </form>
+      <p id="emprestimoMensagem" class="form-msg"></p>
+    </article>
+
+    <div class="painel-grid" style="margin-top:20px">
+      <article class="painel-card data-table-card">
+        <div class="painel-card-head"><h3>Solicitações aguardando aprovação</h3><span class="table-count" id="solicitacoesContagem"></span></div>
+        <p style="margin:6px 0 14px">O aluno ou professor solicita pelo catálogo. A Gestão aprova ou recusa antes da retirada.</p>
+        <input type="search" class="table-search" id="buscaSolicitacoes" placeholder="Buscar por usuário ou livro...">
+        <table class="data-table">
+          <thead><tr><th>Usuário</th><th>Livro</th><th>Data desejada</th><th>Solicitado em</th><th>Disponibilidade</th><th>Ação</th></tr></thead>
+          <tbody id="solicitacoesGestaoLista"><tr><td colspan="6">Carregando...</td></tr></tbody>
+        </table>
+      </article>
     </div>
 
     <div class="painel-grid" style="margin-top:20px">
       <article class="painel-card data-table-card">
-        <h3>Empréstimos recentes</h3>
+        <div class="painel-card-head"><h3>Empréstimos registrados</h3><span class="table-count" id="emprestimosContagem"></span></div>
+        <div class="filtro-chips" id="emprestimosFiltroChips">
+          <button type="button" class="chip active" data-filtro-emprestimo="todos">Todos</button>
+          <button type="button" class="chip" data-filtro-emprestimo="aberto">Em aberto</button>
+          <button type="button" class="chip" data-filtro-emprestimo="atrasado">Atrasados</button>
+          <button type="button" class="chip" data-filtro-emprestimo="devolvido">Devolvidos</button>
+        </div>
+        <input type="search" class="table-search" id="buscaEmprestimos" placeholder="Buscar por usuário, livro ou código...">
         <table class="data-table">
-          <thead><tr><th>Aluno</th><th>Livro</th><th>Empréstimo</th><th>Devolução</th><th>Status</th></tr></thead>
-          <tbody>
-            <tr><td><div class="avatar-row"><span class="avatar av-1">MS</span>Maria Silva</div></td><td>O Pequeno Príncipe</td><td>14/05</td><td>28/05</td><td><span class="badge badge-ativo">Ativo</span></td></tr>
-            <tr><td><div class="avatar-row"><span class="avatar av-2">JP</span>João Pedro</div></td><td>O Hobbit</td><td>13/05</td><td>27/05</td><td><span class="badge badge-ativo">Ativo</span></td></tr>
-            <tr><td><div class="avatar-row"><span class="avatar av-3">LA</span>Laura Andrade</div></td><td>Extraordinário</td><td>12/05</td><td>26/05</td><td><span class="badge badge-atrasado">Atrasado</span></td></tr>
-            <tr><td><div class="avatar-row"><span class="avatar av-4">GM</span>Gabriel Martins</div></td><td>A Menina que Roubava Livros</td><td>10/05</td><td>24/05</td><td><span class="badge badge-ativo">Ativo</span></td></tr>
-          </tbody>
+          <thead><tr><th>Usuário</th><th>Livro</th><th>Exemplar</th><th>Retirada</th><th>Devolução</th><th>Status</th><th>Ação</th></tr></thead>
+          <tbody id="emprestimosGestaoLista"><tr><td colspan="7">Carregando...</td></tr></tbody>
         </table>
       </article>
     </div>
@@ -225,6 +736,8 @@
   <section class="painel-pane" id="pane-turmas">
     <h2>Minhas Turmas</h2>
     <p style="margin:6px 0 18px">Alunos cadastrados organizados pela série e turma.</p>
+    <input type="search" class="table-search" id="buscaTurmas" placeholder="Buscar por aluno, série ou turma..." aria-label="Buscar nas turmas" autocomplete="off">
+    <p class="table-search-vazio" id="buscaTurmasVazio" hidden>Nenhum aluno ou turma encontrado com essa busca.</p>
     <div id="turmas-lista" class="painel-grid">
       <article class="painel-card"><p>Carregando turmas...</p></article>
     </div>
@@ -232,132 +745,359 @@
 
   <section class="painel-pane" id="pane-devolucoes">
     <h2>Devoluções</h2>
-    <p style="margin:6px 0 18px">Confira devoluções feitas e pendentes.</p>
-    <div class="painel-grid">
-      <article class="painel-card"><div class="stat">23</div><h3>Devolvidas hoje</h3><p>Livros que retornaram ao acervo.</p></article>
-      <article class="painel-card"><div class="stat">7</div><h3>Atrasadas</h3><p>Prazo já vencido.</p></article>
-      <article class="painel-card"><div class="stat">4</div><h3>Previstas para amanhã</h3><p>Devoluções esperadas.</p></article>
+    <p style="margin:6px 0 18px">Quando o livro retornar, a Gestão confirma a devolução aqui. O exemplar volta automaticamente para “Disponível”.</p>
+    <div class="painel-grid" id="devolucoesStats">
+      <article class="painel-card"><div class="stat">—</div><h3>Devolvidas hoje</h3><p>Livros que retornaram ao acervo.</p></article>
+      <article class="painel-card"><div class="stat">—</div><h3>Atrasadas</h3><p>Empréstimos ainda pendentes.</p></article>
+      <article class="painel-card"><div class="stat">—</div><h3>Próximas</h3><p>Devoluções previstas nos próximos dias.</p></article>
     </div>
-
-    <div class="painel-grid" style="margin-top:20px">
-      <article class="painel-card data-table-card">
-        <h3>Devoluções recentes</h3>
-        <table class="data-table">
-          <thead><tr><th>Aluno</th><th>Livro</th><th>Devolvido em</th><th>Condição</th></tr></thead>
-          <tbody>
-            <tr><td><div class="avatar-row"><span class="avatar av-1">CS</span>Camila Souza</div></td><td>O Sol é para Todos</td><td>16/08</td><td><span class="badge badge-ativo">Boa</span></td></tr>
-            <tr><td><div class="avatar-row"><span class="avatar av-2">GM</span>Gabriel Martins</div></td><td>A Menina que Roubava Livros</td><td>15/08</td><td><span class="badge badge-ativo">Boa</span></td></tr>
-          </tbody>
-        </table>
-      </article>
-    </div>
+    <div class="painel-grid" style="margin-top:20px"><article class="painel-card data-table-card" id="cardCobranca">
+      <div class="painel-card-head"><h3>📢 Cobrar devolução</h3><span class="table-count" id="cobrancaContagem"></span></div>
+      <p>Avise quem está com livro para devolvê-lo. No <strong>site</strong>, a pessoa vê uma tela de aviso ao entrar (ou na hora, se estiver com o painel aberto) e recebe uma notificação. No <strong>Gmail</strong>, recebe um e-mail. O envio automático é configurado em Configurações.</p>
+      <div class="painel-grid" style="margin:10px 0">
+        <label class="form-field">Avisar por<select id="cobrancaCanal"><option value="ambos">Site e Gmail</option><option value="site">Somente site (tela de aviso)</option><option value="email">Somente Gmail</option></select></label>
+        <label class="form-field">Quem avisar (em lote)<select id="cobrancaAlvo"><option value="atrasados">Todos os atrasados</option><option value="vencendo">Quem vence em até 3 dias</option><option value="todos">Atrasados + vencendo em 3 dias</option></select></label>
+        <label class="form-field" style="grid-column:1/-1">Mensagem personalizada (opcional)<input id="cobrancaMensagem" maxlength="500" placeholder="Deixe em branco para usar a mensagem padrão"></label>
+      </div>
+      <div style="margin-bottom:12px"><button type="button" class="livro-btn" id="btnCobrarLote">Avisar em lote agora</button> <span id="cobrancaMensagemStatus" aria-live="polite"></span></div>
+      <table class="data-table"><thead><tr><th>Usuário</th><th>Livro</th><th>Prazo</th><th>Situação</th><th>Última cobrança</th><th>Ação</th></tr></thead><tbody id="cobrancaLista"><tr><td colspan="6">Carregando...</td></tr></tbody></table>
+    </article></div>
+    <div class="painel-grid" style="margin-top:20px"><article class="painel-card data-table-card"><div class="painel-card-head"><h3>Devoluções avisadas</h3><span class="table-count" id="devolucoesAvisadasContagem"></span></div><p>Use o código informado pelo aluno ou professor para confirmar a devolução.</p><table class="data-table"><thead><tr><th>Usuário</th><th>Livro</th><th>Código</th><th>Prazo</th><th>Ação</th></tr></thead><tbody id="devolucoesAvisadasLista"><tr><td colspan="5">Carregando...</td></tr></tbody></table></article></div>
+    <div class="painel-grid" style="margin-top:20px"><article class="painel-card data-table-card"><h3>Histórico de devoluções</h3><table class="data-table"><thead><tr><th>Usuário</th><th>Livro</th><th>Devolvido em</th><th>Data prevista</th><th>Status</th></tr></thead><tbody id="devolucoesLista"><tr><td colspan="5">Carregando...</td></tr></tbody></table></article></div>
   </section>
 
   <section class="painel-pane" id="pane-reservas">
     <h2>Reservas</h2>
     <p style="margin:6px 0 18px">Livros reservados pelos alunos.</p>
     <div class="painel-grid">
-      <article class="painel-card"><div class="stat">2</div><h3>Aguardando</h3><p>Reservas aguardando retirada.</p></article>
-      <article class="painel-card"><div class="stat">1</div><h3>Expiradas</h3><p>Prazo de retirada não cumprido.</p></article>
+      <article class="painel-card"><div class="stat" id="reservasAguardandoStat">—</div><h3>Aguardando</h3><p>Reservas aguardando retirada.</p></article>
+      <article class="painel-card"><div class="stat" id="reservasProntasStat">—</div><h3>Prontas</h3><p>Reservas liberadas para retirada.</p></article>
     </div>
 
     <div class="painel-grid" style="margin-top:20px">
       <article class="painel-card data-table-card">
         <h3>Reservas ativas</h3>
         <table class="data-table">
-          <thead><tr><th>Aluno</th><th>Livro</th><th>Reservado em</th><th>Status</th></tr></thead>
-          <tbody>
-            <tr><td><div class="avatar-row"><span class="avatar av-1">MS</span>Maria Silva</div></td><td>1984</td><td>10/08</td><td><span class="badge badge-ativo">Pronto para retirada</span></td></tr>
-          </tbody>
+          <thead><tr><th>Aluno</th><th>Livro</th><th>Reservado em</th><th>Status</th><th>Ações</th></tr></thead>
+          <tbody id="reservasGestaoLista"><tr><td colspan="4">Carregando...</td></tr></tbody>
         </table>
       </article>
     </div>
   </section>
 
   <section class="painel-pane" id="pane-multas">
-    <h2>Multas</h2>
-    <p style="margin:6px 0 18px">Pendências financeiras por atraso.</p>
+    <h2>Multas e punições</h2>
+    <p style="margin:6px 0 18px">Quando o prazo de um empréstimo passa, o aluno ou professor aparece aqui sozinho. Escolha a punição e aplique.</p>
     <div class="painel-grid">
-      <article class="painel-card"><div class="stat">3</div><h3>Alunos com multa</h3><p>Pendências em aberto.</p></article>
-      <article class="painel-card"><div class="stat">R$ 47</div><h3>Total pendente</h3><p>Valor acumulado a receber.</p></article>
+      <article class="painel-card mx-stat mx-stat--alerta"><div class="stat" id="multasAguardandoStat">—</div><h3>Aguardando decisão</h3><p>Atrasos ainda sem punição escolhida.</p></article>
+      <article class="painel-card"><div class="stat" id="multasUsuariosStat">—</div><h3>Pessoas com atraso</h3><p>Com livro vencido e não devolvido.</p></article>
+      <article class="painel-card"><div class="stat" id="multasTotalStat">—</div><h3>Penalidades ativas</h3><p>Advertências e bloqueios em andamento.</p></article>
     </div>
 
-    <div class="painel-grid" style="margin-top:20px">
-      <article class="painel-card data-table-card">
-        <h3>Multas em aberto</h3>
-        <table class="data-table">
-          <thead><tr><th>Aluno</th><th>Livro</th><th>Dias de atraso</th><th>Valor</th></tr></thead>
-          <tbody>
-            <tr><td><div class="avatar-row"><span class="avatar av-3">LA</span>Laura Andrade</div></td><td>Extraordinário</td><td>3</td><td>R$ 15</td></tr>
-          </tbody>
-        </table>
-      </article>
-    </div>
+    <h3 class="mx-titulo">⚠️ Aguardando decisão</h3>
+    <div class="mx-lista" id="multasAguardando"><p class="empty-msg">Carregando...</p></div>
+
+    <h3 class="mx-titulo">Penalidades</h3>
+    <article class="painel-card data-table-card" style="margin-top:6px">
+      <div style="overflow:auto"><table class="data-table">
+        <thead><tr><th>Pessoa</th><th>Livro</th><th>Punição</th><th>Até</th><th>Situação</th><th>Ações</th></tr></thead>
+        <tbody id="multasLista"><tr><td colspan="6">Carregando...</td></tr></tbody>
+      </table></div>
+    </article>
   </section>
 
   <section class="painel-pane" id="pane-relatorios">
     <h2>Relatórios</h2>
     <p style="margin:6px 0 18px">Indicadores de uso da biblioteca.</p>
     <div class="painel-grid">
-      <article class="painel-card"><div class="stat">118</div><h3>Frequência</h3><p>Média de atendimentos por semana.</p></article>
-      <article class="painel-card"><h3>Categorias mais procuradas</h3><p>Ficção 56% · Aventura 22% · Clássicos 12%</p></article>
-      <article class="painel-card"><h3>Exportar</h3><p>Gere planilhas mensais em CSV.</p></article>
+      <article class="painel-card"><div class="stat" id="relatorioFrequenciaStat">—</div><h3>Frequência</h3><p>Empréstimos registrados nos últimos 7 dias.</p></article>
+      <article class="painel-card"><h3>Categorias mais procuradas</h3><p id="relatorioCategorias">Carregando...</p></article>
     </div>
+
+    <article class="painel-card rel-gerador" id="relGerador">
+      <h3>Gerar relatório</h3>
+      <p>Escolha qual relatório você quer e baixe em planilha (CSV, abre no Excel e no Google Planilhas) ou em PDF. Use os filtros e marque só as colunas que você quer ver.</p>
+      <div class="rel-tipos" role="radiogroup" aria-label="Tipo de relatório">
+        <label class="rel-tipo"><input type="radio" name="relTipo" value="emprestimos" checked><span><strong>Empréstimos</strong><small>Todos os empréstimos registrados no período.</small></span></label>
+        <label class="rel-tipo"><input type="radio" name="relTipo" value="devolucoes"><span><strong>Devoluções</strong><small>Livros devolvidos no período.</small></span></label>
+        <label class="rel-tipo"><input type="radio" name="relTipo" value="atrasos"><span><strong>Atrasos</strong><small>Empréstimos vencidos que ainda não voltaram.</small></span></label>
+        <label class="rel-tipo"><input type="radio" name="relTipo" value="reservas"><span><strong>Reservas</strong><small>Reservas feitas no período e o status de cada uma.</small></span></label>
+        <label class="rel-tipo"><input type="radio" name="relTipo" value="multas"><span><strong>Multas e punições</strong><small>Advertências e bloqueios aplicados.</small></span></label>
+        <label class="rel-tipo"><input type="radio" name="relTipo" value="livros"><span><strong>Livros (acervo)</strong><small>Todos os livros, gêneros e exemplares.</small></span></label>
+        <label class="rel-tipo"><input type="radio" name="relTipo" value="mais-emprestados"><span><strong>Livros mais emprestados</strong><small>Ranking de empréstimos no período.</small></span></label>
+        <label class="rel-tipo"><input type="radio" name="relTipo" value="leitores"><span><strong>Leitores</strong><small>Alunos e professores, ativos e inativos.</small></span></label>
+        <label class="rel-tipo"><input type="radio" name="relTipo" value="novos-cadastros"><span><strong>Novos cadastros</strong><small>Quem se cadastrou no período.</small></span></label>
+      </div>
+      <div class="rel-opcoes">
+        <section class="rel-bloco" id="relBlocoFiltros" aria-labelledby="relTituloFiltros">
+          <header class="rel-bloco-topo">
+            <span class="rel-bloco-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h18l-7 8v6l-4-2v-4z"/></svg></span>
+            <div class="rel-bloco-titulo"><h4 id="relTituloFiltros">Filtros</h4><small id="relFiltrosInfo">Escolha o que entra no relatório.</small></div>
+            <button type="button" class="rel-link" id="relLimpar">Limpar filtros</button>
+          </header>
+          <div class="rel-filtros" id="relFiltros"><span class="rel-vazio">Carregando...</span></div>
+        </section>
+        <section class="rel-bloco" id="relBlocoColunas" aria-labelledby="relTituloColunas">
+          <header class="rel-bloco-topo">
+            <span class="rel-bloco-icone" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16M15 4v16"/></svg></span>
+            <div class="rel-bloco-titulo"><h4 id="relTituloColunas">Colunas</h4><small id="relColsInfo">Marque o que aparece no relatório.</small></div>
+            <button type="button" class="rel-link" id="relColsTodas">Marcar todas</button>
+          </header>
+          <div class="rel-colunas" id="relColunas"><span class="rel-vazio">Carregando...</span></div>
+        </section>
+      </div>
+      <div class="rel-barra">
+        <label>Período
+          <select id="relPeriodo">
+            <option value="7">Últimos 7 dias</option>
+            <option value="30" selected>Últimos 30 dias</option>
+            <option value="90">Últimos 90 dias</option>
+            <option value="365">Último ano</option>
+            <option value="0">Todo o período</option>
+          </select>
+        </label>
+        <button type="button" class="livro-btn" id="btnGerarRelatorio">Baixar CSV</button>
+        <button type="button" class="livro-btn livro-btn--pdf" id="btnRelPdf">Baixar PDF</button>
+        <span id="relMensagem" aria-live="polite"></span>
+      </div>
+      <p class="rel-resumo" id="relResumo">Carregando prévia...</p>
+      <div class="rel-previa" id="relPrevia"></div>
+    </article>
 
     <div class="painel-grid" style="margin-top:20px">
       <article class="painel-card chart-card">
         <h3>Empréstimos por dia</h3>
-        <svg viewBox="0 0 240 140" class="chart-line" aria-hidden="true">
-          <polyline points="0,100 30,80 60,60 90,70 120,40 150,55 180,30 210,45 240,35"></polyline>
-        </svg>
         <p class="chart-caption">Últimos 30 dias</p>
+        <div class="chart-bars-real chart-bars-real-scroll" id="relatorioGraficoEmprestimos" role="group" aria-label="Gráfico de empréstimos por dia"></div>
       </article>
 
       <article class="painel-card data-table-card">
         <h3>Mais emprestados</h3>
         <table class="data-table">
           <thead><tr><th>#</th><th>Livro</th><th>Empréstimos</th></tr></thead>
-          <tbody>
-            <tr><td>1</td><td>O Pequeno Príncipe</td><td>18</td></tr>
-            <tr><td>2</td><td>O Hobbit</td><td>15</td></tr>
-            <tr><td>3</td><td>Extraordinário</td><td>12</td></tr>
-          </tbody>
+          <tbody id="relatorioMaisEmprestados"><tr><td colspan="3">Carregando...</td></tr></tbody>
         </table>
       </article>
     </div>
   </section>
 
   <section class="painel-pane" id="pane-usuarios">
-    <h2>Usuários</h2>
-    <p style="margin:6px 0 18px">Contas reais cadastradas no sistema.</p>
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap">
+      <div><h2>Leitores</h2><p style="margin:6px 0 18px">Alunos, professores e novos cadastros em um só lugar. Quem sai da biblioteca fica como inativo, sem apagar o histórico.</p></div>
+      <span class="table-count" id="leitoresContagem"></span>
+    </div>
     <div class="painel-grid" id="usuarios-resumo"></div>
-    <div class="painel-grid" style="margin-top:20px">
-      <article class="painel-card data-table-card">
-        <h3>Contas do sistema</h3>
+    <div class="painel-grid leitores-lista-secao">
+      <article class="painel-card data-table-card leitores-lista-card">
+        <div class="painel-card-head"><h3>Contas do sistema</h3></div>
+        <div class="filtro-chips" id="leitoresFiltroChips">
+          <button type="button" class="chip active" data-filtro-leitor="todos">Todos</button>
+          <button type="button" class="chip" data-filtro-leitor="aluno">Alunos</button>
+          <button type="button" class="chip" data-filtro-leitor="professor">Professores</button>
+          <button type="button" class="chip" data-filtro-leitor="novos">Novos cadastros</button>
+          <button type="button" class="chip" data-filtro-leitor="inativo">Inativos</button>
+        </div>
+        <div class="tabela-fixa" id="leitoresTabelaScroll">
         <table class="data-table">
-          <thead><tr><th>Nome</th><th>Tipo</th><th>E-mail</th><th>Status</th></tr></thead>
-          <tbody id="usuarios-lista"><tr><td colspan="4">Carregando usuários...</td></tr></tbody>
+          <thead><tr><th>Nome</th><th>Categoria</th><th>Identificação</th><th>E-mail</th><th>Cadastrado em</th><th>Status</th><th>Ações</th></tr></thead>
+          <tbody id="usuarios-lista"><tr><td colspan="7">Carregando leitores...</td></tr></tbody>
         </table>
+        </div>
       </article>
     </div>
   </section>
 
+  <section class="painel-pane" id="pane-contatos">
+    <h2>Mensagens de contato</h2>
+    <p style="margin:6px 0 18px">Mensagens recebidas pelo formulário público do BiblioBeta.</p>
+    <div class="painel-grid">
+      <article class="painel-card"><div class="stat" id="contatosNovosStat">—</div><h3>Novas</h3><p>Mensagens ainda não lidas.</p></article>
+      <article class="painel-card"><div class="stat" id="contatosTotalStat">—</div><h3>Total</h3><p>Mensagens recebidas.</p></article>
+    </div>
+    <div class="painel-grid" style="margin-top:20px"><article class="painel-card data-table-card"><table class="data-table"><thead><tr><th>Nome</th><th>E-mail</th><th>Mensagem</th><th>Data</th><th>Status</th><th>Ações</th></tr></thead><tbody id="contatosLista"><tr><td colspan="6">Carregando...</td></tr></tbody></table></article></div>
+  </section>
+
+  <section class="painel-pane" id="pane-notificacoes">
+    <h2>Notificações</h2>
+    <p style="margin:6px 0 18px">Acompanhe solicitações, devoluções, atrasos e outros avisos da biblioteca.</p>
+    <div class="painel-grid">
+      <article class="painel-card data-table-card">
+        <div style="display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap">
+          <h3>Central de notificações</h3>
+          <button type="button" class="row-acao-btn" id="marcarTodasNotificacoes">Marcar todas como lidas</button>
+        </div>
+        <ul class="bb-notifs__lista" id="notificacoesGestaoLista"><li class="empty-msg">Carregando...</li></ul>
+      </article>
+    </div>
+  </section>
+
+  <!-- ===================== MODAL: GERENCIAR EXEMPLARES ===================== -->
+  <div class="notificacao-modal" id="modalExemplares" hidden aria-hidden="true">
+    <div class="notificacao-modal-backdrop" data-fechar-exemplares></div>
+    <div class="notificacao-modal-card modal-exemplares-card" role="dialog" aria-modal="true" aria-labelledby="exemplaresTitulo">
+      <button type="button" class="notificacao-modal-fechar" id="fecharExemplares" aria-label="Fechar">&times;</button>
+      <span class="notificacao-modal-tipo">Acervo físico</span>
+      <h3 id="exemplaresTitulo">Gerenciar exemplares</h3>
+      <p id="exemplaresSubtitulo" class="modal-exemplares-sub"></p>
+
+      <div class="exemplares-resumo" id="exemplaresResumo"></div>
+
+      <div class="exemplares-lista-wrap">
+        <table class="data-table">
+          <thead><tr><th>Exemplar</th><th>Localização</th><th>Status</th><th>Observação</th><th></th></tr></thead>
+          <tbody id="exemplaresLivroLista"><tr><td colspan="5">Carregando...</td></tr></tbody>
+        </table>
+      </div>
+
+      <div class="novo-exemplar-box">
+        <div>
+          <h4>+ Adicionar nova cópia</h4>
+          <p>O código é gerado automaticamente. A localização pode ser definida depois.</p>
+        </div>
+        <div class="form-grid">
+          <label class="form-field">
+            Observação
+            <input id="novoExemplarObservacao" type="text" placeholder="Opcional">
+          </label>
+        </div>
+        <div class="modal-acoes">
+          <button type="button" class="btn-primario" id="btnAdicionarExemplar">Adicionar exemplar</button>
+          <button type="button" class="btn-secundario" data-fechar-exemplares>Fechar</button>
+        </div>
+        <p id="exemplarMensagem" class="form-msg"></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="notificacao-modal" id="codigoOperacaoModal" hidden aria-hidden="true">
+    <div class="notificacao-modal-backdrop" data-fechar-codigo></div>
+    <div class="notificacao-modal-card codigo-operacao-card" role="dialog" aria-modal="true" aria-labelledby="codigoOperacaoTitulo">
+      <button type="button" class="notificacao-modal-fechar" id="fecharCodigoOperacao" aria-label="Fechar">&times;</button>
+      <div class="codigo-operacao-icone" id="codigoOperacaoIcone">🔐</div>
+      <span class="notificacao-modal-tipo">Operação do acervo</span>
+      <h3 id="codigoOperacaoTitulo">Confirmar operação</h3>
+      <p id="codigoOperacaoTexto" class="notificacao-modal-mensagem">Digite o código informado pelo usuário.</p>
+      <div class="codigo-operacao-livro" id="codigoOperacaoLivro"></div>
+      <label class="codigo-operacao-label" for="codigoOperacaoInput">Código de 6 números</label>
+      <input id="codigoOperacaoInput" class="codigo-operacao-input" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="000000" aria-describedby="codigoOperacaoErro">
+      <p id="codigoOperacaoErro" class="codigo-operacao-erro" aria-live="polite"></p>
+      <div class="modal-acoes codigo-operacao-acoes">
+        <button type="button" class="btn-secundario" id="cancelarCodigoOperacao">Cancelar</button>
+        <button type="button" class="btn-primario" id="confirmarCodigoOperacao">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="notificacao-modal" id="notificacaoModal" hidden aria-hidden="true">
+    <div class="notificacao-modal-backdrop" data-fechar-notificacao></div>
+    <div class="notificacao-modal-card" role="dialog" aria-modal="true" aria-labelledby="notificacaoModalTitulo">
+      <button type="button" class="notificacao-modal-fechar" id="fecharNotificacaoModal" aria-label="Fechar">&times;</button>
+      <span class="notificacao-modal-tipo" id="notificacaoModalTipo">Notificação</span>
+      <h3 id="notificacaoModalTitulo">Notificação</h3>
+      <p class="notificacao-modal-mensagem" id="notificacaoModalMensagem"></p>
+      <div class="notificacao-modal-meta">
+        <span id="notificacaoModalData"></span>
+        <span id="notificacaoModalStatus"></span>
+      </div>
+    </div>
+  </div>
+
   <section class="painel-pane" id="pane-configuracoes">
     <h2>Configurações</h2>
-    <p style="margin:6px 0 18px">Preferências gerais do sistema.</p>
-    <div class="painel-grid">
-      <article class="painel-card"><h3>Notificações</h3><p>Alertas de atraso e reservas por e-mail.</p></article>
-      <article class="painel-card"><h3>Regras de empréstimo</h3><p>Prazo padrão de 14 dias, até 2 renovações.</p></article>
-      <article class="painel-card"><h3>Backup</h3><p>Exportação automática semanal dos dados.</p></article>
+    <p style="margin:6px 0 18px">Defina as regras usadas automaticamente pelo sistema.</p>
+    <form id="formConfiguracoes" class="painel-grid somente-admin">
+      <label class="painel-card form-field">Dias de empréstimo<input id="cfgDias" type="number" min="1" required></label>
+      <label class="painel-card form-field">Limite por aluno<input id="cfgAluno" type="number" min="1" required></label>
+      <label class="painel-card form-field">Limite por professor<input id="cfgProfessor" type="number" min="1" required></label>
+      <label class="painel-card form-field">Máximo de renovações<input id="cfgRenovacoes" type="number" min="0" required></label>
+      <label class="painel-card form-field">Reservas<select id="cfgReservas"><option value="1">Permitidas</option><option value="0">Desativadas</option></select></label>
+      <div><button class="livro-btn" type="submit">Salvar regras</button><p id="cfgMensagem"></p></div>
+    </form>
+    <div class="painel-grid somente-admin" style="margin-top:20px"><article class="painel-card"><h3>E-mails — Gestão</h3><p id="statusEmail">O envio usa o Gmail oficial da Gestão configurado no arquivo <code>backend/.env</code>.</p><button type="button" class="livro-btn" id="btnTesteEmail">📧 Testar envio de e-mail (Gestão)</button><p id="testeEmailMensagem" aria-live="polite"></p></article><article class="painel-card"><h3>E-mails — Alunos/Professores</h3><p>Usa a conta separada <code>SMTP_USER_ALUNOS</code> do <code>backend/.env</code> (se não estiver preenchida, cai de volta na conta da Gestão).</p><label class="form-field" style="margin:4px 0 12px">E-mail para receber o teste<input type="email" id="emailTesteUsuarios" placeholder="exemplo@gmail.com" autocomplete="off" name="bb_teste_email" readonly onfocus="this.removeAttribute('readonly')" style="width:100%;min-width:0;box-sizing:border-box"></label><button type="button" class="livro-btn" id="btnTesteEmailUsuarios">📧 Testar envio de e-mail (Alunos/Professores)</button><p id="testeEmailUsuariosMensagem" aria-live="polite"></p></article><article class="painel-card"><h3>Notificações internas</h3><p>Empréstimo, renovação, devolução, vencimento e atraso geram avisos dentro do painel e, quando configurado, também por e-mail — usando automaticamente a conta certa (Gestão ou Alunos/Professores) conforme o destinatário.</p></article></div>
+
+    <div class="somente-admin" id="blocoCobrancaAuto" style="margin-top:28px">
+      <h3>Cobrança automática de devolução</h3>
+      <p style="margin:6px 0 14px">O BiblioBeta avisa sozinho quem está com livro para devolver (a verificação roda a cada hora). Você também pode cobrar manualmente em <strong>Devoluções</strong>.</p>
+      <form id="formCobrancaAuto" class="painel-grid">
+        <label class="painel-card form-field">Envio automático<select id="cobAuto"><option value="0">Desligado (só manual)</option><option value="1">Ligado</option></select></label>
+        <label class="painel-card form-field">Avisar por<select id="cobCanal"><option value="ambos">Site e Gmail</option><option value="site">Somente site (tela de aviso)</option><option value="email">Somente Gmail</option></select></label>
+        <label class="painel-card form-field">Quem avisar<select id="cobAlvo"><option value="atrasados">Somente atrasados</option><option value="vencendo">Quem vence em até 3 dias</option><option value="todos">Atrasados + vencendo em 3 dias</option></select></label>
+        <label class="painel-card form-field">Repetir a cada (dias)<input id="cobIntervalo" type="number" min="1" max="30" value="3" required><small>Enquanto o livro não for devolvido.</small></label>
+        <div><button class="livro-btn" type="submit">Salvar cobrança automática</button> <span id="cobAutoMensagem" aria-live="polite"></span></div>
+      </form>
+    </div>
+
+    <div class="somente-admin" id="blocoEmailCategorias" style="margin-top:28px">
+      <h3>E-mails automáticos por categoria</h3>
+      <p style="margin:6px 0 14px">Escolha quais mensagens o BiblioBeta envia por e-mail (boas-vindas, empréstimo, devolução e outras) e para qual tipo de usuário. Os avisos dentro do painel continuam sempre aparecendo.</p>
+      <article class="painel-card data-table-card">
+        <table class="data-table">
+          <thead><tr><th>Categoria</th><th>Enviar e-mail</th><th>Alunos</th><th>Professores</th><th>Gestão</th></tr></thead>
+          <tbody id="emailCategoriasLista"><tr><td colspan="5">Carregando...</td></tr></tbody>
+        </table>
+        <div style="margin-top:12px"><button type="button" class="livro-btn" id="btnSalvarEmailCategorias">Salvar categorias</button> <span id="emailCategoriasMensagem" aria-live="polite"></span></div>
+      </article>
+      <article class="painel-card" style="margin-top:16px">
+        <h3>Enviar mensagem manualmente</h3>
+        <p>Use quando um e-mail automático não chegar. Escolha uma das mensagens que o sistema envia sozinho, preencha o que estiver entre [colchetes] e envie agora (aviso no painel + e-mail).</p>
+        <form id="formEnviarCategoria" class="painel-grid">
+          <label class="form-field" style="grid-column:1/-1">Mensagem automática<select id="envModelo"><option value="">Mensagem personalizada</option></select></label>
+          <label class="form-field">Categoria<select id="envCategoria"></select></label>
+          <label class="form-field">Quem recebe<select id="envDestinatarios"><option value="usuario">Um usuário específico</option><option value="leitores">Todos os alunos e professores</option><option value="alunos">Todos os alunos</option><option value="professores">Todos os professores</option><option value="gestao">Equipe da Gestão</option><option value="todos">Todos os usuários</option></select></label>
+          <label class="form-field" id="envLivroWrap" style="display:none">Livro<select id="envLivro"><option value="">Escolha o livro...</option></select></label>
+          <label class="form-field" id="envUsuarioWrap">Usuário<select id="envUsuario"><option value="">Carregando...</option></select></label>
+          <label class="form-field">Título<input id="envTitulo" maxlength="120" required></label>
+          <label class="form-field" style="grid-column:1/-1">Mensagem<textarea id="envMensagem" rows="4" maxlength="2000" required style="width:100%;box-sizing:border-box"></textarea></label>
+          <div><button class="livro-btn" type="submit" id="btnEnviarCategoria">Enviar mensagem</button> <span id="envCategoriaMensagem" aria-live="polite"></span></div>
+        </form>
+      </article>
+    </div>
+
+    <div class="somente-admin" id="blocoEquipeGestao" style="margin-top:28px">
+      <h3>Equipe da Gestão</h3>
+      <p style="margin:6px 0 14px">Mais de uma pessoa pode usar a Gestão ao mesmo tempo, cada uma com a sua conta. <strong>Administrador</strong> tem acesso total (regras, e-mails, equipe e exclusão de usuários). <strong>Bibliotecário</strong> cuida da rotina: livros, empréstimos, devoluções, reservas e multas.</p>
+      <article class="painel-card data-table-card">
+        <table class="data-table">
+          <thead><tr><th>Nome</th><th>E-mail</th><th>Permissão</th><th>Status</th><th>Ações</th></tr></thead>
+          <tbody id="equipeLista"><tr><td colspan="5">Carregando equipe...</td></tr></tbody>
+        </table>
+      </article>
+      <form id="formNovoMembro" class="painel-grid" style="margin-top:16px" autocomplete="off">
+        <label class="painel-card form-field">Nome completo<input id="membroNome" type="text" required autocomplete="off" name="bb_membro_nome" minlength="3"></label>
+        <label class="painel-card form-field">E-mail<input id="membroEmail" type="email" required autocomplete="off" name="bb_membro_email"></label>
+        <label class="painel-card form-field">Senha provisória<input id="membroSenha" type="text" class="senha-oculta" style="-webkit-text-security:disc" required autocomplete="off" name="bb_membro_senha" minlength="8"><small>Mín. 8 caracteres com maiúscula, minúscula, número e símbolo.</small></label>
+        <label class="painel-card form-field">Permissão<select id="membroNivel"><option value="bibliotecario">Bibliotecário</option><option value="admin">Administrador</option></select></label>
+        <div><button class="livro-btn" type="submit">Adicionar à equipe</button><p id="membroMensagem" aria-live="polite"></p></div>
+      </form>
     </div>
   </section>
 
 </main>
 
-<script src="painel.js"></script>
-<script src="gestao.js"></script>
+<script>
+/* Mostra o usuário logado imediatamente, sem esperar painel.js/gestao.js nem a API. */
+(function(){try{
+  var raw=sessionStorage.getItem('bibliobeta_usuario')||localStorage.getItem('bibliobeta_usuario');
+  var u=raw&&JSON.parse(raw); if(!u||!u.nome) return;
+  var ini=String(u.nome).trim().split(/\s+/).slice(0,2).map(function(x){return x[0]}).join('').toUpperCase();
+  var n=document.getElementById('userName'); if(n) n.textContent=u.nome;
+  var a=document.getElementById('userAvatar'); if(a) a.textContent=ini;
+  var d=document.getElementById('dashboardNome'); if(d) d.textContent=u.nome;
+}catch(e){}})();
+</script>
+<script src="sessao-aba.js?v=1"></script>
+<script src="api-client.js?v=1.2-punicao"></script>
+    <script src="busca.js?v=3.7-busca"></script>
+    <script src="painel.js?v=3.7-busca"></script>
+<script src="relatorio-pdf.js?v=1"></script>
+<script src="gestao.js?v=3.8-relatorios"></script>
+<script src="livros.js?v=3.7-busca"></script>
+<script src="relogio.js"></script>
 <script src="acessibilidade.js"></script>
 
 
+<script src="scrollbar.js?v=1"></script>
+<script src="tooltip.js?v=2"></script>
+<script src="caixa.js?v=1"></script>
 </body>
 </html>

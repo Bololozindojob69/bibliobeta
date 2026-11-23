@@ -169,22 +169,27 @@
   const dropdownWrap = document.getElementById('dropdownWrap');
 
   function closeDropdown(){
-    dropdownMenu.classList.remove('show');
-    profileBtn.classList.remove('open');
+    if(dropdownMenu) dropdownMenu.classList.remove('show');
+    if(profileBtn){ profileBtn.classList.remove('open'); profileBtn.setAttribute('aria-expanded','false'); }
   }
 
-  profileBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    const isOpen = dropdownMenu.classList.contains('show');
-    if(isOpen){ closeDropdown(); } else {
-      dropdownMenu.classList.add('show');
-      profileBtn.classList.add('open');
-    }
-  });
+  if(profileBtn && dropdownMenu){
+    profileBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isOpen = dropdownMenu.classList.contains('show');
+      if(isOpen){ closeDropdown(); } else {
+        dropdownMenu.classList.add('show');
+        profileBtn.classList.add('open');
+        profileBtn.setAttribute('aria-expanded','true');
+      }
+    });
+  }
 
-  document.addEventListener('click', (e) => {
-    if(!dropdownWrap.contains(e.target)){ closeDropdown(); }
-  });
+  if(dropdownWrap){
+    document.addEventListener('click', (e) => {
+      if(!dropdownWrap.contains(e.target)){ closeDropdown(); }
+    });
+  }
 
   document.addEventListener('keydown', (e) => {
     if(e.key === 'Escape'){ closeDropdown(); closeSettingsPanel(); closeMobileNav(); }
@@ -195,32 +200,121 @@
   const overlay = document.getElementById('overlay');
 
   function openSettingsPanel(){
-    settingsPanel.classList.add('show');
-    overlay.classList.add('show');
+    settingsPanel?.classList.add('show');
+    overlay?.classList.add('show');
     closeDropdown();
   }
   function closeSettingsPanel(){
-    settingsPanel.classList.remove('show');
-    overlay.classList.remove('show');
+    settingsPanel?.classList.remove('show');
+    overlay?.classList.remove('show');
   }
 
-  document.getElementById('openSettings').addEventListener('click', openSettingsPanel);
-  document.getElementById('closeSettings').addEventListener('click', closeSettingsPanel);
-  overlay.addEventListener('click', closeSettingsPanel);
+  document.getElementById('openSettings')?.addEventListener('click', openSettingsPanel);
+  document.getElementById('closeSettings')?.addEventListener('click', closeSettingsPanel);
+  overlay?.addEventListener('click', closeSettingsPanel);
 
-  // Ações do dropdown de perfil: Alunos/Professores/Gestão abrem o login
-  // já no tipo certo; as demais seguem como placeholder.
-  const TIPO_POR_ACAO = {
-    alunos: 'aluno',
-    professores: 'professor',
-    gestao: 'gestao'
-  };
+  // ---------------- Perfil e atalhos de acesso ----------------
+  const PAINEIS_PERFIL = { aluno: 'painel.html', professor: 'painel.html', gestao: 'gestao.html' };
+  const ROTULOS_PERFIL = { aluno: 'Aluno', professor: 'Professor', gestao: 'Gestão Bibliotecária' };
+  const TIPO_POR_ACAO = { alunos: 'aluno', professores: 'professor', gestao: 'gestao' };
+  const profileOverlay = document.getElementById('profileOverlay');
+  const profileClose = document.getElementById('profileClose');
+  const profileForm = document.getElementById('profileForm');
+  const profileMessage = document.getElementById('profileMessage');
+
+  function usuarioLocal(){ try { return JSON.parse(localStorage.getItem('bibliobeta_usuario') || 'null'); } catch { return null; } }
+  function setMensagemPerfil(msg, erro=false){ if(profileMessage){ profileMessage.textContent=msg||''; profileMessage.classList.toggle('error',!!erro); } }
+  function escapeHtml(v){ return String(v??'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":'&#039;'}[c])); }
+
+  async function abrirPerfil(){
+    closeDropdown();
+    const token=localStorage.getItem('bibliobeta_token');
+    let u=usuarioLocal();
+    if(!token){ if(typeof window.abrirLogin==='function') window.abrirLogin(); return; }
+    try{
+      const r=await window.BiblioBetaAPI.fetch('/api/auth/me');
+      const d=await r.json();
+      if(!r.ok) throw new Error(d.erro||'Sessão expirada.');
+      u=d.usuario; localStorage.setItem('bibliobeta_usuario',JSON.stringify(u));
+    }catch(e){ setMensagemPerfil(e.message,true); if(!u){ if(typeof window.abrirLogin==='function') window.abrirLogin(); return; } }
+    preencherPerfil(u);
+    profileOverlay.hidden=false; document.body.classList.add('profile-open');
+  }
+
+  function preencherPerfil(u){
+    const p=u.perfil||{}, tipo=u.tipo||'aluno';
+    const nome=String(u.nome||'Usuário');
+    document.getElementById('profileAvatar').textContent=nome.split(/\s+/).slice(0,2).map(x=>x[0]).join('').toUpperCase();
+    document.getElementById('profileRoleText').textContent=ROTULOS_PERFIL[tipo]||tipo;
+    document.getElementById('profileNome').value=u.nome||'';
+    document.getElementById('profileEmail').value=u.email||'';
+    { const w=document.getElementById('profileEmailAltWrap'), i=document.getElementById('profileEmailAlt'); if(w&&i){ w.hidden=tipo!=='professor'; i.value=u.email_alternativo||''; } }
+    document.getElementById('profileTipo').value=ROTULOS_PERFIL[tipo]||tipo;
+    document.getElementById('profileRa').value=p.ra||'';
+    document.getElementById('profileTurma').value=p.turma ? ((p.serie?p.serie+' — ':'')+p.turma) : '';
+    document.getElementById('profileMatricula').value=p.matricula||'';
+    document.getElementById('profileCargo').value=p.cargo||'';
+    document.getElementById('profileMeta').innerHTML=`<span><strong>Status:</strong> ${escapeHtml(u.status||'ativo')}</span><span><strong>Cadastro:</strong> ${escapeHtml(formatarDataPerfil(u.criado_em))}</span>`;
+    document.getElementById('profileRaWrap').hidden=tipo!=='aluno';
+    document.getElementById('profileTurmaWrap').hidden=tipo!=='aluno';
+    document.getElementById('profileMatriculaWrap').hidden=tipo!=='professor';
+    document.getElementById('profileCargoWrap').hidden=tipo!=='gestao';
+    setMensagemPerfil('');
+  }
+  function formatarDataPerfil(v){ if(!v)return '—'; const d=new Date(String(v).replace(' ','T')+'Z'); return Number.isNaN(d.getTime())?v:d.toLocaleDateString('pt-BR'); }
+  function fecharPerfil(){ if(profileOverlay){profileOverlay.hidden=true;document.body.classList.remove('profile-open');} }
+  if(profileClose) profileClose.addEventListener('click',fecharPerfil);
+  if(profileOverlay) profileOverlay.addEventListener('click',e=>{if(e.target===profileOverlay)fecharPerfil();});
+  if(profileForm) profileForm.addEventListener('submit',async e=>{
+    e.preventDefault();
+    const u=usuarioLocal()||{}, tipo=u.tipo||'aluno', p=u.perfil||{};
+    const nome=document.getElementById('profileNome').value.trim();
+    const em=document.getElementById('profileEmail').value.trim().toLowerCase();
+    if(!nome){setMensagemPerfil('Informe o nome completo.',true);return;}
+    let emailOk=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em);
+    if(tipo==='aluno'){
+      const esperado=(String(p.ra||'').replace(/\D/g,'')+String(p.ra_digito||'').replace(/[^0-9a-zA-Z]/g,'')).toLowerCase();
+      const m=em.match(/^([0-9a-z]+)sp@(aluno|al)\.educacao\.sp\.gov\.br$/i);
+      emailOk=!!m && (m[1].toLowerCase().replace(/^0+(?=[0-9a-z])/,'')||'0')===((esperado.replace(/^0+(?=[0-9a-z])/,'')||'0'));
+    }else if(tipo==='professor'){
+      emailOk=/^[a-z0-9](?:[a-z0-9._+-]*[a-z0-9])?@(?:gmail|googlemail)\.com$/i.test(em)||/^[^\s@]+@(?:prof\.|professor\.)?educacao\.sp\.gov\.br$/i.test(em);
+    }
+    if(!emailOk){setMensagemPerfil(tipo==='aluno'?'Use o e-mail institucional correspondente ao RA + dígito.':tipo==='professor'?'Use um Gmail (nome@gmail.com) ou o e-mail @prof.educacao.sp.gov.br.':'Informe um e-mail válido.',true);return;}
+    setMensagemPerfil('Salvando...');
+    try{ const r=await window.BiblioBetaAPI.fetch('/api/auth/me',{method:'PUT',body:JSON.stringify(tipo==='professor'?{nome,email:em,email_alternativo:(document.getElementById('profileEmailAlt')?.value||'').trim().toLowerCase()}:{nome,email:em})}); const d=await r.json(); if(!r.ok)throw new Error(d.erro||'Não foi possível salvar.'); localStorage.setItem('bibliobeta_usuario',JSON.stringify(d.usuario)); preencherPerfil(d.usuario); setMensagemPerfil('Perfil atualizado com sucesso.'); }catch(err){setMensagemPerfil(err.message,true);}
+  });
+  const profileSenhaBtn=document.getElementById('profileSenhaBtn');
+  if(profileSenhaBtn) profileSenhaBtn.addEventListener('click',async()=>{
+    const atual=prompt('Digite sua senha atual:'); if(atual===null)return; const nova=prompt('Digite a nova senha (8+ caracteres, maiúscula, minúscula, número e símbolo):'); if(nova===null)return; const conf=prompt('Confirme a nova senha:'); if(conf!==nova){alert('As senhas não coincidem.');return;}
+    try{const r=await window.BiblioBetaAPI.fetch('/api/auth/me/senha',{method:'PUT',body:JSON.stringify({senha_atual:atual,nova_senha:nova})});const d=await r.json();if(!r.ok)throw new Error(d.erro||'Não foi possível alterar a senha.');alert('Senha alterada com sucesso.');}catch(e){alert(e.message);}
+  });
+
   document.querySelectorAll('.dropdown [data-action]').forEach(btn => {
     btn.addEventListener('click', () => {
+      const acao=btn.dataset.action; closeDropdown();
+      if(acao==='perfil'){ abrirPerfil(); return; }
+      const tipo=TIPO_POR_ACAO[acao], u=usuarioLocal();
+      if(!tipo) return;
+      if(!u){ if(typeof window.abrirLogin==='function') window.abrirLogin(tipo); return; }
+      if(u.tipo!==tipo){ alert('Você está logado como '+(ROTULOS_PERFIL[u.tipo]||u.tipo)+'. Para acessar '+(ROTULOS_PERFIL[tipo]||tipo)+', saia da conta atual e faça login novamente.'); return; }
+      window.location.href=PAINEIS_PERFIL[tipo];
+    });
+  });
+
+
+  // Ações do menu público
+  document.querySelectorAll('[data-public-action]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const acao = btn.dataset.publicAction;
       closeDropdown();
-      const tipo = TIPO_POR_ACAO[btn.dataset.action];
-      if (tipo && typeof window.abrirLogin === 'function') {
-        window.abrirLogin(tipo);
+      if (acao === 'entrar') {
+        if (typeof window.abrirLogin === 'function') window.abrirLogin();
+      } else if (acao === 'configuracao') {
+        openSettingsPanel();
+      } else if (acao === 'sair') {
+        localStorage.removeItem('bibliobeta_token');
+        localStorage.removeItem('bibliobeta_usuario');
+        window.location.href = 'Index.html';
       }
     });
   });
@@ -248,14 +342,36 @@
   navOverlay.addEventListener('click', closeMobileNav);
   navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMobileNav));
 
-  // ---------------- Contact form ----------------
-  document.getElementById('contatoForm').addEventListener('submit', (e) => {
+  // ---------------- Contact form -> backend ----------------
+  const contatoForm = document.getElementById('contatoForm');
+  const contatoMsg = document.getElementById('contatoMensagem');
+  const contatoContador = document.getElementById('contatoContador');
+  if (contatoMsg && contatoContador) {
+    const atualizarContador = () => {
+      const max = contatoMsg.maxLength > 0 ? contatoMsg.maxLength : 1000;
+      contatoContador.textContent = `${contatoMsg.value.length}/${max}`;
+      contatoContador.classList.toggle('limite', contatoMsg.value.length >= max);
+    };
+    contatoMsg.addEventListener('input', atualizarContador);
+    contatoForm?.addEventListener('reset', () => setTimeout(atualizarContador, 0));
+    atualizarContador();
+  }
+  if (contatoForm) contatoForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const btn = e.target.querySelector('button');
     const original = btn.textContent;
-    btn.textContent = 'Mensagem enviada ✓';
-    e.target.reset();
-    setTimeout(() => { btn.textContent = original; }, 2400);
+    const campos = e.target.querySelectorAll('input, textarea');
+    const body = { nome: (campos[0]?.value || '').slice(0, 100), email: (campos[1]?.value || '').slice(0, 254), mensagem: (campos[2]?.value || '').slice(0, 1000) };
+    try {
+      btn.disabled = true; btn.textContent = 'Enviando...';
+      const r = await (window.BiblioBetaAPI?.fetch ? window.BiblioBetaAPI.fetch('/api/contato', { method:'POST', body:JSON.stringify(body) }) : fetch('/api/contato', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body) }));
+      const d = await r.json().catch(() => ({}));
+      if (!r.ok) throw new Error(d.erro || 'Não foi possível enviar a mensagem.');
+      btn.textContent = 'Mensagem enviada ✓'; e.target.reset();
+      setTimeout(() => { btn.textContent = original; btn.disabled = false; }, 2400);
+    } catch (err) {
+      btn.disabled = false; btn.textContent = original; alert(err.message);
+    }
   });
 
   // ---------------- Page navigation (no scrolling) ----------------

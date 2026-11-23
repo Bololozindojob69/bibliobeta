@@ -1,0 +1,3 @@
+MODO=livros
+DIAS_PRIMEIRA_VEZ=7
+PARA=alunos

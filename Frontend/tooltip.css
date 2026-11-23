@@ -1,0 +1,63 @@
+/* BiblioBeta — Tooltip moderno (legenda ao passar o mouse), usado em todo o site. */
+.bb-tip{
+  position:fixed; left:0; top:0;
+  z-index:99999;
+  max-width:260px;
+  padding:8px 13px;
+  border-radius:12px;
+  font-family:'Poppins',sans-serif;
+  font-size:.78rem; font-weight:500; line-height:1.35; letter-spacing:.01em;
+  color:#FAF5EC;
+  background:linear-gradient(145deg, rgba(74,44,26,.96), rgba(46,26,14,.96));
+  border:1px solid rgba(217,164,65,.35);
+  box-shadow:0 14px 34px -10px rgba(0,0,0,.5), 0 2px 8px rgba(0,0,0,.2), inset 0 1px 0 rgba(255,255,255,.07);
+  -webkit-backdrop-filter:blur(10px); backdrop-filter:blur(10px);
+  pointer-events:none;
+  white-space:normal; width:max-content;
+  opacity:0;
+  transform:translate(var(--tx,0), var(--ty,0)) scale(.94);
+  transition:opacity .16s ease, transform .22s cubic-bezier(.22,1,.36,1);
+  will-change:transform, opacity;
+}
+.bb-tip.on{ opacity:1; transform:translate(0,0) scale(1); }
+.bb-tip::before{ /* setinha */
+  content:""; position:absolute;
+  width:9px; height:9px;
+  background:inherit;
+  border:inherit; border-width:0;
+  transform:rotate(45deg);
+}
+.bb-tip[data-side="right"]{ --tx:-8px; --ty:0; }
+.bb-tip[data-side="top"]{ --tx:0; --ty:6px; }
+.bb-tip[data-side="bottom"]{ --tx:0; --ty:-6px; }
+.bb-tip[data-side="right"]::before{
+  left:-5px; top:calc(50% - 4.5px);
+  border-left:1px solid rgba(217,164,65,.35); border-bottom:1px solid rgba(217,164,65,.35);
+  border-width:0 0 1px 1px;
+}
+.bb-tip[data-side="top"]::before{
+  bottom:-5px; left:calc(var(--ax, 50%) - 4.5px);
+  border-right:1px solid rgba(217,164,65,.35); border-bottom:1px solid rgba(217,164,65,.35);
+  border-width:0 1px 1px 0;
+}
+.bb-tip[data-side="bottom"]::before{
+  top:-5px; left:calc(var(--ax, 50%) - 4.5px);
+  border-left:1px solid rgba(217,164,65,.35); border-top:1px solid rgba(217,164,65,.35);
+  border-width:1px 0 0 1px;
+}
+/* detalhe dourado à esquerda quando aparece ao lado do menu */
+.bb-tip[data-side="right"]{ padding-left:15px; }
+.bb-tip[data-side="right"]::after{
+  content:""; position:absolute; left:6px; top:9px; bottom:9px; width:3px; border-radius:3px;
+  background:linear-gradient(180deg,#F28C28,#D9A441);
+}
+
+html.alto-contraste .bb-tip{ background:#000; color:#fff; border:2px solid #fff; }
+html.alto-contraste .bb-tip::before{ background:#000; border-color:#fff; }
+
+@media (prefers-reduced-motion:reduce){ .bb-tip{ transition:opacity .01s; transform:none !important; } }
+@media (hover:none){ .bb-tip{ display:none; } }
+
+/* o brilho (glider) do item ativo ficava por cima e bloqueava o mouse nele */
+.radio-container .glider-container,
+.radio-container .glider-container *{ pointer-events:none; }

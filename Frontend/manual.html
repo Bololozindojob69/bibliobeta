@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Manual do BiblioBeta: como se cadastrar, pedir livros, renovar, devolver e reservar na biblioteca." />
+  <title>Manual — BiblioBeta</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" />
+  <link rel="icon" href="/favicon.png" type="image/png" />
+  <link rel="stylesheet" href="styles.css" />
+<link rel="stylesheet" href="scrollbar.css?v=5">
+<link rel="stylesheet" href="tooltip.css?v=2">
+<link rel="stylesheet" href="caixa.css?v=1">
+  <style>
+    html{scroll-behavior:smooth;scroll-padding-top:84px}
+    body.manual{margin:0;background:var(--bg,#FAF5EC);color:var(--text,#6B4226);font-family:'Poppins',system-ui,sans-serif;line-height:1.6}
+    .m-topo{position:sticky;top:0;z-index:10;display:flex;align-items:center;gap:12px;padding:10px 20px;background:var(--menu,#4A2C1A);color:#fff;box-shadow:0 4px 18px rgba(0,0,0,.2)}
+    .m-topo img{width:38px;height:38px;object-fit:contain}
+    .m-topo strong{font-size:1.05rem;letter-spacing:.01em}
+    .m-topo strong small{display:block;font-size:.65rem;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:var(--icon,#D9A441)}
+    .m-topo .m-esp{flex:1}
+    .m-btn{display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:8px 16px;border-radius:12px;background:var(--btn,#E86A17);color:#fff;font-weight:600;font-size:.9rem;text-decoration:none;border:0;cursor:pointer}
+    .m-btn:hover{filter:brightness(1.08)}
+    .m-btn--leve{background:transparent;border:1.5px solid rgba(255,255,255,.45)}
+    .m-wrap{width:min(980px,100% - 32px);margin:0 auto;padding:28px 0 64px}
+    .m-hero{padding:30px 28px;border-radius:24px;background:linear-gradient(135deg,var(--card,#F7E9D0),color-mix(in srgb,var(--icon,#D9A441) 35%,var(--card,#F7E9D0)));border:1px solid color-mix(in srgb,var(--icon,#D9A441) 45%,transparent)}
+    .m-hero h1{margin:0 0 6px;font-size:clamp(1.7rem,4.6vw,2.5rem);line-height:1.15}
+    .m-hero p{margin:0;max-width:60ch;opacity:.85}
+    .m-layout{display:grid;grid-template-columns:230px 1fr;gap:28px;margin-top:26px;align-items:start}
+    .m-indice{position:sticky;top:84px;padding:16px;border-radius:18px;background:var(--card,#F7E9D0);border:1px solid color-mix(in srgb,var(--icon,#D9A441) 35%,transparent)}
+    .m-indice p{margin:0 0 8px;font-size:.72rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--icon,#D9A441)}
+    .m-indice a{display:block;padding:6px 8px;border-radius:8px;color:inherit;text-decoration:none;font-size:.9rem}
+    .m-indice a:hover{background:color-mix(in srgb,var(--icon,#D9A441) 22%,transparent)}
+    .m-sec{padding:22px 24px;margin-bottom:18px;border-radius:20px;background:#fff9;border:1px solid color-mix(in srgb,var(--icon,#D9A441) 30%,transparent);box-shadow:0 8px 24px rgba(60,35,10,.06)}
+    .m-sec h2{margin:0 0 10px;font-size:1.3rem;display:flex;align-items:center;gap:10px}
+    .m-sec h2 span{display:inline-grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--btn,#E86A17);color:#fff;font-size:.95rem;flex-shrink:0}
+    .m-sec p{margin:.4em 0}
+    .m-sec ul,.m-sec ol{margin:.5em 0 .5em 1.2em;padding:0}
+    .m-sec li{margin:.3em 0}
+    .m-dica{margin:12px 0 0;padding:11px 14px;border-radius:12px;background:color-mix(in srgb,var(--icon,#D9A441) 20%,transparent);border-left:4px solid var(--icon,#D9A441);font-size:.92rem}
+    .m-alerta{background:color-mix(in srgb,#b42318 10%,transparent);border-left-color:#b42318}
+    .m-passos{list-style:none;margin:.8em 0 0!important;counter-reset:p}
+    .m-passos li{counter-increment:p;position:relative;padding:8px 0 8px 44px;margin:0}
+    .m-passos li::before{content:counter(p);position:absolute;left:0;top:8px;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:var(--card,#F7E9D0);color:var(--btn,#E86A17);font-weight:700;border:1.5px solid var(--btn,#E86A17)}
+    .m-cod{display:inline-block;padding:1px 10px;border-radius:8px;background:var(--menu,#4A2C1A);color:#fff;font-weight:600;letter-spacing:.08em}
+    .m-rodape{text-align:center;opacity:.75;font-size:.9rem;margin-top:30px}
+    @media (max-width:820px){.m-layout{grid-template-columns:1fr}.m-indice{position:static}.m-topo .m-txt{display:none}}
+    @media print{.m-topo,.m-indice,.m-btn{display:none!important}.m-layout{display:block}.m-sec{break-inside:avoid;box-shadow:none}}
+  </style>
+</head>
+<body class="manual">
+  <header class="m-topo">
+    <img src="logo-bibliobeta-96.png" alt="" width="38" height="38" />
+    <strong>BiblioBeta<small>Manual</small></strong>
+    <span class="m-esp"></span>
+    <a class="m-btn m-btn--leve" href="javascript:window.print()" aria-label="Imprimir o manual"><span class="m-txt">Imprimir</span> 🖨️</a>
+    <a class="m-btn" id="voltarPainel" href="painel.html">← <span class="m-txt">Voltar ao painel</span></a>
+  </header>
+
+  <main class="m-wrap">
+    <section class="m-hero">
+      <h1>📖 Como funciona o BiblioBeta</h1>
+      <p>Guia rápido para alunos e professores: do cadastro até a devolução do livro. Leva menos de 5 minutos para ler.</p>
+    </section>
+
+    <div class="m-layout">
+      <nav class="m-indice" aria-label="Índice do manual">
+        <p>Neste manual</p>
+        <a href="#comecar">1. Primeiros passos</a>
+        <a href="#catalogo">2. Catálogo e favoritos</a>
+        <a href="#pedir">3. Pedir um livro</a>
+        <a href="#emprestimos">4. Meus empréstimos</a>
+        <a href="#devolver">5. Devolver o livro</a>
+        <a href="#reservas">6. Reservas</a>
+        <a href="#avisos">7. Avisos e notificações</a>
+        <a href="#atrasos">8. Atrasos e penalidades</a>
+        <a href="#conta">9. Sua conta e ajuda</a>
+      </nav>
+
+      <div>
+        <section class="m-sec" id="comecar">
+          <h2><span>1</span> Primeiros passos</h2>
+          <p><strong>Cadastro.</strong> Na tela inicial, escolha <em>Cadastrar</em> e informe seus dados:</p>
+          <ul>
+            <li><strong>Aluno:</strong> use o e-mail institucional no formato <em>RA + dígito + sp@al.educacao.sp.gov.br</em>, além da turma, ano e etapa de ensino.</li>
+            <li><strong>Professor:</strong> use um Gmail pessoal ou o e-mail institucional (@prof.educacao.sp.gov.br). Você pode informar um segundo e-mail para receber os avisos nos dois.</li>
+          </ul>
+          <p>A senha precisa ter <strong>no mínimo 8 caracteres</strong>, com letra maiúscula, minúscula, número e símbolo. Depois do cadastro sua conta já fica ativa.</p>
+          <p><strong>Entrar de novo.</strong> Use seu e-mail e senha. Esqueceu a senha? Use <em>Esqueci minha senha</em> na tela de login.</p>
+        </section>
+
+        <section class="m-sec" id="catalogo">
+          <h2><span>2</span> Catálogo e favoritos</h2>
+          <p>Em <strong>Catálogo</strong> você vê todos os livros da biblioteca. Busque por <strong>título, autor ou categoria</strong> e filtre por gênero. Cada livro mostra se há exemplar disponível.</p>
+          <p>Marque o coração ♥ para guardar o livro em <strong>Favoritos</strong> e ler depois.</p>
+        </section>
+
+        <section class="m-sec" id="pedir">
+          <h2><span>3</span> Pedir um livro</h2>
+          <ol class="m-passos">
+            <li>No <strong>Catálogo</strong>, abra o livro e toque em <strong>Solicitar empréstimo</strong>.</li>
+            <li>Acompanhe o pedido em <strong>Solicitações</strong>. A Gestão da biblioteca analisa e aprova ou recusa.</li>
+            <li>Se aprovado, você recebe o <strong>código de retirada</strong> (<span class="m-cod">6 números</span>) no site e por e-mail.</li>
+            <li>Vá até a biblioteca e <strong>apresente o código</strong> para pegar o livro.</li>
+          </ol>
+          <p class="m-dica">💡 O número de livros que você pode ter ao mesmo tempo é definido pela biblioteca. Se atingir o limite, devolva um livro antes de pedir outro.</p>
+        </section>
+
+        <section class="m-sec" id="emprestimos">
+          <h2><span>4</span> Meus empréstimos</h2>
+          <p>Em <strong>Meus Empréstimos</strong> aparecem os livros que estão com você e a <strong>data prevista de devolução</strong>.</p>
+          <ul>
+            <li><strong>Renovar:</strong> precisa de mais tempo? Toque em <em>Renovar</em> para ganhar uma nova data. A biblioteca define quantas renovações são permitidas.</li>
+            <li><strong>Histórico:</strong> veja tudo o que você já emprestou e devolveu.</li>
+          </ul>
+        </section>
+
+        <section class="m-sec" id="devolver">
+          <h2><span>5</span> Devolver o livro</h2>
+          <ol class="m-passos">
+            <li>Em <strong>Meus Empréstimos</strong>, toque em <strong>Avisar devolução</strong>.</li>
+            <li>Você recebe um <strong>código de devolução</strong> (<span class="m-cod">6 números</span>). Guarde esse código.</li>
+            <li>Leve o livro à biblioteca e diga o código para a Gestão. Ela confirma e o livro volta para o acervo.</li>
+          </ol>
+          <p class="m-dica">💡 Você recebe uma notificação quando a devolução for registrada.</p>
+        </section>
+
+        <section class="m-sec" id="reservas">
+          <h2><span>6</span> Reservas</h2>
+          <p>Todos os exemplares estão emprestados? <strong>Reserve o livro</strong> e entre na fila de espera.</p>
+          <ul>
+            <li>Quando chegar a sua vez, você é avisado de que a reserva está <strong>pronta para retirada</strong>.</li>
+            <li>Você tem <strong>2 dias</strong> para retirar. Passou o prazo, a reserva é cancelada e o livro vai para o próximo da fila.</li>
+          </ul>
+          <p>Acompanhe tudo em <strong>Reservas</strong>.</p>
+        </section>
+
+        <section class="m-sec" id="avisos">
+          <h2><span>7</span> Avisos e notificações</h2>
+          <p>O sino 🔔 no topo mostra seus avisos. Eles também chegam por <strong>e-mail</strong>. Você é avisado quando:</p>
+          <ul>
+            <li>uma solicitação é aprovada ou recusada;</li>
+            <li>falta <strong>3 dias</strong> para devolver e no <strong>dia</strong> da devolução;</li>
+            <li>uma reserva fica disponível ou expira;</li>
+            <li>chega um livro novo no catálogo.</li>
+          </ul>
+          <p class="m-dica">💡 Confira também a caixa de spam do e-mail na primeira vez.</p>
+        </section>
+
+        <section class="m-sec" id="atrasos">
+          <h2><span>8</span> Atrasos e penalidades</h2>
+          <p>Se o prazo vencer sem devolução, o empréstimo fica <strong>atrasado</strong> e você recebe avisos. A Gestão pode aplicar uma <strong>advertência</strong> ou um <strong>bloqueio</strong> (por alguns dias ou até você devolver o livro), durante o qual não é possível pedir novos livros.</p>
+          <p>Seu cartão <strong>Multas</strong> no início do painel mostra se está tudo em dia.</p>
+          <p class="m-dica m-alerta">⚠️ Atrasou? Procure a biblioteca o quanto antes para regularizar. Devolvendo o livro em atraso, o bloqueio “até regularizar” termina sozinho.</p>
+        </section>
+
+        <section class="m-sec" id="conta">
+          <h2><span>9</span> Sua conta e ajuda</h2>
+          <ul>
+            <li><strong>Informações:</strong> veja os dados do seu cadastro.</li>
+            <li><strong>Acessibilidade:</strong> o botão laranja no canto da tela ajusta tamanho da letra, contraste e outros recursos.</li>
+            <li><strong>Sair:</strong> use <em>Sair do painel</em> sempre que usar um computador compartilhado.</li>
+          </ul>
+          <p>Ficou com dúvida? Fale com a Gestão da biblioteca pessoalmente ou pelo formulário de contato do site.</p>
+        </section>
+
+        <p class="m-rodape">BiblioBeta · Biblioteca escolar 📚</p>
+      </div>
+    </div>
+  </main>
+  <script src="sessao-aba.js?v=1"></script>
+  <script>
+    // Se o manual foi aberto de fora do painel (sem sessão), o botão leva para a tela inicial.
+    try{ if(!sessionStorage.getItem('bibliobeta_token') && !localStorage.getItem('bibliobeta_token')) document.getElementById('voltarPainel').href='Index.html'; }catch(_){}
+  </script>
+<script src="scrollbar.js?v=1"></script>
+<script src="tooltip.js?v=2"></script>
+<script src="caixa.js?v=1"></script>
+</body>
+</html>

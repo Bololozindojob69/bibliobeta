@@ -1,0 +1,30 @@
+BIBLIOBETA — NOTIFICAÇÕES POR GMAIL
+
+O BiblioBeta já possui envio de e-mail via Gmail SMTP.
+
+EVENTOS PRINCIPAIS:
+- Novo cadastro pendente -> e-mail para a Gestão.
+- Cadastro aprovado -> e-mail para o aluno/professor.
+- Cadastro recusado -> e-mail para o aluno/professor.
+- Solicitação de empréstimo -> e-mail para a Gestão.
+- Aprovação/recusa de empréstimo -> e-mail para o usuário.
+- Reservas, devoluções e outros avisos -> e-mail quando a notificação estiver configurada para envio.
+
+CONFIGURAÇÃO:
+1. Abra backend/.env.
+2. SMTP_USER deve ser a conta Gmail que envia os avisos.
+3. SMTP_PASS deve ser uma SENHA DE APP do Google, não a senha normal da conta.
+4. Mantenha SMTP_HOST=smtp.gmail.com, SMTP_PORT=465 e SMTP_SECURE=true.
+5. Reinicie o backend depois de alterar o .env.
+
+IMPORTANTE:
+- Não publique o arquivo .env no GitHub.
+- Se a senha de app for revogada, gere outra no Google e atualize SMTP_PASS.
+
+
+COBRANÇA DE DEVOLUÇÃO (NOVO)
+- Gestão > Devoluções > "Cobrar devolução": avisa uma pessoa (botão na linha) ou vários de uma vez (atrasados / vencendo em 3 dias).
+  Canais: Site (tela de aviso + notificação), Gmail, ou os dois.
+- Gestão > Configurações > "Cobrança automática de devolução" (somente administrador): liga o envio automático,
+  escolhe canal, quem avisar e de quantos em quantos dias repetir enquanto o livro não for devolvido.
+- Contas desativadas veem uma tela própria ("Sua conta está desativada") ao tentar entrar ou, se estiverem com o site aberto, na hora.

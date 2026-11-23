@@ -1,43 +1,60 @@
-# BiblioBeta — versão corrigida
+# BiblioBeta — V1.4 Teste em Tempo Real
 
-## Como iniciar no Windows
+Sistema de biblioteca escolar para teste local em computadores da mesma rede.
 
-1. Instale o Node.js LTS.
-2. Abra o terminal nesta pasta: `backend`.
-3. Execute `npm install`.
-4. Execute `npm start`.
-5. Abra no navegador: `http://localhost:3000`
+## Como iniciar
 
-Não abra `Frontend/Index.html` com duplo clique. O sistema agora serve o Frontend pelo próprio backend, e o login usa a API relativa `/api`.
+1. No computador que será o **servidor**, extraia o ZIP.
+2. Execute **Iniciar BiblioBeta.bat**.
+3. Aguarde aparecer no terminal que a API está rodando na porta **3000**.
+4. No próprio servidor, abra:
+   `http://127.0.0.1:3000`
 
-### Contas de teste
-- Gestão: `gestao@bibliobeta.local` / `Vasco123!`
-- Aluno: `aluno@bibliobeta.local` / `123456`
-- Professor: `carla.pires@escola.com` / `123456`
-- Sophia: `sophialarabc18@gmail.com` / `Sophia3004`
+## Teste em dois notebooks
 
-O banco SQLite já está incluído em `backend/database.sqlite`.
+Os dois computadores precisam estar conectados à **mesma rede da escola**.
 
+No computador servidor, descubra o IPv4 com `ipconfig`. Exemplo:
 
-Conta Sophia: sophialarabc18@gmail.com / Sophia3004. A senha é armazenada com hash e o login valida a senha cadastrada.
+`192.168.1.25`
 
+No segundo notebook, abra:
 
-### Login e senhas
+`http://192.168.1.25:3000`
 
-O banco usa hash de senha e o backend aceita tanto as senhas antigas em bcrypt quanto as novas em scrypt.
+> Não use `192.168.15.15` na escola. Esse era o IP da rede de casa e pode mudar em outra rede.
 
-**Regra importante:** ao iniciar o sistema, as contas de demonstração existentes são apenas reativadas se necessário. O sistema **não sobrescreve a senha de uma conta existente**. Portanto, uma senha escolhida pelo usuário continua funcionando depois de reiniciar o servidor.
+## Tempo real
 
-Contas de teste incluídas nesta versão:
-- Gestão: `gestao@bibliobeta.local` / `Vasco123!`
-- Sophia: `sophialarabc18@gmail.com` / `Sophia3004`
+A V1.4 usa atualização em tempo real para eventos da biblioteca.
 
-Novos cadastros usam a senha informada no próprio cadastro.
+Exemplo de teste:
+- Notebook 2: faça uma solicitação de empréstimo.
+- Notebook 1: confira a solicitação sem precisar apertar F5.
+- Depois aprove a solicitação no Notebook 1 e confira a atualização no Notebook 2.
 
+## Se o segundo notebook não acessar
 
-## Política de e-mail
+- confirme que os dois estão na mesma Wi-Fi/rede;
+- confira o IPv4 do computador servidor;
+- use o IPv4 correto seguido de `:3000`;
+- se necessário, permita o Node.js/porta 3000 no Firewall do Windows.
 
-- Alunos podem cadastrar e-mail normal ou institucional.
-- Domínios institucionais de aluno reconhecidos: `@aluno.educacao.sp.gov.br` e `@al.educacao.sp.gov.br`.
-- E-mails são normalizados para minúsculas e espaços são removidos antes do cadastro e login.
-- O mesmo e-mail não pode ser usado por duas contas.
+## Observação
+
+Este pacote é para **teste local**. Para acessar o BiblioBeta de redes diferentes (por exemplo, escola e casa), será necessário publicar o sistema em um servidor acessível pela internet.
+
+O pacote não inclui `node_modules` nem o banco SQLite pronto. O script de inicialização prepara as dependências/banco conforme a configuração do projeto.
+
+## Novidades da versão 0.5
+
+**Gêneros dos livros**
+- Cada livro pode ter vários gêneros (Fantasia, Romance, Feminismo, Cultura Afro-brasileira...). Os 10 livros que já estavam no banco já receberam seus gêneros.
+- Gestão: no cadastro/edição do livro há chips para escolher os gêneros. Ao buscar pelo ISBN o sistema sugere o gênero lendo a categoria que a API (BrasilAPI / Google Books / Open Library) devolve. O botão **Detectar gêneros** (tela Livros) faz isso para todos os livros sem gênero.
+- API: `GET /api/generos`, `GET /api/livros?genero=Fantasia` (também aceita o id), `POST /api/livros/:id/detectar-generos`, `POST /api/generos/detectar-todos`. O campo `generos` vem em cada livro.
+- Alunos e professores: o catálogo tem a galeria de gêneros e prateleiras por gênero.
+
+**Multas e punições (Gestão > Multas)**
+- Passou do prazo? A pessoa aparece sozinha em "Aguardando decisão", com o número no menu.
+- A Gestão escolhe: advertência, bloqueio de 3/7/15 dias, bloqueio até devolver, ou dispensar. A punição sugerida muda conforme os dias de atraso.
+- Enquanto há bloqueio, a pessoa não consegue solicitar nem receber empréstimo. O bloqueio por dias termina sozinho; o "até devolver" termina quando o livro é devolvido.

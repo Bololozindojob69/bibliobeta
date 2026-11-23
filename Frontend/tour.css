@@ -1,0 +1,45 @@
+/* BiblioBeta — tour guiado (manual interativo). Usa as cores do tema do painel. */
+.bbt{position:fixed;inset:0;z-index:2147483000;font-family:'Poppins',system-ui,sans-serif}
+.bbt[hidden]{display:none}
+.bbt-trava{position:absolute;inset:0;background:transparent}
+.bbt.sem-alvo .bbt-trava{background:rgba(36,20,9,.66)}
+
+.bbt-foco{position:fixed;left:0;top:0;width:0;height:0;border-radius:16px;pointer-events:none;opacity:0;
+  box-shadow:0 0 0 3px var(--btn,#E86A17),0 0 0 100vmax rgba(36,20,9,.66);
+  transition:left .38s cubic-bezier(.2,.8,.2,1),top .38s cubic-bezier(.2,.8,.2,1),width .38s cubic-bezier(.2,.8,.2,1),height .38s cubic-bezier(.2,.8,.2,1),opacity .2s}
+.bbt-foco.visivel{opacity:1}
+
+.bbt-cursor{position:fixed;left:0;top:0;width:34px;height:34px;margin:-4px 0 0 -6px;pointer-events:none;opacity:0;
+  transition:transform .75s cubic-bezier(.45,.05,.2,1),opacity .25s;filter:drop-shadow(0 4px 6px rgba(0,0,0,.35))}
+.bbt-cursor.clicando svg{animation:bbt-toque .18s ease-out}
+.bbt-cursor::after{content:"";position:absolute;left:3px;top:3px;width:26px;height:26px;margin:-9px 0 0 -9px;border-radius:50%;
+  border:3px solid var(--btn,#E86A17);opacity:0;transform:scale(.3)}
+.bbt-cursor.clicando::after{animation:bbt-onda .5s ease-out}
+@keyframes bbt-toque{50%{transform:scale(.82)}}
+@keyframes bbt-onda{0%{opacity:.95;transform:scale(.3)}100%{opacity:0;transform:scale(2.2)}}
+
+.bbt-balao{position:fixed;left:0;top:0;width:min(368px,calc(100vw - 24px));box-sizing:border-box;padding:18px 20px 16px;
+  border-radius:20px;background:#FFF8EC;color:#4A2C1A;border:1px solid color-mix(in srgb,var(--icon,#D9A441) 55%,transparent);
+  box-shadow:0 18px 48px rgba(30,15,5,.45);transition:opacity .2s}
+.bbt-balao.oculto{opacity:0;pointer-events:none}
+.bbt-balao h3{margin:0 28px 6px 0;font-size:1.08rem;line-height:1.25;font-weight:700}
+.bbt-balao p{margin:0;font-size:.92rem;line-height:1.55}
+.bbt-balao p strong{color:#B4500C}
+.bbt-fechar{position:absolute;right:10px;top:10px;width:30px;height:30px;border:0;border-radius:50%;background:transparent;color:#4A2C1A;
+  font-size:1.4rem;line-height:1;cursor:pointer}
+.bbt-fechar:hover{background:rgba(74,44,26,.1)}
+.bbt-rodape{display:flex;align-items:center;gap:8px;margin-top:16px}
+.bbt-prog{flex:1;min-width:30px;height:5px;border-radius:5px;background:rgba(74,44,26,.14);overflow:hidden}
+.bbt-prog i{display:block;height:100%;width:0;border-radius:5px;background:var(--btn,#E86A17);transition:width .35s}
+.bbt-cont{font-size:.74rem;font-weight:600;opacity:.7;white-space:nowrap;margin-right:4px}
+.bbt-balao button.bbt-b{min-height:38px;padding:7px 14px;border-radius:11px;font:600 .86rem 'Poppins',system-ui,sans-serif;cursor:pointer}
+.bbt-voltar{background:transparent;color:#4A2C1A;border:1.5px solid rgba(74,44,26,.3)}
+.bbt-prox{background:var(--btn,#E86A17);color:#fff;border:1.5px solid var(--btn,#E86A17)}
+.bbt-prox:hover{filter:brightness(1.08)}
+.bbt-balao button:focus-visible,.bbt-link:focus-visible{outline:3px solid #1d4ed8;outline-offset:2px}
+.bbt-link{display:inline-block;margin-top:10px;font-size:.86rem;font-weight:600;color:#B4500C}
+
+@media (prefers-reduced-motion:reduce){
+  .bbt-foco,.bbt-cursor,.bbt-balao,.bbt-prog i{transition:none}
+  .bbt-cursor{display:none}
+}

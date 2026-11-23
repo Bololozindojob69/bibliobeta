@@ -1,0 +1,59 @@
+/* BiblioBeta — barra de rolagem fina e animada, em todas as telas.
+   Aparece suave quando o mouse passa na área e engrossa ao passar na barra. */
+:root{
+  --sb-thumb:rgba(194,90,20,.45);
+  --sb-thumb-area:rgba(194,90,20,.62);
+  --sb-thumb-hover:rgba(232,105,26,.95);
+}
+/* Firefox usa as propriedades padrão; Chrome/Edge usam o estilo animado abaixo
+   (se as duas coisas ficassem juntas, o Chrome ignoraria o estilo animado). */
+@supports not selector(::-webkit-scrollbar){
+  *{ scrollbar-width:thin; scrollbar-color:var(--sb-thumb-area) transparent; }
+}
+
+*::-webkit-scrollbar{ width:10px; height:10px; }
+*::-webkit-scrollbar-track{ background:transparent; }
+*::-webkit-scrollbar-corner{ background:transparent; }
+*::-webkit-scrollbar-button{ display:none; width:0; height:0; }
+/* Barra fininha (3px), quase invisível em repouso. A espessura NÃO é animada:
+   animar a borda deixava a ponta quadrada durante o arraste. Só a cor muda. */
+*::-webkit-scrollbar-thumb{
+  background-color:transparent;
+  background-clip:padding-box;
+  border:3.5px solid transparent;
+  border-radius:999px;
+  min-height:36px;
+  transition:background-color .25s ease;
+}
+*:hover::-webkit-scrollbar-thumb{ background-color:var(--sb-thumb); }
+*::-webkit-scrollbar-thumb:hover,
+*::-webkit-scrollbar-thumb:active{
+  background-color:var(--sb-thumb-hover);
+  border-radius:999px;                   /* mesma espessura: só muda a cor */
+}
+
+/* Rolagem da página: a barra nativa some (sem trilho branco) e entra uma barra
+   flutuante fininha por cima do conteúdo (scrollbar.js), sem ocupar espaço. */
+html{ scrollbar-width:none; -ms-overflow-style:none; }
+html::-webkit-scrollbar{ width:0; height:0; display:none; }
+.bb-pagescroll{
+  position:fixed; top:0; right:0; width:14px; height:100vh; z-index:2147483000;
+  pointer-events:none; opacity:0; transition:opacity .3s ease;
+}
+.bb-pagescroll.on{ opacity:1; }
+.bb-pagescroll i{
+  position:absolute; right:3px; width:5px; border-radius:999px; min-height:36px;
+  background:rgba(74,44,26,.5);
+  box-shadow:0 0 0 1px rgba(255,255,255,.28);
+  pointer-events:auto; cursor:grab; transition:background-color .2s ease;
+}
+.bb-pagescroll i:hover,.bb-pagescroll.drag i{ background:rgba(232,106,23,.95); }
+@media print{ .bb-pagescroll{ display:none; } }
+
+/* Menu lateral (fundo escuro) e janelas com estilo próprio */
+.side-nav::-webkit-scrollbar-thumb,
+.recuperacao-card::-webkit-scrollbar-thumb{ border:0; background-clip:border-box; border-radius:999px; }
+
+@media (prefers-reduced-motion:reduce){
+  *::-webkit-scrollbar-thumb{ transition:none; }
+}

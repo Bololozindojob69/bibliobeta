@@ -3,35 +3,42 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="BiblioBeta: acompanhe empréstimos, reservas e o acervo da biblioteca." />
     <title id="painelTitle">Meu Painel — BiblioBeta</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'" />
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" /></noscript>
     <link rel="icon" href="/favicon.png" type="image/png" />
     <link rel="stylesheet" href="styles.css" />
-    <link rel="stylesheet" href="painel.css" />
+<link rel="stylesheet" href="scrollbar.css?v=5">
+<link rel="stylesheet" href="tooltip.css?v=2">
+<link rel="stylesheet" href="caixa.css?v=1">
+    <link rel="stylesheet" href="painel.css?v=3.10" />
+    <link rel="stylesheet" href="tour.css?v=1" />
     <link rel="stylesheet" href="acessibilidade.css" />
   </head>
   <body class="painel-body">
     <!-- Logo flutuante: no mobile abre a navbar lateral -->
     <button class="logo-toggle" id="logoToggle" aria-label="Abrir menu">
-      <img src="logo.png" alt="Logo BiblioBeta" />
+      <img src="logo-bibliobeta.png" alt="Logo BiblioBeta" />
     </button>
     <div class="side-backdrop" id="sideBackdrop"></div>
 
     <!-- ===================== NAVBAR LATERAL ===================== -->
+    <button class="side-toggle" id="sideToggle" type="button" aria-label="Recolher menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>
+    </button>
+
     <aside class="side-nav" id="sideNav">
       <div class="side-brand">
-        <img src="logo.png" alt="Logo BiblioBeta" />
+        <img src="logo-bibliobeta.png" alt="Logo BiblioBeta" />
         <span class="side-brand-text"
           ><strong>BiblioBeta</strong><span id="sideBrandTipo">Aluno</span></span
         >
       </div>
 
-      <div class="radio-container" style="--total-radio: 7">
+      <div class="radio-container" style="--total-radio: 9">
         <input
           type="radio"
           name="nav-aluno"
@@ -72,6 +79,12 @@
             <path d="M13 5h7v14h-7z" /></svg
           >Catálogo</label
         >
+
+        <input type="radio" name="nav-aluno" id="nav-solicitacoes" value="solicitacoes" />
+        <label for="nav-solicitacoes">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h14v16H5z"/><path d="M8 8h8M8 12h8M8 16h5"/></svg>
+          Solicitações
+        </label>
 
         <input
           type="radio"
@@ -153,6 +166,12 @@
           >Favoritos</label
         >
 
+        <input type="radio" name="nav-aluno" id="nav-notificacoes" value="notificacoes" />
+        <label for="nav-notificacoes">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          Notificações <span id="navNotifBadge" class="bell-badge" style="position:static;margin-left:auto;" hidden>0</span>
+        </label>
+
         <input
           type="radio"
           name="nav-aluno"
@@ -197,6 +216,20 @@
     <!-- ===================== CONTEÚDO ===================== -->
     <main class="painel-main">
       <div class="painel-topbar">
+        <a
+          href="manual.html"
+          target="_blank"
+          rel="noopener"
+          class="topbar-bell topbar-manual"
+          id="topbarManual"
+          aria-label="Fazer um tour guiado pelo BiblioBeta"
+          title="Tour guiado pelo BiblioBeta"
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M2 4h6a4 4 0 0 1 4 4v13a3 3 0 0 0-3-3H2z" />
+            <path d="M22 4h-6a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h7z" />
+          </svg>
+        </a>
         <button
           type="button"
           class="topbar-bell"
@@ -217,13 +250,14 @@
           <span class="bell-badge" id="bellBadge" hidden>0</span>
         </button>
         <div class="topbar-notif" id="topbarNotif" hidden>
-          <h4>Notificações</h4>
+          <p class="topbar-notif-titulo">Notificações</p>
           <ul id="topbarNotifLista"></ul>
+          <a href="#pane-notificacoes" data-fecha-nav="notificacoes" class="card-link" style="display:block;text-align:center;margin-top:10px;">Ver todas</a>
         </div>
 
         <div class="topbar-user" id="topbarUser">
-          <span class="avatar user-avatar" id="userAvatar">MS</span>
-          <span class="user-name" id="userName">Olá, Maria!</span>
+          <span class="avatar user-avatar" id="userAvatar"></span>
+          <span class="user-name" id="userName"></span>
           <svg
             class="user-chevron"
             viewBox="0 0 24 24"
@@ -236,28 +270,39 @@
             <path d="M6 9l6 6 6-6" />
           </svg>
           <div class="user-dropdown" id="userDropdown">
-            <a href="#pane-informacoes" data-fecha-nav="informacoes"
-              >Minhas informações</a
-            >
-            <a href="#pane-emprestimos" data-fecha-nav="emprestimos"
-              >Meus empréstimos</a
-            >
-            <a href="Index.html" data-logout>Sair da conta</a>
+            <a href="#pane-informacoes" data-fecha-nav="informacoes">Dados do Perfil</a>
+            <a href="Index.html" data-logout>Sair</a>
           </div>
         </div>
       </div>
 
-      <div class="painel-head">
-        <span class="eyebrow">BiblioBeta</span>
-        <h1 id="painelHeadTitulo">Área do Aluno</h1>
-        <p id="painelHeadDescricao">Acompanhe seus empréstimos, prazos e o acervo da biblioteca.</p>
+      <div class="painel-head painel-head--anim" id="painelHeadAnim">
+        <!-- Fundo decorativo: livrinhos e brilhos flutuando -->
+        <div class="ph-flutuantes" aria-hidden="true">
+          <span class="ph-fl ph-fl--1">📖</span>
+          <span class="ph-fl ph-fl--2">✨</span>
+          <span class="ph-fl ph-fl--3">📚</span>
+          <span class="ph-fl ph-fl--4">🔖</span>
+          <span class="ph-fl ph-fl--5">✨</span>
+        </div>
+        <div class="ph-texto">
+          <span class="eyebrow ph-chip" aria-label="BiblioBeta">
+            <img src="logo-bibliobeta.png" alt="" width="20" height="20" />
+            <span class="ph-chip-txt" id="phDigitando">BiblioBeta</span><span class="ph-caret" aria-hidden="true"></span>
+          </span>
+          <h1 id="painelHeadTitulo">Área do Aluno</h1>
+          <p id="painelHeadDescricao">Acompanhe seus empréstimos, prazos e o acervo da biblioteca.</p>
+        </div>
+        <div class="ph-livro" aria-hidden="true">
+          <div class="bb-livro"><div class="bb-livro__pg-shadow"></div><div class="bb-livro__pg"></div><div class="bb-livro__pg bb-livro__pg--2"></div><div class="bb-livro__pg bb-livro__pg--3"></div><div class="bb-livro__pg bb-livro__pg--4"></div><div class="bb-livro__pg bb-livro__pg--5"></div></div>
+        </div>
       </div>
 
       <section class="painel-pane" id="pane-inicio">
         <div class="hero-card">
           <div class="hero-texto">
             <span class="hero-eyebrow">Que bom te ver por aqui 🌿</span>
-            <h2>Olá, <span id="inicioNome">Aluno</span>!</h2>
+            <h2>Olá, <span id="inicioNome"></span>!</h2>
             <p>
               Acompanhe seus prazos, descubra novidades do acervo e continue sua
               jornada de leitura.
@@ -266,19 +311,19 @@
               Explorar catálogo
             </button>
           </div>
-          <div class="hero-ilustracao" aria-hidden="true">
-            <svg viewBox="0 0 120 120" fill="none">
-              <circle cx="60" cy="60" r="58" fill="rgba(255,255,255,.08)" />
-              <path
-                d="M30 78V38a4 4 0 0 1 4-4h20v48H34a4 4 0 0 1-4-4Z"
-                fill="rgba(255,255,255,.9)"
-              />
-              <path
-                d="M90 78V38a4 4 0 0 0-4-4H66v48h20a4 4 0 0 0 4-4Z"
-                fill="rgba(255,255,255,.65)"
-              />
-              <path d="M54 34h12v48H54z" fill="rgba(255,255,255,.85)" />
-            </svg>
+          <div class="rel-card" data-relogio data-periodo="dia" role="group" aria-label="Data e hora atuais">
+            <div class="rel-ceu" aria-hidden="true">
+              <div class="rel-nuvem rel-frente"><span class="rel-frente-e"></span><span class="rel-frente-d"></span></div>
+              <span class="rel-sol rel-brilho"></span>
+              <span class="rel-sol"></span>
+              <div class="rel-nuvem rel-fundo"><span class="rel-fundo-e"></span><span class="rel-fundo-d"></span></div>
+            </div>
+            <div class="rel-cabecalho">
+              <span class="rel-semana" data-rel-semana>Hoje</span>
+              <span class="rel-data" data-rel-data>&nbsp;</span>
+            </div>
+            <time class="rel-hora" data-rel-hora><span data-rel-hm>--:--</span><small data-rel-seg aria-hidden="true">--</small></time>
+            <div class="rel-periodo"><span data-rel-periodo>Olá</span></div>
           </div>
         </div>
 
@@ -350,20 +395,14 @@
         </div>
 
         <div class="painel-grid" style="margin-top: 20px">
-          <article class="painel-card data-table-card">
-            <h3>Meus empréstimos atuais</h3>
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>Livro</th>
-                  <th>Devolução</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody id="inicioTabelaEmprestimos">
-                <!-- preenchido via JS -->
-              </tbody>
-            </table>
+          <article class="painel-card emprestimos-card">
+            <div class="painel-card-head">
+              <h3>Meus empréstimos atuais</h3>
+              <button type="button" class="card-link" data-ir-pane="emprestimos">Ver todos</button>
+            </div>
+            <div class="emprestimos-lista" id="inicioTabelaEmprestimos">
+              <!-- preenchido via JS -->
+            </div>
             <p class="empty-msg" id="inicioEmprestimosVazio" hidden>
               Você não possui empréstimos no momento. Que tal encontrar um livro
               novo?
@@ -372,16 +411,9 @@
 
           <article class="painel-card chart-card">
             <h3>Livros lidos por mês</h3>
-            <svg viewBox="0 0 240 140" class="chart-bars" aria-hidden="true">
-              <rect x="10" y="90" width="26" height="40" rx="4"></rect>
-              <rect x="50" y="70" width="26" height="60" rx="4"></rect>
-              <rect x="90" y="50" width="26" height="80" rx="4"></rect>
-              <rect x="130" y="60" width="26" height="70" rx="4"></rect>
-              <rect x="170" y="30" width="26" height="100" rx="4"></rect>
-              <rect x="210" y="45" width="26" height="85" rx="4"></rect>
-            </svg>
+            <div class="chart-bars-real" id="inicioGraficoLivrosLidos" role="group" aria-label="Gráfico de livros lidos por mês"></div>
             <p class="chart-caption" id="inicioChartCaption">
-              Mar – Ago · 14 livros no total
+              Carregando histórico...
             </p>
           </article>
         </div>
@@ -400,26 +432,14 @@
           placeholder="Pesquisar por título, autor ou assunto..."
         />
 
-        <div class="categoria-pills" id="catalogoCategorias">
-          <button type="button" class="pill active" data-categoria="todos">
-            Todos
-          </button>
-          <button type="button" class="pill" data-categoria="Infantil">
-            Infantil
-          </button>
-          <button type="button" class="pill" data-categoria="Juvenil">
-            Juvenil
-          </button>
-          <button type="button" class="pill" data-categoria="Ficção">
-            Ficção
-          </button>
-          <button type="button" class="pill" data-categoria="Não ficção">
-            Não ficção
-          </button>
-          <button type="button" class="pill" data-categoria="Biografias">
-            Biografias
-          </button>
-        </div>
+        <div class="generos-galeria" id="catalogoCategorias" role="group" aria-label="Escolha um gênero" hidden></div>
+        <div class="genero-banner" id="catalogoBanner" hidden></div>
+
+        <p class="catalogo-dica">
+          <span class="catalogo-dica-icone" aria-hidden="true">💡</span>
+          <span class="catalogo-dica-hover">Passe o mouse sobre a capa para abrir o livro e <strong>pedir emprestado</strong>.</span>
+          <span class="catalogo-dica-toque">Toque na capa para abrir o livro e <strong>pedir emprestado</strong>.</span>
+        </p>
 
         <div class="livro-grid" id="catalogoGrid">
           <!-- preenchido via JS -->
@@ -433,30 +453,34 @@
         <h2>Meus Empréstimos</h2>
         <p style="margin: 6px 0 18px">Renove prazos e confira devoluções.</p>
         <div class="painel-grid">
-          <article class="painel-card data-table-card">
+          <article class="painel-card emprestimos-card">
             <h3>Empréstimos ativos</h3>
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>Livro</th>
-                  <th>Devolução</th>
-                  <th>Renovações</th>
-                  <th>Status</th>
-                  <th></th>
-                </tr>
-              </thead>
-              <tbody id="emprestimosTabela">
-                <!-- preenchido via JS -->
-              </tbody>
-            </table>
+            <div class="emprestimos-lista" id="emprestimosTabela">
+              <!-- preenchido via JS -->
+            </div>
             <p class="empty-msg" id="emprestimosVazio" hidden>
               Você não possui empréstimos ativos no momento.
             </p>
           </article>
-          <article class="painel-card">
-            <div class="stat" id="multasValor">R$ 0</div>
-            <h3>Multas</h3>
+          <article class="painel-card multas-card" id="multasCard">
+            <div class="stat" id="multasValor">Em dia</div>
+            <h3>Pendências</h3>
             <p id="multasTexto">Nenhuma pendência registrada.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="painel-pane" id="pane-solicitacoes">
+        <h2>Minhas Solicitações</h2>
+        <p style="margin: 6px 0 18px">Acompanhe os pedidos de empréstimo enviados para a Gestão.</p>
+        <div class="painel-grid">
+          <article class="painel-card data-table-card">
+            <h3>Solicitações de empréstimo</h3>
+            <table class="data-table">
+              <thead><tr><th>Livro</th><th>Solicitado em</th><th>Data desejada</th><th>Status</th><th></th></tr></thead>
+              <tbody id="solicitacoesTabela"></tbody>
+            </table>
+            <p class="empty-msg" id="solicitacoesVazio" hidden>Você ainda não fez nenhuma solicitação.</p>
           </article>
         </div>
       </section>
@@ -495,20 +519,21 @@
         <h2>Histórico</h2>
         <p style="margin: 6px 0 18px">Todos os livros que você já retirou.</p>
         <div class="painel-grid">
-          <article class="painel-card data-table-card">
-            <h3>Empréstimos anteriores</h3>
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th>Livro</th>
-                  <th>Retirado em</th>
-                  <th>Devolvido em</th>
-                </tr>
-              </thead>
-              <tbody id="historicoTabela">
-                <!-- preenchido via JS -->
-              </tbody>
-            </table>
+          <article class="painel-card historico-card">
+            <div class="painel-card-head">
+              <h3>Empréstimos anteriores</h3>
+              <span class="historico-contagem" id="historicoContagem"></span>
+            </div>
+            <input type="search" id="historicoBusca" class="table-search" placeholder="Buscar por título ou autor..." />
+            <div class="filtro-chips" id="historicoFiltroChips" role="group" aria-label="Filtrar por período">
+              <button type="button" class="chip active" data-hist-periodo="todos">Todos</button>
+              <button type="button" class="chip" data-hist-periodo="30">Últimos 30 dias</button>
+              <button type="button" class="chip" data-hist-periodo="180">Últimos 6 meses</button>
+              <button type="button" class="chip" data-hist-periodo="ano">Este ano</button>
+            </div>
+            <div class="historico-lista" id="historicoTabela">
+              <!-- preenchido via JS -->
+            </div>
             <p class="empty-msg" id="historicoVazio" hidden>
               Nenhum empréstimo concluído ainda.
             </p>
@@ -528,6 +553,21 @@
           Você ainda não marcou nenhum livro como favorito. Clique no coração de
           um livro no Catálogo.
         </p>
+      </section>
+
+      <section class="painel-pane" id="pane-notificacoes">
+        <h2>Notificações</h2>
+        <p style="margin:6px 0 18px">Veja os avisos novos e reveja os que você já leu.</p>
+        <div class="painel-grid">
+          <article class="painel-card data-table-card">
+            <div class="painel-card-head">
+              <h3>Todas as notificações</h3>
+              <button type="button" class="row-acao-btn" id="marcarTodasNotificacoesAluno">Marcar todas como lidas</button>
+            </div>
+            <ul class="bb-notifs__lista" id="notificacoesAlunoLista"><li class="empty-msg">Carregando...</li></ul>
+            <p class="empty-msg" id="notificacoesAlunoVazio" hidden>Você ainda não recebeu nenhuma notificação.</p>
+          </article>
+        </div>
       </section>
 
       <section class="painel-pane" id="pane-informacoes">
@@ -560,7 +600,7 @@
         <!-- Passo 1: formulário -->
         <div class="modal-step" id="modalPassoForm">
           <div class="modal-icon">📖</div>
-          <h2 id="modalTitulo">Cadastre seu empréstimo</h2>
+          <h2 id="modalTitulo">Solicite seu empréstimo</h2>
           <p class="modal-sub">
             Preencha os dados abaixo para solicitar o empréstimo do livro
             desejado.
@@ -587,6 +627,9 @@
                   <option>8º Ano B</option>
                   <option>9º Ano A</option>
                   <option>9º Ano B</option>
+                  <option>1º Ano</option>
+                  <option>2º Ano</option>
+                  <option>3º Ano</option>
                 </select>
               </label>
               <div class="form-field">
@@ -608,9 +651,9 @@
             <div class="modal-aviso">
               <strong>Importante!</strong>
               <p>
-                Após enviar sua solicitação, você receberá um código de
-                verificação. Apresente esse código à equipe da biblioteca no dia
-                escolhido para retirar o livro.
+                Sua solicitação será enviada para a Gestão analisar. Assim que
+                for aprovada, você recebe uma notificação (no BiblioBeta e por
+                e-mail) com o código de retirada para apresentar na biblioteca.
               </p>
             </div>
 
@@ -630,10 +673,9 @@
           <div class="confirma-cabecalho">
             <span class="confirma-check">✓</span>
             <div>
-              <h2>Empréstimo realizado com sucesso!</h2>
+              <h2>Solicitação enviada com sucesso!</h2>
               <p class="modal-sub">
-                Seu empréstimo foi registrado. Compareça à biblioteca para
-                retirar o livro.
+                Sua solicitação foi enviada para a Gestão. Aguarde a aprovação antes de retirar o livro.
               </p>
             </div>
           </div>
@@ -644,14 +686,15 @@
               <dl id="confirmaResumo"><!-- preenchido via JS --></dl>
             </div>
             <div class="confirma-codigo">
-              <h3>Código de verificação</h3>
-              <div class="codigo-caixa" id="confirmaCodigo">----</div>
+              <h3>Próximos passos</h3>
               <p>
-                Apresente este código à equipe da biblioteca para retirar o
-                livro pessoalmente.
+                A Gestão vai analisar seu pedido. Assim que aprovar, você
+                recebe uma notificação com o <strong>código de retirada</strong> —
+                confira em "Notificações" ou em "Meus Empréstimos".
               </p>
               <p class="confirma-aviso">
-                🛡️ Guarde este código e não o compartilhe com terceiros.
+                🛎️ Fique de olho nas notificações para não perder o prazo de
+                retirada.
               </p>
             </div>
           </div>
@@ -676,7 +719,27 @@
       </div>
     </div>
 
-    <script src="painel.js"></script>
+    <script>
+/* Mostra o usuário logado imediatamente, sem esperar painel.js nem a API. */
+(function(){try{
+  var raw=sessionStorage.getItem('bibliobeta_usuario')||localStorage.getItem('bibliobeta_usuario');
+  var u=raw&&JSON.parse(raw); if(!u||!u.nome) return;
+  var partes=String(u.nome).trim().split(/\s+/);
+  var ini=partes.slice(0,2).map(function(x){return x[0]}).join('').toUpperCase();
+  var n=document.getElementById('userName'); if(n) n.textContent='Olá, '+partes[0]+'!';
+  var a=document.getElementById('userAvatar'); if(a) a.textContent=ini;
+  var i=document.getElementById('inicioNome'); if(i) i.textContent=partes[0];
+}catch(e){}})();
+</script>
+<script src="sessao-aba.js?v=1"></script>
+    <script src="api-client.js?v=1.2-punicao"></script>
+    <script src="busca.js?v=3.7-busca"></script>
+    <script src="painel.js?v=3.7-busca"></script>
+    <script src="tour.js?v=1"></script>
+    <script src="relogio.js"></script>
     <script src="acessibilidade.js"></script>
-  </body>
+  <script src="scrollbar.js?v=1"></script>
+<script src="tooltip.js?v=2"></script>
+<script src="caixa.js?v=1"></script>
+</body>
 </html>
