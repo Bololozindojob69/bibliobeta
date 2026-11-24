@@ -431,7 +431,8 @@
             isbn: l.isbn || '',
             capa: l.capa || (l.isbn ? 'https://covers.openlibrary.org/b/isbn/' + encodeURIComponent(l.isbn) + '-M.jpg' : ''),
             cor: PALETA_CAPAS[i % PALETA_CAPAS.length],
-            disponivel: (l.disponiveis === undefined ? l.quantidade : l.disponiveis) > 0
+            disponivel: (l.disponiveis === undefined ? l.quantidade : l.disponiveis) > 0,
+            localizacoes: l.localizacoes || ''
           };
         });
         saveDB(db);
@@ -761,6 +762,7 @@
             <div class="livro-book__pagina">
               <span class="livro-book__categoria">${categoria}</span>
               <span class="livro-disp ${l.disponivel ? '' : 'indisponivel'}">${l.disponivel ? 'Disponível' : 'Emprestado'}</span>
+              <small class="livro-localizacao">Local de retirada: ${escaparTexto((l.localizacoes || '').split(',').map(v => v.trim() === 'A definir' ? 'confirmar com a biblioteca' : v.trim()).filter(Boolean).join(', ') || 'consulte a Gestão')}</small>
               ${l.disponivel
                 ? `<button type="button" class="livro-btn" data-emprestar="${l.id}">Solicitar empréstimo</button>`
                 : `<button type="button" class="livro-btn secundario" data-reservar="${l.id}">Reservar</button>`}
@@ -1476,7 +1478,7 @@
       if(!window.EventSource||!token)return;
       const url=base+'/api/tempo-real?token='+encodeURIComponent(token);
       let es,encerrado=false,jaConectou=false;
-      const conectar=()=>{ if(encerrado)return; es=new EventSource(url); es.addEventListener('conta_excluida',()=>{ encerrado=true; es.close(); window.BiblioBetaAPI?.contaExcluida?.(); }); es.addEventListener('conta_desativada',()=>{ encerrado=true; es.close(); window.BiblioBetaAPI?.contaDesativada?.(); }); es.addEventListener('cobranca_devolucao',()=>{ window.BiblioBetaAPI?.verificarCobrancas?.(); }); es.addEventListener('punicao',()=>{ window.BiblioBetaAPI?.verificarPunicao?.(true); }); let t=null; const atualizar=()=>{ if(t)return; t=setTimeout(async()=>{ t=null; await Promise.all([sincronizarBibliotecaReal(),carregarLivrosReais()]); renderTudo(); },250); }; es.addEventListener('notificacao',atualizar); es.addEventListener('atualizar',atualizar);
+      const conectar=()=>{ if(encerrado)return; es=new EventSource(url); es.addEventListener('conta_excluida',()=>{ encerrado=true; es.close(); window.BiblioBetaAPI?.contaExcluida?.(); }); es.addEventListener('conta_desativada',()=>{ encerrado=true; es.close(); window.BiblioBetaAPI?.contaDesativada?.(); }); es.addEventListener('cobranca_devolucao',()=>{ window.BiblioBetaAPI?.verificarCobrancas?.(); }); es.addEventListener('punicao',()=>{ window.BiblioBetaAPI?.verificarPunicao?.(true); }); let t=null; const atualizar=()=>{ if(t)return; t=setTimeout(async()=>{ t=null; await Promise.all([sincronizarBibliotecaReal(),carregarLivrosReais()]); renderTudo(); },250); }; es.addEventListener('notificacao',atualizar); es.addEventListener('atualizar',atualizar); es.addEventListener('catalogo_atualizado',atualizar); es.addEventListener('categorias_atualizadas',atualizar);
         // Ao (re)conectar: se o site mudou (servidor reiniciado com arquivos novos) recarrega a página sozinha;
         // se só caiu a conexão, busca os dados de novo para não ficar com a tela velha.
         es.addEventListener('conectado',ev=>{ try{ const v=JSON.parse(ev.data||'{}').versao; if(v){ if(window.__bbVersaoSite&&window.__bbVersaoSite!==v){ location.reload(); return; } window.__bbVersaoSite=v; } }catch(_){} if(jaConectou) atualizar(); jaConectou=true; });

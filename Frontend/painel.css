@@ -2292,3 +2292,95 @@ body.fora-do-inicio .painel-head--anim + .painel-pane{ margin-top:0; }
   .favorito-card{ transition:none; }
   .livro-card.livro-destaque{ animation:none; outline:3px solid var(--btn); }
 }
+
+/* Localização física do exemplar exibida na ficha do catálogo. */
+.livro-localizacao{display:block;margin:7px 0 10px;font-size:.78rem;line-height:1.35;opacity:.78}
+
+/* Ajuste visual do catálogo: a ficha interna não pode transbordar da capa 3D.
+   Mantém o mesmo padrão de botão e de cartão em todos os gêneros. */
+.genero-prateleira__trilho{align-items:stretch}
+.genero-prateleira__trilho > .livro-card--3d{height:auto;min-width:0}
+.livro-card--3d .livro-book{flex:0 0 auto;min-width:0}
+.livro-book__pagina{
+  box-sizing:border-box;
+  overflow:hidden;
+  padding:24px 12px 12px 24px;
+  justify-content:flex-start;
+  gap:8px;
+}
+.livro-book__categoria{
+  display:-webkit-box;
+  max-width:100%;
+  overflow:hidden;
+  -webkit-box-orient:vertical;
+  -webkit-line-clamp:2;
+  line-clamp:2;
+  text-overflow:ellipsis;
+  overflow-wrap:anywhere;
+  font-size:.66rem;
+  letter-spacing:.04em;
+}
+.livro-book__categoria .genero-tags{
+  justify-content:center;
+  max-height:2.7em;
+  overflow:hidden;
+}
+.livro-book__categoria .genero-tag{font-size:.6rem;padding:2px 5px;white-space:normal}
+.livro-book__pagina .livro-disp{flex:0 0 auto;margin:0;font-size:.7rem}
+.livro-book__pagina .livro-localizacao{
+  display:-webkit-box;
+  flex:1 1 auto;
+  min-height:0;
+  max-width:100%;
+  margin:0;
+  overflow:hidden;
+  -webkit-box-orient:vertical;
+  -webkit-line-clamp:3;
+  line-clamp:3;
+  overflow-wrap:anywhere;
+  font-size:.69rem;
+  line-height:1.25;
+}
+.livro-book__pagina .livro-btn{
+  display:flex;
+  flex:0 0 auto;
+  align-items:center;
+  justify-content:center;
+  width:100%;
+  min-height:40px;
+  margin:auto 0 0;
+  padding:8px 7px;
+  border-radius:9px;
+  font-size:.76rem;
+  line-height:1.15;
+  text-align:center;
+  white-space:normal;
+  overflow-wrap:anywhere;
+}
+.livro-legenda{min-width:0;overflow-wrap:anywhere}
+.livro-legenda h3{margin:0;font-size:.92rem;line-height:1.3;overflow-wrap:anywhere}
+@media(max-width:520px){
+  .livro-book__pagina{padding:22px 8px 8px 20px;gap:6px}
+  .livro-book__pagina .livro-localizacao{font-size:.64rem;-webkit-line-clamp:2;line-clamp:2}
+  .livro-book__pagina .livro-btn{min-height:36px;font-size:.7rem;padding:6px 5px}
+}
+
+/* =====================================================
+   Ajustes do catálogo (v0.11)
+   - espaço entre as abas de gênero e as prateleiras
+   - gêneros dentro do livro não encostam mais no coração
+   (tamanho dos cards mantido no padrão)
+   ===================================================== */
+.generos-galeria{ margin:16px 0 34px; padding-bottom:16px; }
+.genero-prateleira{ margin-bottom:34px; }
+
+/* Página de dentro: começa abaixo do coração e todos os cards ficam iguais */
+.livro-book__pagina{ padding:44px 12px 12px 24px; gap:8px; }
+.livro-book__categoria .genero-tags{ max-height:none; justify-content:center; }
+
+@media (max-width:640px){
+  .generos-galeria{ margin-bottom:26px; }
+}
+@media (max-width:520px){
+  .livro-book__pagina{ padding:40px 8px 8px 20px; }
+}
